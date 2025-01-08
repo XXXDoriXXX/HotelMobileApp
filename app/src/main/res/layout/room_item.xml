@@ -1,0 +1,80 @@
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="235dp"
+    android:layout_height="380dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:cardElevation="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Зображення кімнати -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="200dp"
+            android:layout_height="250dp"
+            app:cardCornerRadius="26dp"
+            app:cardElevation="0dp">
+
+            <ImageView
+                android:id="@+id/room_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                tools:srcCompat="@tools:sample/backgrounds/scenic" />
+        </androidx.cardview.widget.CardView>
+
+
+            <TextView
+                android:id="@+id/room_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="101"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="16sp"
+                android:fontFamily="@font/roboto_medium"
+                android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:id="@+id/room_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_regular"
+                android:text="VIP"
+                android:textColor="?attr/colorOnSecondary"
+                android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/room_places"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+
+            android:text="2 places"
+            android:textColor="?attr/colorOnSecondary"
+            android:textSize="14sp"
+            android:fontFamily="@font/roboto_regular" />
+        <TextView
+            android:id="@+id/room_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="999$"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="16sp"
+            android:fontFamily="@font/roboto_medium"
+            android:layout_marginLeft="160dp"/>
+        <!-- Рейтинг -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

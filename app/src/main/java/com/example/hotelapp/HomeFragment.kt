@@ -66,7 +66,7 @@ class HomeFragment : Fragment() {
                 HotelItem(
                     3,
                     "Poltava Tower",
-                    "poltavex",
+                    "poltave",
                     "Poltava",
                     "Ivana Mazepy 6",
                     listOf(room1, room2, room3)

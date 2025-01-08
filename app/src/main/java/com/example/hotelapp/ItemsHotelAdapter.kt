@@ -5,7 +5,6 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -31,7 +30,7 @@ class ItemsHotelAdapter(var items:List<HotelItem>, var context: Context) : Recyc
 
     override fun onBindViewHolder(holder: MyViewHoldert, position: Int) {
         holder.title.text = items[position].title
-        holder.hotelname.text = items[position].name
+        holder.hotelname.text = items[position].name + " " + items[position].desc
       //  holder.description.text = items[position].desc
 
         var imageid = context.resources.getIdentifier(
@@ -50,6 +49,7 @@ class ItemsHotelAdapter(var items:List<HotelItem>, var context: Context) : Recyc
             HotelHolder.currentHotel = items[position]
             val intent = Intent(context,CurrentHotelInfo::class.java)
             context.startActivity(intent)
+            HotelHolder.currentHotel=items[position]
         }
     }
 
