@@ -1,0 +1,12 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Колір кнопки -->
+    <solid android:color="?attr/colorSecondary" />
+
+    <!-- Заокруглення -->
+    <corners android:radius="12dp" /> <!-- Радіус заокруглення -->
+
+    <!-- Рамка кнопки (опційно) -->
+
+</shape>

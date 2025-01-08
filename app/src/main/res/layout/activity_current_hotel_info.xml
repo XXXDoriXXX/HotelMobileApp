@@ -1,0 +1,171 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorPrimary">
+
+    <!-- Верхнє зображення -->
+    <ImageView
+        android:id="@+id/hotel_image"
+        android:layout_width="match_parent"
+        android:layout_height="450dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/default_hotel_image"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Назад кнопка -->
+    <ImageView
+        android:id="@+id/back_button"
+        android:layout_width="18dp"
+        android:layout_height="26dp"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="?attr/colorOnPrimary" />
+
+    <!-- Поділитися кнопка -->
+    <ImageView
+        android:id="@+id/share_button"
+        android:layout_width="30dp"
+        android:layout_height="27dp"
+        android:layout_margin="16dp"
+        android:src="@drawable/share"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="?attr/colorOnPrimary" />
+
+    <!-- Інформаційний блок -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/info_card"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_marginTop="-40dp"
+        app:cardCornerRadius="36dp"
+        app:cardBackgroundColor="?attr/colorSurface"
+        app:cardElevation="0dp"
+        app:layout_constraintTop_toBottomOf="@id/hotel_image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="600dp"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/hotel_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_medium"
+                android:text="Trending"
+                android:textColor="?attr/colorOnSecondary"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/hotel_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/roboto"
+                android:text="Blue Star Hotel"
+                android:textColor="?attr/colorOnPrimary"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/hotel_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/roboto_regular"
+                android:text="Your go to location for a romantic stay in luxury. This 4.5-star splendor, located in Los Angeles, features countless amenities and fun."
+                android:textColor="?attr/colorOnSecondary"
+                android:textSize="14sp" />
+
+            <!-- Рейтинг -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/star"
+                    app:tint="?attr/colorSecondary" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/star"
+                    app:tint="?attr/colorSecondary" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/star"
+                    app:tint="?attr/colorSecondary" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/star"
+                    app:tint="?attr/colorSecondary" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/star_outline"
+                    app:tint="?attr/colorSecondary" />
+
+                <TextView
+                    android:id="@+id/review_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/roboto_regular"
+                    android:gravity="center_vertical"
+                    android:text="2.3k reviews"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Зручності -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginTop="-60dp"
+        android:background="?attr/colorSurface"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/info_card">
+
+        <!-- Кнопка "Book Now" -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/book_now_button"
+            android:layout_width="350dp"
+            android:layout_height="55dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"
+            android:layout_gravity="center"
+            android:backgroundTint="?attr/colorSecondary"
+            android:fontFamily="@font/roboto_bold"
+            android:text="B O O K   N O W"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="16sp"
+            app:cornerRadius="12dp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
