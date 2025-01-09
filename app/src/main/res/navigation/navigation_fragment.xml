@@ -20,4 +20,9 @@
         android:name="com.example.hotelapp.FavoriteFragment"
         android:label="fragment_favorite"
         tools:layout="@layout/fragment_favorite" />
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.example.hotelapp.HistoryFragment"
+        android:label="fragment_history"
+        tools:layout="@layout/fragment_history" />
 </navigation>

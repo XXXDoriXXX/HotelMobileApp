@@ -1,5 +1,6 @@
 package com.example.hotelapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
@@ -9,6 +10,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.datepicker.MaterialDatePicker
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -21,6 +23,8 @@ class Current_Room_Info : AppCompatActivity() {
     private lateinit var totalPriceText: TextView
     private var pricePerNight = HotelHolder.currentRoom?.price?: 0f
     private var totalNights = 0
+    private  var checkInDateFormatted: String? = null
+    private  var checkOutDateFormatted: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -36,12 +40,45 @@ class Current_Room_Info : AppCompatActivity() {
 
         findViewById<Button>(R.id.pay_button).setOnClickListener {
             if (totalNights > 0) {
-                Toast.makeText(this, "Payment of \$${totalNights * pricePerNight} confirmed!", Toast.LENGTH_SHORT).show()
-                HotelHolder.currentRoom?.let { it1 -> HotelHolder.roomList.add(it1) }
+                val newOrder = checkInDateFormatted?.let { checkIn ->
+                    checkOutDateFormatted?.let { checkOut ->
+                        OrderItem(
+                            hotelName = HotelHolder.currentHotel?.name ?: "Unknown Hotel",
+                            roomType = HotelHolder.currentRoom?.type ?: "Unknown Room",
+                            checkInDate = checkIn,
+                            checkOutDate = checkOut,
+                            totalPrice = totalNights * pricePerNight
+                        )
+                    }
+                }
+
+                if (newOrder != null) {
+                    HotelHolder.orders.add(newOrder)
+                    Toast.makeText(
+                        this,
+                        "Payment of \$${totalNights * pricePerNight} confirmed!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    val navHostFragment = supportFragmentManager.findFragmentById(R.id.navigation_fragment) as? NavHostFragment
+                    val currentFragment = navHostFragment?.childFragmentManager?.primaryNavigationFragment
+                    if (currentFragment is HistoryFragment) {
+                        currentFragment.addOrderToList(newOrder)
+                    }
+
+
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    finish()
+                } else {
+                    Toast.makeText(this, "Failed to create order.", Toast.LENGTH_SHORT).show()
+                }
             } else {
                 Toast.makeText(this, "Please select dates first.", Toast.LENGTH_SHORT).show()
             }
         }
+
         val roomimage: ImageView = findViewById(R.id.room_image)
         val backbtn:ImageView = findViewById(R.id.back_button)
         backbtn.setOnClickListener {
@@ -79,7 +116,8 @@ class Current_Room_Info : AppCompatActivity() {
                 val endDateFormatted = dateFormatter.format(Date(endDate))
 
                 selectDatesButton.text = "$startDateFormatted - $endDateFormatted"
-
+                checkInDateFormatted = startDateFormatted
+                checkOutDateFormatted = endDateFormatted
                 calculateTotalPrice(startDate, endDate)
             }
         }

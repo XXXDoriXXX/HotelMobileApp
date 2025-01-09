@@ -10,6 +10,10 @@
         android:title="Favorite"
         android:icon="@drawable/wishlist"/>
     <item
+        android:id="@+id/historyFragment"
+        android:title="Favorite"
+        android:icon="@drawable/history"/>
+    <item
         android:id="@+id/profileFragment"
         android:title="Profile"
         android:icon="@drawable/user"/>

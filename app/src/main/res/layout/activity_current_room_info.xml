@@ -11,7 +11,7 @@
     <ImageView
         android:id="@+id/room_image"
         android:layout_width="match_parent"
-        android:layout_height="450dp"
+        android:layout_height="300dp"
         android:scaleType="centerCrop"
         android:src="@drawable/default_hotel_image"
         app:layout_constraintTop_toTopOf="parent"
@@ -34,7 +34,7 @@
         android:id="@+id/info_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="-40dp"
+        android:layout_marginTop="-30dp"
         app:cardCornerRadius="36dp"
         app:cardBackgroundColor="?attr/colorSurface"
         app:layout_constraintTop_toBottomOf="@id/room_image"
@@ -47,6 +47,7 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <!-- Назва кімнати -->
             <TextView
                 android:id="@+id/room_number"
                 android:layout_width="wrap_content"
@@ -56,6 +57,7 @@
                 android:textColor="?attr/colorOnPrimary"
                 android:textSize="20sp" />
 
+            <!-- Ціна -->
             <TextView
                 android:id="@+id/room_price"
                 android:layout_width="wrap_content"
@@ -65,6 +67,92 @@
                 android:fontFamily="@font/roboto_bold"
                 android:textColor="?attr/colorSecondary"
                 android:textSize="18sp" />
+
+            <!-- Опис -->
+            <TextView
+                android:id="@+id/room_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="A luxurious room equipped with all amenities for a comfortable stay."
+                android:layout_marginTop="8dp"
+                android:textSize="14sp"
+                android:textColor="?attr/colorOnSecondary"
+                android:fontFamily="@font/roboto_regular" />
+
+            <!-- Зручності -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="16dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:src="@drawable/wifi"
+                        app:tint="?attr/colorSecondary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Wi-Fi"
+                        android:textColor="?attr/colorOnSecondary"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:src="@drawable/tv"
+                        app:tint="?attr/colorSecondary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="TV"
+                        android:textColor="?attr/colorOnSecondary"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:src="@drawable/ac"
+                        app:tint="?attr/colorSecondary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="AC"
+                        android:textColor="?attr/colorOnSecondary"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
 
             <!-- Вибір дати -->
             <Button

@@ -15,7 +15,7 @@ class ItemsHotelAdapter(var items:List<HotelItem>, var context: Context) : Recyc
         val image: ImageView =view.findViewById(R.id.hotel_image)
         val hotelname: TextView =view.findViewById(R.id.hotel_name)
         val title: TextView =view.findViewById(R.id.hotel_description)
-        //val description: TextView =view.findViewById(R.id.item_hotel_list_text)
+        val description: TextView =view.findViewById(R.id.hotel_description)
 
     }
 
@@ -30,8 +30,8 @@ class ItemsHotelAdapter(var items:List<HotelItem>, var context: Context) : Recyc
 
     override fun onBindViewHolder(holder: MyViewHoldert, position: Int) {
         holder.title.text = items[position].title
-        holder.hotelname.text = items[position].name + " " + items[position].desc
-      //  holder.description.text = items[position].desc
+        holder.hotelname.text = items[position].name
+        holder.description.text =  items[position].desc
 
         var imageid = context.resources.getIdentifier(
             items[position].image,

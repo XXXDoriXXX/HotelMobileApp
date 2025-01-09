@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="?attr/colorSurface">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Назва готелю -->
+        <TextView
+            android:id="@+id/order_hotel_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Blue Star Hotel"
+            android:textSize="18sp"
+            android:textColor="?attr/colorOnPrimary"
+            android:fontFamily="@font/roboto_bold" />
+
+        <!-- Тип кімнати -->
+        <TextView
+            android:id="@+id/order_room_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Room: VIP"
+            android:layout_marginTop="4dp"
+            android:textSize="14sp"
+            android:textColor="?attr/colorOnSecondary"
+            android:fontFamily="@font/roboto_regular" />
+
+        <!-- Дати замовлення -->
+        <TextView
+            android:id="@+id/order_dates"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Jan 10 - Jan 15, 2025"
+            android:layout_marginTop="4dp"
+            android:textSize="14sp"
+            android:textColor="?attr/colorOnSecondary"
+            android:fontFamily="@font/roboto_regular" />
+
+        <!-- Ціна -->
+        <TextView
+            android:id="@+id/order_total_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total: $999"
+            android:layout_marginTop="8dp"
+            android:textSize="16sp"
+            android:textColor="?attr/colorAccent"
+            android:fontFamily="@font/roboto_bold" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

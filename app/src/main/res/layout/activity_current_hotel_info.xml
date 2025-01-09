@@ -141,31 +141,145 @@
 
     <!-- Зручності -->
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_marginTop="-60dp"
-        android:background="?attr/colorSurface"
-        android:orientation="vertical"
-        android:padding="16dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:paddingTop="140dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/hotel_image">
+
+        <!-- Wi-Fi -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/wifi"
+                app:tint="?attr/colorOnPrimary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Wi-Fi"
+                android:textColor="?attr/colorOnPrimary"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- TV -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/tv"
+                app:tint="?attr/colorOnPrimary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="TV"
+                android:textColor="?attr/colorOnPrimary"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- AC -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/ac"
+                app:tint="?attr/colorOnPrimary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="AC"
+                android:textColor="?attr/colorOnPrimary"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- Gym -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/gym"
+                app:tint="?attr/colorOnPrimary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Gym"
+                android:textColor="?attr/colorOnPrimary"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- Parking -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/parking"
+                app:tint="?attr/colorOnPrimary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Parking"
+                android:textColor="?attr/colorOnPrimary"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Кнопка "Book Now" -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/book_now_button"
+        android:layout_width="350dp"
+        android:layout_height="55dp"
+        android:layout_gravity="center"
+        android:backgroundTint="?attr/colorSecondary"
+        android:fontFamily="@font/roboto_bold"
+        android:text="B O O K   N O W"
+        android:textColor="?attr/colorOnPrimary"
+        android:textSize="16sp"
+        app:cornerRadius="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/info_card">
-
-        <!-- Кнопка "Book Now" -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/book_now_button"
-            android:layout_width="350dp"
-            android:layout_height="55dp"
-            android:layout_marginTop="25dp"
-            android:layout_marginBottom="25dp"
-            android:layout_gravity="center"
-            android:backgroundTint="?attr/colorSecondary"
-            android:fontFamily="@font/roboto_bold"
-            android:text="B O O K   N O W"
-            android:textColor="?attr/colorOnPrimary"
-            android:textSize="16sp"
-            app:cornerRadius="12dp" />
-    </LinearLayout>
-
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 </androidx.constraintlayout.widget.ConstraintLayout>
