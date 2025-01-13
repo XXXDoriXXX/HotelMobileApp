@@ -13,23 +13,19 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("MissingSuperCall")
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Правильний виклик super.onCreate
+
         super.onCreate(savedInstanceState)
 
-        // Застосування теми
         ThemeManager.applyTheme(this)
 
-        // Встановлення макета
         setContentView(R.layout.activity_main)
 
-        // Edge-to-edge дизайн
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // Налаштування BottomNavigationView
             val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNav)
             val navController = findNavController(R.id.fragmentContainerView)
             bottomNavigationView.setupWithNavController(navController)

@@ -27,8 +27,10 @@
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorSurface"
+        android:background="?attr/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:itemIconTint="#84c6cf"
+        app:itemTextColor="?attr/colorOnSecondary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:menu="@menu/menu_btn" />
