@@ -1,7 +1,15 @@
-package com.example.hotelapp
+import com.example.hotelapp.RoomItem
 
-class HotelItem(val id:Int,val name:String, val image:String, val title: String, val desc:String,   val rooms: List<RoomItem> =listOf()) {
-    fun addRoom(room: RoomItem): HotelItem {
-        return HotelItem(id, name, image, title, desc, rooms + room)
-    }
-}
+data class HotelItem(
+    val id: Int,
+    val name: String,
+    val address: String,
+    val images: List<HotelImage>,
+    val rooms: List<RoomItem>,
+    var views:Int
+)
+
+data class HotelImage(
+    val id: Int,
+    val image_url: String
+)

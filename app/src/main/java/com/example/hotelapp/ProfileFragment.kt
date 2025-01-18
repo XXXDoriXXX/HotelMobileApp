@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.example.hotelapp.classes.UserHolder
+import com.example.hotelapp.Holder.UserHolder
 import com.example.hotelapp.utils.SessionManager
 
 private const val ARG_PARAM1 = "param1"

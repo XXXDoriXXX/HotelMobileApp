@@ -1,5 +1,7 @@
 package com.example.hotelapp
 
+import HotelItem
+import HotelRepository
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +10,15 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.hotelapp.Holder.UserHolder
+
+import com.example.hotelapp.api.HotelService
+import com.example.hotelapp.network.RetrofitClient
+import com.example.hotelapp.utils.SessionManager
+
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class HomeFragment : Fragment() {
     private var param1: String? = null
@@ -25,63 +36,33 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        try {
-            // Знаходимо RecyclerView
-            val itemsList: RecyclerView = view.findViewById(R.id.itemsHotelList)
+        val itemsList: RecyclerView = view.findViewById(R.id.itemsHotelList)
+        itemsList.layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
+        val hotelRepository = UserHolder.getHotelRepository()
 
-            // Створюємо дані для списку
-            val items = arrayListOf<HotelItem>()
-            val room1 = RoomItem(1, "room101", 101, "Premium", 2, 399f, 1)
-            val room2 = RoomItem(1, "room201", 201, "Vip", 2, 299f, 1)
-            val room3 = RoomItem(1, "room102", 102, "Standart", 4, 199f, 1)
-
-            items.add(
-                HotelItem(
-                    1,
-                    "Grand Palace",
-                    "grandpalace",
-                    "Khmelnytskiy",
-                    "Zarichanska 10/4",
-                    listOf(room1, room2, room3)
-                )
-            )
-            items.add(
-                HotelItem(
-                    2,
-                    "Bukovel City",
-                    "bukovel",
-                    "Bukovel",
-                    "Tsentralna 3",
-                    listOf(room1, room2, room3)
-                )
-            )
-            items.add(
-                HotelItem(
-                    3,
-                    "Poltava Tower",
-                    "poltave",
-                    "Poltava",
-                    "Ivana Mazepy 6",
-                    listOf(room1, room2, room3)
-                )
-            )
-
-            // Налаштовуємо RecyclerView
-            itemsList.layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
-            itemsList.adapter = ItemsHotelAdapter(items, requireContext())
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_LONG).show()
-        }
+        hotelRepository.getHotels(
+            onResult = { hotels ->
+                if (isAdded) {
+                    itemsList.adapter = ItemsHotelAdapter(hotels, requireContext())
+                }
+            },
+            onError = { error ->
+                if (isAdded) {
+                    Toast.makeText(requireContext(), "Error: ${error.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        )
     }
+
+
+
+
 
     companion object {
         private const val ARG_PARAM1 = "param1"

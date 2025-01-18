@@ -8,6 +8,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.hotelapp.Holder.HotelHolder
+import com.example.hotelapp.Holder.apiHolder
 
 class ItemsRoomAdapter(var items:List<RoomItem>, var context: Context) : RecyclerView.Adapter<ItemsRoomAdapter.MyViewHolder>(){
 
@@ -31,22 +34,19 @@ class ItemsRoomAdapter(var items:List<RoomItem>, var context: Context) : Recycle
     override fun onBindViewHolder(holder: com.example.hotelapp.ItemsRoomAdapter.MyViewHolder, position: Int) {
         try {
 
-
-            var imageid = context.resources.getIdentifier(
-                items[position].image,
-                "drawable",
-                context.packageName
-            )
-
-            if (imageid != 0) {
-                holder.image.setImageResource(imageid)
+            val imageUrl = items[position].images?.firstOrNull()?.image_url
+            if (!imageUrl.isNullOrEmpty()) {
+                Glide.with(context)
+                    .load(apiHolder.BASE_URL+imageUrl)
+                    .placeholder(R.drawable.default_image)
+                    .into(holder.image)
             } else {
                 holder.image.setImageResource(R.drawable.default_image)
             }
-            holder.roomnumber.text ="Room number: "+items[position].number.toString()
-            holder.type.text = "Status: "+items[position].type
+            holder.roomnumber.text ="Room number: "+items[position].room_number.toString()
+            holder.type.text = "Status: "+items[position].room_number
             holder.places.text ="Places: "+ items[position].places.toString()
-            holder.price.text = "$"+items[position].price.toString()
+            holder.price.text = "$"+items[position].price_per_night.toString()
             holder.image.setOnClickListener {
                 HotelHolder.currentRoom = items[position]
                 val intent = Intent(context,Current_Room_Info::class.java)

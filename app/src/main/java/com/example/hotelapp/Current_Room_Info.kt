@@ -11,17 +11,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.fragment.NavHostFragment
+import com.bumptech.glide.Glide
+import com.example.hotelapp.Holder.HotelHolder
+import com.example.hotelapp.Holder.apiHolder
 import com.google.android.material.datepicker.MaterialDatePicker
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
-import kotlin.time.times
 
 class Current_Room_Info : AppCompatActivity() {
     private lateinit var selectDatesButton: Button
     private lateinit var totalPriceText: TextView
-    private var pricePerNight = HotelHolder.currentRoom?.price?: 0f
+    private var pricePerNight = HotelHolder.currentRoom?.price_per_night?: 0f
     private var totalNights = 0
     private  var checkInDateFormatted: String? = null
     private  var checkOutDateFormatted: String? = null
@@ -44,7 +46,7 @@ class Current_Room_Info : AppCompatActivity() {
                     checkOutDateFormatted?.let { checkOut ->
                         OrderItem(
                             hotelName = HotelHolder.currentHotel?.name ?: "Unknown Hotel",
-                            roomType = HotelHolder.currentRoom?.type ?: "Unknown Room",
+                            roomType = HotelHolder.currentRoom?.room_type ?: "Unknown Room",
                             checkInDate = checkIn,
                             checkOutDate = checkOut,
                             totalPrice = totalNights * pricePerNight
@@ -84,20 +86,19 @@ class Current_Room_Info : AppCompatActivity() {
         backbtn.setOnClickListener {
             finish()
         }
-        var imageid = resources.getIdentifier(
-            HotelHolder.currentRoom?.image,
-            "drawable",
-            packageName
-        )
-        if (imageid != 0) {
-            roomimage.setImageResource(imageid)
+        val imageUrl = HotelHolder.currentRoom?.images?.firstOrNull()?.image_url
+        if (!imageUrl.isNullOrEmpty()) {
+            Glide.with(this)
+                .load(apiHolder.BASE_URL+imageUrl)
+                .placeholder(R.drawable.default_image)
+                .into(roomimage)
         } else {
-            roomimage.setImageResource(R.drawable.default_hotel_image)
+            roomimage.setImageResource(R.drawable.default_image)
         }
         val roomnum:TextView = findViewById(R.id.room_number)
         val roomPrice:TextView=findViewById(R.id.room_price)
-        roomnum.text ="Room number: "+ HotelHolder.currentRoom?.number.toString()
-        roomPrice.text ="$"+HotelHolder.currentRoom?.price.toString()
+        roomnum.text ="Room number: "+ HotelHolder.currentRoom?.room_number.toString()
+        roomPrice.text ="$"+ HotelHolder.currentRoom?.price_per_night.toString()
     }
     private fun showDatePicker() {
         val dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()

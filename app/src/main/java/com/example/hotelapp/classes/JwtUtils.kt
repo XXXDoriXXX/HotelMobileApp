@@ -2,7 +2,6 @@ package com.example.hotelapp.utils
 
 import android.util.Base64
 import com.example.hotelapp.classes.User
-import com.example.hotelapp.classes.UserHolder
 import org.json.JSONObject
 
 object JwtUtils {

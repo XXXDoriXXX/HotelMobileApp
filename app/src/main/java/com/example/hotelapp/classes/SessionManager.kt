@@ -3,7 +3,7 @@ package com.example.hotelapp.utils
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.hotelapp.classes.User
-import com.example.hotelapp.classes.UserHolder
+import com.example.hotelapp.Holder.UserHolder
 
 class SessionManager(context: Context) {
     private val prefs: SharedPreferences =
@@ -18,9 +18,11 @@ class SessionManager(context: Context) {
         private const val KEY_EMAIL = "email"
         private const val KEY_PHONE = "phone"
         private const val KEY_BIRTH_DATE = "birth_date"
-    }
 
-    // Збереження даних при логіні
+    }
+    fun getAccessToken(): String? {
+        return prefs.getString(KEY_ACCESS_TOKEN, null)
+    }
     fun saveLoginInfo(
         token: String,
         firstName: String,
@@ -41,12 +43,6 @@ class SessionManager(context: Context) {
         }
     }
 
-    // Отримання доступного токена
-    fun getAccessToken(): String? {
-        return prefs.getString(KEY_ACCESS_TOKEN, null)
-    }
-
-    // Перевірка, чи користувач залогінений
     fun isLoggedIn(): Boolean {
         val loggedIn = prefs.getBoolean(KEY_IS_LOGGED_IN, false)
 
@@ -63,13 +59,8 @@ class SessionManager(context: Context) {
 
         return loggedIn
     }
-
-
-    // Отримання збережених даних користувача
-
-
-    // Очищення сесії
     fun clearSession() {
         prefs.edit().clear().apply()
     }
+
 }

@@ -1,4 +1,15 @@
 package com.example.hotelapp
 
-class RoomItem(val id:Int, val image:String, val number:Int,val type:String,val places:Int, val price:Float,val hotel_id:Int) {
-}
+data class RoomItem(
+    val id: Int,
+    val room_number: String,
+    val room_type: String,
+    val places: Int,
+    val price_per_night: Float,
+    val images: List<RoomImage>
+)
+
+data class RoomImage(
+    val id: Int,
+    val image_url: String
+)

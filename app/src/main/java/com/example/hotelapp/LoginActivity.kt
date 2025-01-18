@@ -8,8 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.hotelapp.classes.User
-import com.example.hotelapp.classes.UserHolder
+import com.example.hotelapp.Holder.UserHolder
 import com.example.hotelapp.models.AuthResponse
 import com.example.hotelapp.models.LoginRequest
 import com.example.hotelapp.repository.AuthRepository
@@ -17,9 +16,6 @@ import com.example.hotelapp.utils.JwtUtils
 import com.example.hotelapp.utils.SessionManager
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.button.MaterialButton
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
     private val authRepository = AuthRepository()

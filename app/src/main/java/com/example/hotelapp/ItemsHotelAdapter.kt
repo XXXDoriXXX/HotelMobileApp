@@ -8,6 +8,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import HotelItem
+import com.bumptech.glide.Glide
+import com.example.hotelapp.Holder.HotelHolder
+import com.example.hotelapp.Holder.apiHolder
 
 class ItemsHotelAdapter(var items:List<HotelItem>, var context: Context) : RecyclerView.Adapter<ItemsHotelAdapter.MyViewHoldert>(){
 
@@ -16,6 +20,7 @@ class ItemsHotelAdapter(var items:List<HotelItem>, var context: Context) : Recyc
         val hotelname: TextView =view.findViewById(R.id.hotel_name)
         val title: TextView =view.findViewById(R.id.hotel_description)
         val description: TextView =view.findViewById(R.id.hotel_description)
+
 
     }
 
@@ -29,28 +34,29 @@ class ItemsHotelAdapter(var items:List<HotelItem>, var context: Context) : Recyc
     }
 
     override fun onBindViewHolder(holder: MyViewHoldert, position: Int) {
-        holder.title.text = items[position].title
-        holder.hotelname.text = items[position].name
-        holder.description.text =  items[position].desc
+        val currentItem = items[position]
 
-        var imageid = context.resources.getIdentifier(
-            items[position].image,
-            "drawable",
-            context.packageName
-        )
+        holder.title.text = currentItem.name
+        holder.hotelname.text = currentItem.name
+        holder.description.text = "Address: ${currentItem.address}"
 
-        if (imageid != 0) {
-            holder.image.setImageResource(imageid)
+        val imageUrl = currentItem.images?.firstOrNull()?.image_url
+        if (!imageUrl.isNullOrEmpty()) {
+            Glide.with(context)
+                .load(apiHolder.BASE_URL+imageUrl)
+                .placeholder(R.drawable.default_image)
+                .into(holder.image)
         } else {
-            holder.image.setImageResource(R.drawable.default_hotel_image)
+            holder.image.setImageResource(R.drawable.default_image)
         }
 
         holder.image.setOnClickListener {
-            HotelHolder.currentHotel = items[position]
-            val intent = Intent(context,CurrentHotelInfo::class.java)
+            HotelHolder.currentHotel = currentItem
+            val intent = Intent(context, CurrentHotelInfo::class.java)
             context.startActivity(intent)
-            HotelHolder.currentHotel=items[position]
         }
     }
+
+
 
 }

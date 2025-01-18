@@ -5,17 +5,17 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
+import com.example.hotelapp.Holder.UserHolder.initialize
+import com.example.hotelapp.Holder.UserHolder.sessionManager
 import com.example.hotelapp.utils.SessionManager
 
 class SplashActivity : AppCompatActivity() {
 
-    private lateinit var sessionManager: SessionManager
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Ініціалізуйте SessionManager
-        sessionManager = SessionManager(this)
+       initialize(this)
         Handler(Looper.getMainLooper()).postDelayed({
             if (sessionManager.isLoggedIn()) {
                 navigateToMainActivity()

@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.hotelapp.classes.User
-import com.example.hotelapp.classes.UserHolder
+import com.example.hotelapp.Holder.UserHolder
 import com.example.hotelapp.models.AuthResponse
 import com.example.hotelapp.models.RegisterRequest
 import com.example.hotelapp.repository.AuthRepository
