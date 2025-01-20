@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import HotelItem
+import android.widget.RatingBar
 import com.bumptech.glide.Glide
 import com.example.hotelapp.Holder.HotelHolder
 import com.example.hotelapp.Holder.apiHolder
@@ -20,7 +21,7 @@ class ItemsHotelAdapter(var items:List<HotelItem>, var context: Context) : Recyc
         val hotelname: TextView =view.findViewById(R.id.hotel_name)
         val title: TextView =view.findViewById(R.id.hotel_description)
         val description: TextView =view.findViewById(R.id.hotel_description)
-
+        val rating: RatingBar = view.findViewById(R.id.rating_bar)
 
     }
 
@@ -39,7 +40,7 @@ class ItemsHotelAdapter(var items:List<HotelItem>, var context: Context) : Recyc
         holder.title.text = currentItem.name
         holder.hotelname.text = currentItem.name
         holder.description.text = "Address: ${currentItem.address}"
-
+        holder.rating.rating = currentItem.rating
         val imageUrl = currentItem.images?.firstOrNull()?.image_url
         if (!imageUrl.isNullOrEmpty()) {
             Glide.with(context)

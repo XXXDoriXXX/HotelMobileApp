@@ -2,6 +2,8 @@ package com.example.hotelapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -38,7 +40,11 @@ class RegisterActivity : AppCompatActivity() {
         val phoneField = findViewById<TextInputEditText>(R.id.phone_input_field)
         val passwordField = findViewById<TextInputEditText>(R.id.password_input_field)
         val birthDateField = findViewById<TextInputEditText>(R.id.date_of_birth_input_field)
-
+        val haveaccount: TextView = findViewById(R.id.have_account_text)
+        haveaccount.setOnClickListener{
+            val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
+            startActivity(intent)
+        }
         val registerButton = findViewById<MaterialButton>(R.id.register_button)
         registerButton.setOnClickListener {
             val username = usernameField.text.toString().trim()
@@ -46,13 +52,8 @@ class RegisterActivity : AppCompatActivity() {
             val email = emailField.text.toString().trim()
             val phone = phoneField.text.toString().trim()
             val password = passwordField.text.toString().trim()
-            val birthDate = birthDateField.text.toString().trim()
-            val haveaccount: TextView = findViewById(R.id.have_account_text)
-            haveaccount.setOnClickListener{
-                val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
-                startActivity(intent)
+            val birthDate = birthDateField.text.toString().trim().replace("/", "-")
 
-            }
             when {
                 username.isEmpty() -> {
                     Toast.makeText(this, "Please enter your first name", Toast.LENGTH_SHORT).show()
@@ -100,7 +101,7 @@ class RegisterActivity : AppCompatActivity() {
                             saveToken(token)
                         }
                         Toast.makeText(this@RegisterActivity, "Registration successful!", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(this@RegisterActivity, MainActivity::class.java)
+                        val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
                         startActivity(intent)
                         if (token != null) {
                             sessionManager.saveLoginInfo(
@@ -125,6 +126,33 @@ class RegisterActivity : AppCompatActivity() {
             })
 
         }
+        birthDateField.addTextChangedListener(object : TextWatcher {
+            private var isEditing = false
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                if (isEditing) return
+
+                isEditing = true
+
+                val input = s.toString().replace("/", "")
+                val formatted = StringBuilder()
+
+                for (i in input.indices) {
+                    formatted.append(input[i])
+                    if ((i == 3 || i == 5) && i != input.length - 1) {
+                        formatted.append("/")
+                    }
+                }
+
+                birthDateField.setText(formatted.toString())
+                birthDateField.setSelection(formatted.length)
+
+                isEditing = false
+            }
+        })
     }
     private fun saveToken(token: String) {
         val sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE)

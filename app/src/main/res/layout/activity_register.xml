@@ -39,7 +39,7 @@ android:layout_marginTop="12dp"
         android:id="@+id/username_input"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="66dp"
+        android:layout_marginTop="26dp"
         app:boxBackgroundMode="outline"
         app:boxCornerRadiusTopStart="16dp"
         app:boxCornerRadiusTopEnd="16dp"
@@ -47,21 +47,23 @@ android:layout_marginTop="12dp"
         app:boxCornerRadiusBottomEnd="16dp"
         app:layout_constraintTop_toBottomOf="@id/register_title"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/username_input_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Name"
-            android:textColorHint="?attr/colorOnSurface" />
+            android:textColorHint="?attr/colorPrimary" />
     </com.google.android.material.textfield.TextInputLayout>
     <com.google.android.material.textfield.TextInputLayout
 
         android:id="@+id/usersecondname_input"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         app:boxBackgroundMode="outline"
         app:boxCornerRadiusTopStart="16dp"
         app:boxCornerRadiusTopEnd="16dp"
@@ -69,14 +71,17 @@ android:layout_marginTop="12dp"
         app:boxCornerRadiusBottomEnd="16dp"
         app:layout_constraintTop_toBottomOf="@id/username_input"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/usersecondname_input_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Second Name"
-            android:textColorHint="?attr/colorOnSurface" />
+            android:textColorHint="?attr/colorPrimary" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Поле Email -->
@@ -84,7 +89,6 @@ android:layout_marginTop="12dp"
         android:id="@+id/email_input"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         app:boxBackgroundMode="outline"
         app:boxCornerRadiusTopStart="16dp"
         app:boxCornerRadiusTopEnd="16dp"
@@ -92,7 +96,13 @@ android:layout_marginTop="12dp"
         app:boxCornerRadiusBottomEnd="16dp"
         app:layout_constraintTop_toBottomOf="@+id/usersecondname_input"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp"
+
+
+        >
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/email_input_field"
@@ -100,7 +110,7 @@ android:layout_marginTop="12dp"
             android:layout_height="wrap_content"
             android:hint="Email"
             android:inputType="textEmailAddress"
-            android:textColorHint="?attr/colorOnSurface" />
+            android:textColorHint="?attr/colorPrimary" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Поле Phone Number -->
@@ -108,7 +118,6 @@ android:layout_marginTop="12dp"
         android:id="@+id/phone_input"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         app:boxBackgroundMode="outline"
         app:boxCornerRadiusTopStart="16dp"
         app:boxCornerRadiusTopEnd="16dp"
@@ -116,7 +125,10 @@ android:layout_marginTop="12dp"
         app:boxCornerRadiusBottomEnd="16dp"
         app:layout_constraintTop_toBottomOf="@+id/email_input"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/phone_input_field"
@@ -124,7 +136,7 @@ android:layout_marginTop="12dp"
             android:layout_height="wrap_content"
             android:hint="Phone Number"
             android:inputType="phone"
-            android:textColorHint="?attr/colorOnSurface" />
+            android:textColorHint="?attr/colorPrimary" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Поле Password -->
@@ -132,7 +144,6 @@ android:layout_marginTop="12dp"
         android:id="@+id/password_input"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         app:boxBackgroundMode="outline"
         app:boxCornerRadiusTopStart="16dp"
         app:boxCornerRadiusTopEnd="16dp"
@@ -140,7 +151,10 @@ android:layout_marginTop="12dp"
         app:boxCornerRadiusBottomEnd="16dp"
         app:layout_constraintTop_toBottomOf="@+id/phone_input"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/password_input_field"
@@ -148,7 +162,7 @@ android:layout_marginTop="12dp"
             android:layout_height="wrap_content"
             android:hint="Password"
             android:inputType="textPassword"
-            android:textColorHint="?attr/colorOnSurface" />
+            android:textColorHint="?attr/colorPrimary" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Поле Date of Birth -->
@@ -156,7 +170,6 @@ android:layout_marginTop="12dp"
         android:id="@+id/date_of_birth_input"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         app:boxBackgroundMode="outline"
         app:boxCornerRadiusBottomEnd="16dp"
         app:boxCornerRadiusBottomStart="16dp"
@@ -164,15 +177,18 @@ android:layout_marginTop="12dp"
         app:boxCornerRadiusTopStart="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password_input">
+        app:layout_constraintTop_toBottomOf="@+id/password_input"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/date_of_birth_input_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Date of Birth (MM/DD/YYYY)"
-            android:inputType="date"
-            android:textColorHint="?attr/colorOnSurface" />
+            android:hint="Date of Birth (YYYY/MM/DD)"
+            android:inputType="datetime"
+            android:textColorHint="?attr/colorPrimary" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Кнопка реєстрації -->
@@ -184,8 +200,12 @@ android:layout_marginTop="12dp"
         android:backgroundTint="?attr/colorSecondary"
         android:text="Register"
         android:textSize="26dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:textColor="?attr/colorPrimary"
         app:cornerRadius="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

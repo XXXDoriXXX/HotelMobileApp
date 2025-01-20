@@ -6,7 +6,8 @@ data class HotelItem(
     val address: String,
     val images: List<HotelImage>,
     val rooms: List<RoomItem>,
-    var views:Int
+    var views:Int,
+    var rating:Float
 )
 
 data class HotelImage(
