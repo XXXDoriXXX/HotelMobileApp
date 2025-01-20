@@ -10,6 +10,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface HotelService {
     @GET("hotels/all_details")
@@ -25,4 +26,7 @@ interface HotelService {
         @Body ratingRequest: RatingRequest,
         @Header("Authorization") token: String
     ): Call<RatingResponse>
+    @GET("hotels/search")
+    fun searchHotels(@Query("name") name: String): Call<List<HotelItem>>
+
 }

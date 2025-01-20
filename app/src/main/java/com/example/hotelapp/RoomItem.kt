@@ -6,7 +6,8 @@ data class RoomItem(
     val room_type: String,
     val places: Int,
     val price_per_night: Float,
-    val images: List<RoomImage>
+    val images: List<RoomImage>,
+    var description:String
 )
 
 data class RoomImage(

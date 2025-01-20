@@ -3,33 +3,32 @@ package com.example.hotelapp
 import HotelItem
 import HotelRepository
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hotelapp.Holder.UserHolder
-
-import com.example.hotelapp.api.HotelService
-import com.example.hotelapp.network.RetrofitClient
 import com.example.hotelapp.utils.SessionManager
-
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
-    private var param1: String? = null
-    private var param2: String? = null
+
+    private lateinit var searchInputField: TextInputEditText
+    private lateinit var itemsList: RecyclerView
+    private val hotelRepository = UserHolder.getHotelRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(
@@ -42,10 +41,36 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val itemsList: RecyclerView = view.findViewById(R.id.itemsHotelList)
-        itemsList.layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
-        val hotelRepository = UserHolder.getHotelRepository()
+        try {
+            searchInputField = view.findViewById(R.id.search_input_field)
+            itemsList = view.findViewById(R.id.itemsHotelList)
 
+            itemsList.layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
+            loadDefaultHotels()
+            val debounceSearch = debounce<String>(
+                delayMillis = 500L,
+                coroutineScope = viewLifecycleOwner.lifecycleScope
+            ) { query ->
+                performSearch(query)
+            }
+
+            searchInputField.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                    debounceSearch(s.toString())
+                }
+
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            })
+
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), "Error initializing views: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+
+    private fun loadDefaultHotels() {
         hotelRepository.getHotels(
             onResult = { hotels ->
                 if (isAdded) {
@@ -60,21 +85,42 @@ class HomeFragment : Fragment() {
         )
     }
 
+    private fun performSearch(query: String) {
+        if (query.isBlank()) {
+            loadDefaultHotels()
+            return
+        }
 
-
-
-
-    companion object {
-        private const val ARG_PARAM1 = "param1"
-        private const val ARG_PARAM2 = "param2"
-
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            HomeFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+        hotelRepository.searchHotels(query,
+            onResult = { hotels ->
+                if (isAdded) {
+                    itemsList.adapter = ItemsHotelAdapter(hotels, requireContext())
+                }
+            },
+            onError = { error ->
+                if (isAdded) {
+                    Toast.makeText(requireContext(), "Search: ${error.message}", Toast.LENGTH_LONG).show()
                 }
             }
+        )
+    }
+
+    private fun <T> debounce(
+        delayMillis: Long = 500L,
+        coroutineScope: CoroutineScope,
+        action: (T) -> Unit
+    ): (T) -> Unit {
+        var debounceJob: Job? = null
+        return { param: T ->
+            debounceJob?.cancel()
+            debounceJob = coroutineScope.launch {
+                delay(delayMillis)
+                action(param)
+            }
+        }
+    }
+
+    companion object {
+        fun newInstance() = HomeFragment()
     }
 }

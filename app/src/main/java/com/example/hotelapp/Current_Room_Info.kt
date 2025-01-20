@@ -82,6 +82,8 @@ class Current_Room_Info : AppCompatActivity() {
         }
 
         val roomimage: ImageView = findViewById(R.id.room_image)
+        val descriprion:TextView=findViewById(R.id.room_description)
+        descriprion.text=HotelHolder.currentRoom!!.description
         val backbtn:ImageView = findViewById(R.id.back_button)
         backbtn.setOnClickListener {
             finish()

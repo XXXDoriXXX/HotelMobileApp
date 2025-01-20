@@ -71,7 +71,8 @@
             android:src="@drawable/search"
             app:tint="?attr/colorOnSecondary" />
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/search_input_field"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"

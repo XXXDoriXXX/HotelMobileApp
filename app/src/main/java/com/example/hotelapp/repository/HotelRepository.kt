@@ -68,4 +68,24 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
             }
         })
     }
+    fun searchHotels(
+        name: String,
+        onResult: (List<HotelItem>) -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        apiService.searchHotels(name).enqueue(object : Callback<List<HotelItem>> {
+            override fun onResponse(call: Call<List<HotelItem>>, response: Response<List<HotelItem>>) {
+                if (response.isSuccessful) {
+                    onResult(response.body() ?: emptyList())
+                } else {
+                    onError(Exception("Failed to search hotels"))
+                }
+            }
+
+            override fun onFailure(call: Call<List<HotelItem>>, t: Throwable) {
+                onError(t)
+            }
+        })
+    }
+
 }

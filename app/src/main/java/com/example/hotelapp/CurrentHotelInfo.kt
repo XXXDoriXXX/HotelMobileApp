@@ -35,15 +35,16 @@ class CurrentHotelInfo : AppCompatActivity() {
         }
         val hotelimage:ImageView = findViewById(R.id.hotel_image)
         val hotelname:TextView = findViewById(R.id.hotel_name)
-        val hoteldesc:TextView=findViewById(R.id.hotel_description)
         val ratingBar: RatingBar = findViewById(R.id.rating_bar)
         val button_book:Button = findViewById(R.id.book_now_button)
         val review:TextView = findViewById(R.id.review_count)
+        val description:TextView=findViewById(R.id.hotel_description)
         ratingBar.setOnRatingBarChangeListener { _, rating, _ ->
             currentHotel?.let { hotel ->
                 sendRatingToServer(hotel.id, rating)
             }
         }
+        description.text = currentHotel!!.description
         review.text = currentHotel?.views.toString()+" reviews"
         val imageUrl = HotelHolder.currentHotel?.images?.firstOrNull()?.image_url
         if (!imageUrl.isNullOrEmpty()) {
