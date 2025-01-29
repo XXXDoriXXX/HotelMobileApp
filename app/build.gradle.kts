@@ -33,6 +33,9 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -45,6 +48,9 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.10.0")
     implementation ("com.github.bumptech.glide:glide:4.15.1")
+    implementation(libs.androidx.annotation)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)

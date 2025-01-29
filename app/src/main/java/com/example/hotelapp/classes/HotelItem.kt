@@ -1,4 +1,4 @@
-import com.example.hotelapp.RoomItem
+import com.example.hotelapp.classes.RoomItem
 
 data class HotelItem(
     val id: Int,

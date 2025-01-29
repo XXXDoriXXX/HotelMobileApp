@@ -13,6 +13,7 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("MissingSuperCall")
     override fun onCreate(savedInstanceState: Bundle?) {
+        UserHolder.initialize(this)
 
         super.onCreate(savedInstanceState)
 

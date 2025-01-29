@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hotelapp.Holder.HotelHolder
+import com.example.hotelapp.classes.ItemHistoryAdapter
 
 class HistoryFragment : Fragment() {
 

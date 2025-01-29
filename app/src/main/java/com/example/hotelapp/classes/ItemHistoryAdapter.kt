@@ -1,4 +1,4 @@
-package com.example.hotelapp
+package com.example.hotelapp.classes
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.hotelapp.OrderItem
+import com.example.hotelapp.R
 
 class ItemHistoryAdapter(
     private var items: MutableList<OrderItem>,

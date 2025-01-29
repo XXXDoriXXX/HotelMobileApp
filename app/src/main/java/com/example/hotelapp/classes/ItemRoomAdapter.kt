@@ -1,4 +1,4 @@
-package com.example.hotelapp
+package com.example.hotelapp.classes
 
 import android.content.Context
 import android.content.Intent
@@ -9,8 +9,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.hotelapp.Current_Room_Info
 import com.example.hotelapp.Holder.HotelHolder
 import com.example.hotelapp.Holder.apiHolder
+import com.example.hotelapp.R
 
 class ItemsRoomAdapter(var items:List<RoomItem>, var context: Context) : RecyclerView.Adapter<ItemsRoomAdapter.MyViewHolder>(){
 
@@ -22,16 +24,16 @@ class ItemsRoomAdapter(var items:List<RoomItem>, var context: Context) : Recycle
         val price: TextView =view.findViewById(R.id.room_price)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): com.example.hotelapp.ItemsRoomAdapter.MyViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.room_item,parent,false)
-        return com.example.hotelapp.ItemsRoomAdapter.MyViewHolder(view)
+        return MyViewHolder(view)
     }
 
     override fun getItemCount(): Int {
         return items.count()
     }
 
-    override fun onBindViewHolder(holder: com.example.hotelapp.ItemsRoomAdapter.MyViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         try {
 
             val imageUrl = items[position].images?.firstOrNull()?.image_url
@@ -49,7 +51,7 @@ class ItemsRoomAdapter(var items:List<RoomItem>, var context: Context) : Recycle
             holder.price.text = "$"+items[position].price_per_night.toString()
             holder.image.setOnClickListener {
                 HotelHolder.currentRoom = items[position]
-                val intent = Intent(context,Current_Room_Info::class.java)
+                val intent = Intent(context, Current_Room_Info::class.java)
                 context.startActivity(intent)
 
             }

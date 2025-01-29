@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- Дозволи -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -17,41 +16,40 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HotelApp"
         tools:targetApi="31">
-
-        <!-- SplashActivity як стартова активність -->
+        <activity
+            android:name=".EditProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.login.EditProfileActivity"
+            android:exported="false"
+            android:label="@string/title_activity_edit_profile" /> <!-- SplashActivity як стартова активність -->
         <activity
             android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".LoginActivity"
             android:exported="false" />
-
         <activity
             android:name=".RegisterActivity"
             android:exported="true" />
-
         <activity
             android:name=".Current_Room_Info"
             android:exported="false" />
-
         <activity
             android:name=".RoomsListActivity"
             android:exported="false" />
-
         <activity
             android:name=".SettingsActivity"
             android:exported="false" />
-
         <activity
             android:name=".CurrentHotelInfo"
             android:exported="false" />
-
         <activity
             android:name=".MainActivity"
             android:exported="false" />
@@ -60,4 +58,5 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
     </application>
+
 </manifest>

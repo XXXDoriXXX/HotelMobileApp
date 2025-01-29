@@ -5,9 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
-import com.example.hotelapp.Holder.UserHolder.initialize
-import com.example.hotelapp.Holder.UserHolder.sessionManager
-import com.example.hotelapp.utils.SessionManager
+
 
 class SplashActivity : AppCompatActivity() {
 
@@ -15,7 +13,8 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-       initialize(this)
+        UserHolder.initialize(this)
+        val sessionManager=UserHolder.getSessionManager();
         Handler(Looper.getMainLooper()).postDelayed({
             if (sessionManager.isLoggedIn()) {
                 navigateToMainActivity()

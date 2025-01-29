@@ -1,7 +1,5 @@
 package com.example.hotelapp
 
-import HotelItem
-import HotelRepository
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,8 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.hotelapp.Holder.UserHolder
-import com.example.hotelapp.utils.SessionManager
+import com.example.hotelapp.classes.ItemsHotelAdapter
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

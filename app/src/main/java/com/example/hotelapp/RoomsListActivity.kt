@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hotelapp.Holder.HotelHolder
+import com.example.hotelapp.classes.ItemsRoomAdapter
 import com.example.hotelapp.repository.RoomRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

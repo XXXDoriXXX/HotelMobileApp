@@ -1,6 +1,6 @@
 package com.example.hotelapp.repository
 
-import com.example.hotelapp.RoomItem
+import com.example.hotelapp.classes.RoomItem
 import com.example.hotelapp.network.RetrofitClient
 import retrofit2.Call
 import retrofit2.http.GET

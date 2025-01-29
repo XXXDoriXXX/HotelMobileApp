@@ -15,7 +15,6 @@ import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.example.hotelapp.Holder.HotelHolder
 import com.example.hotelapp.Holder.HotelHolder.currentHotel
-import com.example.hotelapp.Holder.UserHolder
 import com.example.hotelapp.Holder.apiHolder
 import com.example.hotelapp.api.HotelService
 import com.example.hotelapp.network.RetrofitClient

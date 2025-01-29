@@ -2,8 +2,7 @@ package com.example.hotelapp.Holder
 
 import HotelItem
 import com.example.hotelapp.OrderItem
-import com.example.hotelapp.RoomItem
-import com.example.hotelapp.utils.SessionManager
+import com.example.hotelapp.classes.RoomItem
 
 object HotelHolder {
     var currentHotel: HotelItem? = null

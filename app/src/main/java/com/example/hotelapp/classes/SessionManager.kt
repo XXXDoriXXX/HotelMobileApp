@@ -3,7 +3,7 @@ package com.example.hotelapp.utils
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.hotelapp.classes.User
-import com.example.hotelapp.Holder.UserHolder
+
 
 class SessionManager(context: Context) {
     private val prefs: SharedPreferences =
@@ -42,6 +42,16 @@ class SessionManager(context: Context) {
             apply()
         }
     }
+    fun saveUserData(user: User) {
+        prefs.edit().apply {
+            putString("first_name", user.first_name)
+            putString("last_name", user.last_name)
+            putString("email", user.email)
+            putString("phone", user.phone)
+            putString("birth_date", user.birth_date)
+            apply()
+        }
+    }
 
     fun isLoggedIn(): Boolean {
         val loggedIn = prefs.getBoolean(KEY_IS_LOGGED_IN, false)
@@ -51,8 +61,9 @@ class SessionManager(context: Context) {
                 first_name = prefs.getString(KEY_FIRST_NAME, "") ?: "",
                 last_name = prefs.getString(KEY_LAST_NAME, "") ?: "",
                 email = prefs.getString(KEY_EMAIL, "") ?: "",
+                birth_date = prefs.getString(KEY_BIRTH_DATE, "") ?: "",
                 phone = prefs.getString(KEY_PHONE, "") ?: "",
-                birth_date = prefs.getString(KEY_BIRTH_DATE, "") ?: ""
+
             )
             UserHolder.currentUser = user
         }

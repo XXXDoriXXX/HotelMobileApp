@@ -1,4 +1,4 @@
-package com.example.hotelapp
+package com.example.hotelapp.classes
 
 import android.content.Context
 import android.content.Intent
@@ -11,8 +11,10 @@ import androidx.recyclerview.widget.RecyclerView
 import HotelItem
 import android.widget.RatingBar
 import com.bumptech.glide.Glide
+import com.example.hotelapp.CurrentHotelInfo
 import com.example.hotelapp.Holder.HotelHolder
 import com.example.hotelapp.Holder.apiHolder
+import com.example.hotelapp.R
 
 class ItemsHotelAdapter(var items:List<HotelItem>, var context: Context) : RecyclerView.Adapter<ItemsHotelAdapter.MyViewHoldert>(){
 

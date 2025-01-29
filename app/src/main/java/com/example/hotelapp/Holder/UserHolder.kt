@@ -1,6 +1,3 @@
-package com.example.hotelapp.Holder
-
-import HotelRepository
 import android.content.Context
 import com.example.hotelapp.api.HotelService
 import com.example.hotelapp.classes.User
@@ -11,23 +8,21 @@ object UserHolder {
     var currentUser: User? = null
 
     private val apiService = RetrofitClient.retrofit.create(HotelService::class.java)
-    lateinit var sessionManager: SessionManager
-        private set
+    private var sessionManager: SessionManager? = null
     private var hotelRepositoryInstance: HotelRepository? = null
 
     fun initialize(context: Context) {
-        sessionManager = SessionManager(context)
+        if (sessionManager == null) {
+            sessionManager = SessionManager(context)
+            hotelRepositoryInstance = HotelRepository(apiService, sessionManager!!)
+        }
+    }
+
+    fun getSessionManager(): SessionManager {
+        return sessionManager ?: throw IllegalStateException("SessionManager must be initialized before accessing it")
     }
 
     fun getHotelRepository(): HotelRepository {
-        if (!::sessionManager.isInitialized) {
-            throw IllegalStateException("SessionManager must be initialized before accessing HotelRepository")
-        }
-
-        if (hotelRepositoryInstance == null) {
-            hotelRepositoryInstance = HotelRepository(apiService, sessionManager)
-        }
-
-        return hotelRepositoryInstance!!
+        return hotelRepositoryInstance ?: throw IllegalStateException("HotelRepository not initialized")
     }
 }
