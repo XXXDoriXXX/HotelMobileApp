@@ -4,7 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.example.hotelapp.Holder.apiHolder
 
 
 class SplashActivity : AppCompatActivity() {
@@ -27,6 +29,8 @@ class SplashActivity : AppCompatActivity() {
         } else {
             navigateToLogin()
         }
+        apiHolder.fetchBaseUrl {
+            Log.d("MainActivity", "BASE_URL loaded: ${apiHolder.BASE_URL}")}
     }
 
     private fun navigateToMainActivity() {

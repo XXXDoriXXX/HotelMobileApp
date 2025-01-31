@@ -1,5 +1,32 @@
 package com.example.hotelapp.Holder
+import android.util.Log
+import okhttp3.*
+import java.io.IOException
 
 object apiHolder {
-     const val BASE_URL = "https://b410-217-196-163-126.ngrok-free.app"
+     var BASE_URL: String = "http://10.0.2.2:8008"
+     private const val URL_SOURCE = "https://pastebin.com/raw/eY33mzuJ"
+
+     fun fetchBaseUrl(onSuccess: () -> Unit = {}) {
+          val client = OkHttpClient()
+          val request = Request.Builder().url(URL_SOURCE).build()
+
+          client.newCall(request).enqueue(object : Callback {
+               override fun onFailure(call: Call, e: IOException) {
+                    Log.e("apiHolder", "Failed to fetch BASE_URL: ${e.message}")
+               }
+
+               override fun onResponse(call: Call, response: Response) {
+                    if (response.isSuccessful) {
+                         response.body?.string()?.trim()?.let {
+                              BASE_URL = it
+                              Log.d("apiHolder", "Fetched BASE_URL: $BASE_URL")
+                              onSuccess()
+                         }
+                    } else {
+                         Log.e("apiHolder", "Error fetching BASE_URL: ${response.code}")
+                    }
+               }
+          })
+     }
 }

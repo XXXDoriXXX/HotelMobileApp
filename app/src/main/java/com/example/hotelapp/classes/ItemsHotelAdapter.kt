@@ -38,7 +38,6 @@ class ItemsHotelAdapter(var items:List<HotelItem>, var context: Context) : Recyc
 
     override fun onBindViewHolder(holder: MyViewHoldert, position: Int) {
         val currentItem = items[position]
-
         holder.title.text = currentItem.name
         holder.hotelname.text = currentItem.name
         holder.description.text = "Address: ${currentItem.address}"
@@ -46,7 +45,7 @@ class ItemsHotelAdapter(var items:List<HotelItem>, var context: Context) : Recyc
         val imageUrl = currentItem.images?.firstOrNull()?.image_url
         if (!imageUrl.isNullOrEmpty()) {
             Glide.with(context)
-                .load(apiHolder.BASE_URL+imageUrl)
+                .load(ImageCacheProxy.getImage(apiHolder.BASE_URL + imageUrl))
                 .placeholder(R.drawable.default_image)
                 .into(holder.image)
         } else {

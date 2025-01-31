@@ -2,11 +2,14 @@ package com.example.hotelapp
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.hotelapp.Holder.apiHolder
+import com.example.hotelapp.classes.ImageCacheProxy
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -14,9 +17,10 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("MissingSuperCall")
     override fun onCreate(savedInstanceState: Bundle?) {
         UserHolder.initialize(this)
-
+        ImageCacheProxy.initialize(this)
         super.onCreate(savedInstanceState)
-
+        apiHolder.fetchBaseUrl {
+            Log.d("MainActivity", "BASE_URL loaded: ${apiHolder.BASE_URL}")}
         ThemeManager.applyTheme(this)
 
         setContentView(R.layout.activity_main)

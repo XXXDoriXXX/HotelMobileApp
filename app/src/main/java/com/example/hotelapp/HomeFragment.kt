@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.hotelapp.classes.ItemsHotelAdapter
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.CoroutineScope
@@ -22,6 +23,7 @@ class HomeFragment : Fragment() {
 
     private lateinit var searchInputField: TextInputEditText
     private lateinit var itemsList: RecyclerView
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private val hotelRepository = UserHolder.getHotelRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,9 +43,13 @@ class HomeFragment : Fragment() {
         try {
             searchInputField = view.findViewById(R.id.search_input_field)
             itemsList = view.findViewById(R.id.itemsHotelList)
-
+            swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
             itemsList.layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
             loadDefaultHotels()
+            swipeRefreshLayout.setOnRefreshListener {
+                refreshHotels()
+                searchInputField.text = null;
+            }
             val debounceSearch = debounce<String>(
                 delayMillis = 500L,
                 coroutineScope = viewLifecycleOwner.lifecycleScope
@@ -66,6 +72,9 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun refreshHotels() {
+        loadDefaultHotels()
+    }
 
     private fun loadDefaultHotels() {
         hotelRepository.getHotels(
