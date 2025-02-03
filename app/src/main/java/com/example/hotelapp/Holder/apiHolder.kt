@@ -4,7 +4,7 @@ import okhttp3.*
 import java.io.IOException
 
 object apiHolder {
-     var BASE_URL: String = "http://10.0.2.2:8008"
+     var BASE_URL: String = " https://c52a-46-150-67-25.ngrok-free.app"
      private const val URL_SOURCE = "https://pastebin.com/raw/eY33mzuJ"
 
      fun fetchBaseUrl(onSuccess: () -> Unit = {}) {

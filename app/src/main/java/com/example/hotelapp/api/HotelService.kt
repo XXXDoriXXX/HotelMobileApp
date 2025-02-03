@@ -34,12 +34,6 @@ interface HotelService {
     ): Call<RatingResponse>
     @GET("hotels/search")
     fun searchHotels(@Query("name") name: String): Call<List<HotelItem>>
-    @Multipart
-    @PUT("profile/change_avatar")
-    fun changeAvatar(
-        @Header("Authorization") token: String,
-        @Part avatar: MultipartBody.Part
-    ): Call<JsonObject>
-    @GET("profile/avatar")
-    fun getProfileAvatar(@Header("Authorization") token: String): Call<JsonObject>
+
+
 }

@@ -44,10 +44,12 @@ class ItemsHotelAdapter(var items:List<HotelItem>, var context: Context) : Recyc
         holder.rating.rating = currentItem.rating
         val imageUrl = currentItem.images?.firstOrNull()?.image_url
         if (!imageUrl.isNullOrEmpty()) {
-            Glide.with(context)
-                .load(ImageCacheProxy.getImage(apiHolder.BASE_URL + imageUrl))
-                .placeholder(R.drawable.default_image)
-                .into(holder.image)
+            ImageCacheProxy.getImage(apiHolder.BASE_URL + imageUrl) { cachedImagePath ->
+                Glide.with(context)
+                    .load(cachedImagePath)
+                    .placeholder(R.drawable.default_image)
+                    .into(holder.image)
+            }
         } else {
             holder.image.setImageResource(R.drawable.default_image)
         }

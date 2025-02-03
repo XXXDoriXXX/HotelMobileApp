@@ -81,11 +81,13 @@ class HomeFragment : Fragment() {
             onResult = { hotels ->
                 if (isAdded) {
                     itemsList.adapter = ItemsHotelAdapter(hotels, requireContext())
+                    swipeRefreshLayout.isRefreshing = false
                 }
             },
             onError = { error ->
                 if (isAdded) {
                     Toast.makeText(requireContext(), "Error: ${error.message}", Toast.LENGTH_LONG).show()
+                    swipeRefreshLayout.isRefreshing = false
                 }
             }
         )
