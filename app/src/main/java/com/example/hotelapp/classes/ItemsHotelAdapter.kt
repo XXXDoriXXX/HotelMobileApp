@@ -9,47 +9,74 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import HotelItem
+import android.graphics.drawable.Drawable
+import android.util.Log
 import android.widget.RatingBar
+import android.widget.Toast
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import com.example.hotelapp.CurrentHotelInfo
 import com.example.hotelapp.Holder.HotelHolder
 import com.example.hotelapp.Holder.apiHolder
 import com.example.hotelapp.R
 
-class ItemsHotelAdapter(var items:List<HotelItem>, var context: Context) : RecyclerView.Adapter<ItemsHotelAdapter.MyViewHoldert>(){
+class ItemsHotelAdapter(
+    var items: List<HotelItem>,
+    var context: Context,
+    private var isVerticalLayout: Boolean
+) : RecyclerView.Adapter<ItemsHotelAdapter.MyViewHoldert>() {
 
-    class   MyViewHoldert(view: View): RecyclerView.ViewHolder(view){
-        val image: ImageView =view.findViewById(R.id.hotel_image)
-        val hotelname: TextView =view.findViewById(R.id.hotel_name)
-        val title: TextView =view.findViewById(R.id.hotel_description)
-        val description: TextView =view.findViewById(R.id.hotel_description)
+    class MyViewHoldert(view: View) : RecyclerView.ViewHolder(view) {
+        val image: ImageView = view.findViewById(R.id.hotel_image)
+        val hotelName: TextView = view.findViewById(R.id.hotel_name)
+        val description: TextView = view.findViewById(R.id.hotel_description)
         val rating: RatingBar = view.findViewById(R.id.rating_bar)
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHoldert {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.hotel_item,parent,false)
+        val layoutId = if (isVerticalLayout) R.layout.hotel_item_2 else R.layout.hotel_item
+        val view = LayoutInflater.from(parent.context).inflate(layoutId, parent, false)
         return MyViewHoldert(view)
     }
 
-    override fun getItemCount(): Int {
-        return items.count()
-    }
+    override fun getItemCount(): Int = items.count()
 
     override fun onBindViewHolder(holder: MyViewHoldert, position: Int) {
         val currentItem = items[position]
-        holder.title.text = currentItem.name
-        holder.hotelname.text = currentItem.name
+        holder.hotelName.text = currentItem.name
         holder.description.text = "Address: ${currentItem.address}"
         holder.rating.rating = currentItem.rating
+
         val imageUrl = currentItem.images?.firstOrNull()?.image_url
+        Log.d("ItemsHotelAdapter", "Loading image: ${apiHolder.BASE_URL + imageUrl}")
+
         if (!imageUrl.isNullOrEmpty()) {
-            ImageCacheProxy.getImage(apiHolder.BASE_URL + imageUrl) { cachedImagePath ->
-                Glide.with(context)
-                    .load(cachedImagePath)
-                    .placeholder(R.drawable.default_image)
-                    .into(holder.image)
-            }
+            val fullAvatarUrl = "${apiHolder.BASE_URL}$imageUrl"
+            Glide.with(holder.image.context)
+                .load(fullAvatarUrl)
+                .placeholder(R.drawable.default_image)
+                .error(R.drawable.default_image)
+                .listener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean
+                    ): Boolean {
+                        Toast.makeText(context, "Glide error: ${e?.message}", Toast.LENGTH_LONG).show()
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable?, model: Any?, target: Target<Drawable>?,
+                        dataSource: DataSource?, isFirstResource: Boolean
+                    ): Boolean {
+                        Toast.makeText(context, "Image loaded!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                })
+                .into(holder.image)
+
         } else {
             holder.image.setImageResource(R.drawable.default_image)
         }
@@ -62,5 +89,8 @@ class ItemsHotelAdapter(var items:List<HotelItem>, var context: Context) : Recyc
     }
 
 
-
+    fun toggleLayout(isVertical: Boolean) {
+        isVerticalLayout = isVertical
+        notifyDataSetChanged()
+    }
 }

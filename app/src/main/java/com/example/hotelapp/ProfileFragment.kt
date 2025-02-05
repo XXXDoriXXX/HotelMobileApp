@@ -13,6 +13,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.hotelapp.classes.ImageCacheProxy
+import com.example.hotelapp.classes.User
 import com.example.hotelapp.repository.UserRepository
 import com.example.hotelapp.utils.SessionManager
 
@@ -44,8 +46,9 @@ class ProfileFragment : Fragment() {
         profileName = view.findViewById(R.id.profile_name)
 
         swipeRefreshLayout.setOnRefreshListener {
-            refreshProfile()
+            loadProfile(useCache = false)
         }
+
 
         editProfileBtn.setOnClickListener {
             startActivity(Intent(requireContext(), EditProfileActivity::class.java))
@@ -64,11 +67,14 @@ class ProfileFragment : Fragment() {
         }
 
         avatarImageView.setOnClickListener {
-            val cachedImagePath = avatarImageView.tag as? String ?: return@setOnClickListener
-            val intent = Intent(requireContext(), FullScreenAvatarActivity::class.java)
-            intent.putExtra("CACHED_IMAGE_PATH", cachedImagePath)
-            startActivity(intent)
+            val currentImagePath = avatarImageView.tag as? String
+            if (!currentImagePath.isNullOrEmpty()) {
+                val intent = Intent(requireContext(), FullScreenAvatarActivity::class.java)
+                intent.putExtra("CACHED_IMAGE_PATH", currentImagePath)
+                startActivity(intent)
+            }
         }
+
 
         loadProfile()
 
@@ -80,22 +86,33 @@ class ProfileFragment : Fragment() {
         loadProfile()
     }
 
-    private fun loadProfile() {
-        userRepository.loadProfileAvatar(requireContext(), avatarImageView) { cachedPath ->
+     fun loadProfile(useCache: Boolean = true) {
+        val sessionManager = SessionManager(requireContext())
+
+        if (useCache) {
+            val cachedUser = UserHolder.currentUser
+
+            profileName.text = "${cachedUser?.last_name} ${cachedUser?.first_name}"
+            profileEmail.text = cachedUser?.email
+        }
+
+        userRepository.loadProfileAvatar(requireContext(), avatarImageView, !useCache) { cachedPath ->
             avatarImageView.tag = cachedPath
         }
 
-        userRepository.loadProfileDetails(
-            onSuccess = { user ->
-                profileName.text = "${user.last_name} ${user.first_name}"
-                profileEmail.text = user.email
-
-                swipeRefreshLayout.isRefreshing = false
-            },
-            onError = { error ->
-                Toast.makeText(requireContext(), "Error loading profile: $error", Toast.LENGTH_SHORT).show()
-                swipeRefreshLayout.isRefreshing = false
-            }
-        )
+        if (!useCache) {
+            userRepository.loadProfileDetails(
+                onSuccess = { user ->
+                    sessionManager.saveUserData(user)
+                    profileName.text = "${user.last_name} ${user.first_name}"
+                    profileEmail.text = user.email
+                    swipeRefreshLayout.isRefreshing = false
+                },
+                onError = { error ->
+                    Toast.makeText(requireContext(), "Error loading profile: $error", Toast.LENGTH_SHORT).show()
+                    swipeRefreshLayout.isRefreshing = false
+                }
+            )
+        }
     }
 }

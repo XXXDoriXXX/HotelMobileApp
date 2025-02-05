@@ -15,6 +15,7 @@ object ImageCacheProxy {
     private var cacheDir: File? = null
     private val downloadExecutor = Executors.newFixedThreadPool(3)
     private val mainHandler = Handler(Looper.getMainLooper())
+
     fun initialize(context: Context) {
         cacheDir = File(context.cacheDir, "images").apply { mkdirs() }
         Log.d("ImageCacheProxy", "Initialized with cacheDir: ${cacheDir?.absolutePath}")
@@ -22,7 +23,6 @@ object ImageCacheProxy {
 
     fun clearCachedImage(imageUrl: String) {
         if (cacheDir == null) return
-
         val fileName = imageUrl.hashCode().toString()
         val file = File(cacheDir, fileName)
 
@@ -32,24 +32,25 @@ object ImageCacheProxy {
         }
     }
 
-    fun getImage(imageUrl: String, callback: (String) -> Unit) {
+    fun getCachedImagePath(imageUrl: String): String? {
+        if (cacheDir == null) return null
+        val file = File(cacheDir, imageUrl.hashCode().toString())
+        return if (file.exists()) file.absolutePath else null
+    }
+
+    fun getImage(imageUrl: String, forceRefresh: Boolean = false, callback: (String) -> Unit) {
         if (cacheDir == null) {
-            Log.e("ImageCacheProxy", "ERROR: ImageCacheProxy has not been initialized!")
-            throw IllegalStateException("ImageCacheProxy has not been initialized. Call initialize(context) first.")
+            throw IllegalStateException("ImageCacheProxy has not been initialized.")
         }
 
-        val fileName = imageUrl.hashCode().toString()
-        val file = File(cacheDir, fileName)
+        val file = File(cacheDir, imageUrl.hashCode().toString())
 
-        if (file.exists()) {
-            Log.d("ImageCacheProxy", "Loading from cache: $file")
+        if (!forceRefresh && file.exists()) {
             mainHandler.post { callback(file.absolutePath) }
         } else {
-            synchronized(this) {
-                downloadExecutor.execute {
-                    downloadAndCacheImage(imageUrl, file) {
-                        mainHandler.post { callback(file.absolutePath) }
-                    }
+            downloadExecutor.execute {
+                downloadAndCacheImage(imageUrl, file) {
+                    mainHandler.post { callback(file.absolutePath) }
                 }
             }
         }
@@ -73,7 +74,6 @@ object ImageCacheProxy {
             onComplete()
         } catch (e: Exception) {
             Log.e("ImageCacheProxy", "Download error: ${e.message}")
-            e.printStackTrace()
         }
     }
 }

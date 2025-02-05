@@ -16,7 +16,7 @@
         <item name="colorControlActivated">@color/colorSecondary</item>
 
         <!-- Фон -->
-        <item name="android:windowBackground">@color/colorPrimary</item>
+        <item name="android:windowBackground">@drawable/gradient_background</item>
         <item name="colorSurface">@color/colorSurface</item>
         <item name="colorError">#CF6679</item>
         <item name="colorOnError">#FFFFFF</item>

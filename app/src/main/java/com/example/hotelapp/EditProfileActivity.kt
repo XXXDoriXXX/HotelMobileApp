@@ -13,6 +13,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.hotelapp.classes.ImageCacheProxy
 import com.example.hotelapp.classes.User
 import com.example.hotelapp.repository.UserRepository
 import com.example.hotelapp.utils.SessionManager
@@ -93,6 +94,7 @@ class EditProfileActivity : AppCompatActivity() {
             onSuccess = {
                 sessionManager.saveUserData(updatedUser)
                 Toast.makeText(this, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
+
                 finish()
             },
             onError = { error ->
@@ -109,14 +111,16 @@ class EditProfileActivity : AppCompatActivity() {
             }
         }
     }
-
     private fun uploadNewAvatar(uri: Uri) {
         userRepository.uploadNewAvatar(
             context = this,
             uri = uri,
             avatarImageView = avatarImageView,
             onSuccess = {
-                Toast.makeText(this, "Avatar updated successfully!", Toast.LENGTH_SHORT).show()
+                ImageCacheProxy.clearCachedImage(avatarImageView.tag.toString())
+                userRepository.loadProfileAvatar(this, avatarImageView, forceRefresh = true) { newPath ->
+                    SessionManager(this).saveUserAvatar(newPath)
+                }
                 loadProfile()
             },
             onError = { error ->

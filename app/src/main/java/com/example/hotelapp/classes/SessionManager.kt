@@ -52,6 +52,14 @@ class SessionManager(context: Context) {
             apply()
         }
     }
+    fun saveUserAvatar(avatarPath: String) {
+        prefs.edit().putString("cached_avatar_path", avatarPath).apply()
+    }
+
+    fun getUserAvatar(): String? {
+        return prefs.getString("cached_avatar_path", null)
+    }
+
 
     fun isLoggedIn(): Boolean {
         val loggedIn = prefs.getBoolean(KEY_IS_LOGGED_IN, false)

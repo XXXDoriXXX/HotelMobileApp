@@ -86,9 +86,29 @@ class UserRepository {
             }
         })
     }
-    fun loadProfileAvatar(context: Context, avatarImageView: ImageView, onCachePathReady: (String) -> Unit) {
+    fun loadProfileAvatar(
+        context: Context,
+        avatarImageView: ImageView,
+        forceRefresh: Boolean = false,
+        onCachePathReady: (String) -> Unit
+    ) {
         val sessionManager = UserHolder.getSessionManager()
         val token = sessionManager.getAccessToken() ?: return
+
+        val cachedAvatarPath = sessionManager.getUserAvatar()
+
+        if (!forceRefresh && cachedAvatarPath != null) {
+            Glide.with(context)
+                .load(cachedAvatarPath)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .placeholder(R.drawable.default_avatar)
+                .into(avatarImageView)
+
+            avatarImageView.tag = cachedAvatarPath
+            onCachePathReady(cachedAvatarPath)
+            return
+        }
 
         userService.getProfileAvatar("Bearer $token").enqueue(object : Callback<JsonObject> {
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
@@ -97,9 +117,8 @@ class UserRepository {
                     if (!avatarUrl.isNullOrEmpty()) {
                         val fullAvatarUrl = "${apiHolder.BASE_URL}$avatarUrl"
 
-                        ImageCacheProxy.clearCachedImage(fullAvatarUrl)
-
-                        ImageCacheProxy.getImage(fullAvatarUrl) { newCachedPath ->
+                        ImageCacheProxy.getImage(fullAvatarUrl, forceRefresh) { newCachedPath ->
+                            sessionManager.saveUserAvatar(newCachedPath)
                             Handler(Looper.getMainLooper()).post {
                                 Glide.with(context)
                                     .load(newCachedPath)
@@ -108,7 +127,7 @@ class UserRepository {
                                     .placeholder(R.drawable.default_avatar)
                                     .into(avatarImageView)
 
-                                avatarImageView.tag = newCachedPath // ✅ Оновлюємо tag після завершення кешування
+                                avatarImageView.tag = newCachedPath
                                 onCachePathReady(newCachedPath)
                             }
                         }
@@ -121,7 +140,6 @@ class UserRepository {
             }
         })
     }
-
 
 
 

@@ -19,8 +19,6 @@ class MainActivity : AppCompatActivity() {
         UserHolder.initialize(this)
         ImageCacheProxy.initialize(this)
         super.onCreate(savedInstanceState)
-        apiHolder.fetchBaseUrl {
-            Log.d("MainActivity", "BASE_URL loaded: ${apiHolder.BASE_URL}")}
         ThemeManager.applyTheme(this)
 
         setContentView(R.layout.activity_main)

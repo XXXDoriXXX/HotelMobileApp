@@ -29,8 +29,7 @@ class SplashActivity : AppCompatActivity() {
         } else {
             navigateToLogin()
         }
-        apiHolder.fetchBaseUrl {
-            Log.d("MainActivity", "BASE_URL loaded: ${apiHolder.BASE_URL}")}
+
     }
 
     private fun navigateToMainActivity() {

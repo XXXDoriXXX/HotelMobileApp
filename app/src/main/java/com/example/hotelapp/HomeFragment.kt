@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -23,6 +24,9 @@ class HomeFragment : Fragment() {
 
     private lateinit var searchInputField: TextInputEditText
     private lateinit var itemsList: RecyclerView
+    private lateinit var layoutToggleButton: ImageButton
+    private var isVerticalLayout = false
+    private lateinit var hotelAdapter: ItemsHotelAdapter
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private val hotelRepository = UserHolder.getHotelRepository()
 
@@ -41,11 +45,16 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         try {
+            layoutToggleButton = view.findViewById(R.id.layoutToggleButton)
             searchInputField = view.findViewById(R.id.search_input_field)
             itemsList = view.findViewById(R.id.itemsHotelList)
             swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
-            itemsList.layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
+            itemsList.layoutManager =
+                LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
             loadDefaultHotels()
+            layoutToggleButton.setOnClickListener {
+                toggleLayout()
+            }
             swipeRefreshLayout.setOnRefreshListener {
                 refreshHotels()
                 searchInputField.text = null;
@@ -62,32 +71,45 @@ class HomeFragment : Fragment() {
                     debounceSearch(s.toString())
                 }
 
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             })
 
         } catch (e: Exception) {
-            Toast.makeText(requireContext(), "Error initializing views: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                requireContext(),
+                "Error initializing views: ${e.message}",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
     private fun refreshHotels() {
         loadDefaultHotels()
+        swipeRefreshLayout.isRefreshing = true
     }
 
     private fun loadDefaultHotels() {
         hotelRepository.getHotels(
             onResult = { hotels ->
                 if (isAdded) {
-                    itemsList.adapter = ItemsHotelAdapter(hotels, requireContext())
+                    hotelAdapter = ItemsHotelAdapter(hotels, requireContext(), isVerticalLayout)
+                    itemsList.adapter = hotelAdapter
+                    updateLayoutManager()
                     swipeRefreshLayout.isRefreshing = false
                 }
             },
             onError = { error ->
                 if (isAdded) {
-                    Toast.makeText(requireContext(), "Error: ${error.message}", Toast.LENGTH_LONG).show()
                     swipeRefreshLayout.isRefreshing = false
+                    Toast.makeText(requireContext(), "Error: ${error.message}", Toast.LENGTH_LONG).show()
                 }
             }
         )
@@ -102,12 +124,13 @@ class HomeFragment : Fragment() {
         hotelRepository.searchHotels(query,
             onResult = { hotels ->
                 if (isAdded) {
-                    itemsList.adapter = ItemsHotelAdapter(hotels, requireContext())
+                    itemsList.adapter = ItemsHotelAdapter(hotels, requireContext(), isVerticalLayout)
                 }
             },
             onError = { error ->
                 if (isAdded) {
-                    Toast.makeText(requireContext(), "Search: ${error.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(), "Search: ${error.message}", Toast.LENGTH_LONG)
+                        .show()
                 }
             }
         )
@@ -130,5 +153,20 @@ class HomeFragment : Fragment() {
 
     companion object {
         fun newInstance() = HomeFragment()
+    }
+
+    private fun toggleLayout() {
+        isVerticalLayout = !isVerticalLayout
+        updateLayoutManager()
+        hotelAdapter.toggleLayout(isVerticalLayout)
+    }
+
+    private fun updateLayoutManager() {
+        val layoutManager = if (isVerticalLayout) {
+            LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+        } else {
+            LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
+        }
+        itemsList.layoutManager = layoutManager
     }
 }
