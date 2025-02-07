@@ -23,5 +23,7 @@
 
         <!-- Акценти -->
         <item name="colorAccent">@color/colorSecondary</item>
+
+
     </style>
 </resources>

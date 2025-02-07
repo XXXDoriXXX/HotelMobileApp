@@ -63,7 +63,7 @@ class ItemsHotelAdapter(
                     override fun onLoadFailed(
                         e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean
                     ): Boolean {
-                        Toast.makeText(context, "Glide error: ${e?.message}", Toast.LENGTH_LONG).show()
+                        //Toast.makeText(context, "Glide error: ${e?.message}", Toast.LENGTH_LONG).show()
                         return false
                     }
 
@@ -71,7 +71,7 @@ class ItemsHotelAdapter(
                         resource: Drawable?, model: Any?, target: Target<Drawable>?,
                         dataSource: DataSource?, isFirstResource: Boolean
                     ): Boolean {
-                        Toast.makeText(context, "Image loaded!", Toast.LENGTH_SHORT).show()
+                       // Toast.makeText(context, "Image loaded!", Toast.LENGTH_SHORT).show()
                         return false
                     }
                 })

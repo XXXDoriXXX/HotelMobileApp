@@ -158,7 +158,7 @@ class HomeFragment : Fragment() {
     private fun toggleLayout() {
         isVerticalLayout = !isVerticalLayout
         updateLayoutManager()
-        hotelAdapter.toggleLayout(isVerticalLayout)
+        reloadHotels()
     }
 
     private fun updateLayoutManager() {
@@ -168,5 +168,22 @@ class HomeFragment : Fragment() {
             LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
         }
         itemsList.layoutManager = layoutManager
+    }
+    private fun reloadHotels() {
+        hotelRepository.getHotels(
+            onResult = { hotels ->
+                if (isAdded) {
+                    hotelAdapter = ItemsHotelAdapter(hotels, requireContext(), isVerticalLayout)
+                    itemsList.adapter = hotelAdapter
+                    swipeRefreshLayout.isRefreshing = false
+                }
+            },
+            onError = { error ->
+                if (isAdded) {
+                    swipeRefreshLayout.isRefreshing = false
+                    Toast.makeText(requireContext(), "Error: ${error.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        )
     }
 }

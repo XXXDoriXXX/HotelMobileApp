@@ -22,6 +22,6 @@
         <item name="colorOnError">#FFFFFF</item>
 
         <!-- Акценти -->
-        <item name="colorAccent">@color/colorSecondary</item>
+
     </style>
 </resources>
