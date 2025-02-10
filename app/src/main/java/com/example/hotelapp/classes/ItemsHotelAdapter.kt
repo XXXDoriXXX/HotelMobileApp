@@ -12,12 +12,11 @@ import HotelItem
 import android.graphics.drawable.Drawable
 import android.util.Log
 import android.widget.RatingBar
-import android.widget.Toast
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
 import com.example.hotelapp.CurrentHotelInfo
 import com.example.hotelapp.Holder.HotelHolder
 import com.example.hotelapp.Holder.apiHolder
@@ -59,35 +58,19 @@ class ItemsHotelAdapter(
                 .load(fullAvatarUrl)
                 .placeholder(R.drawable.default_image)
                 .error(R.drawable.default_image)
-                .listener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                        e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean
-                    ): Boolean {
-                        //Toast.makeText(context, "Glide error: ${e?.message}", Toast.LENGTH_LONG).show()
-                        return false
-                    }
-
-                    override fun onResourceReady(
-                        resource: Drawable?, model: Any?, target: Target<Drawable>?,
-                        dataSource: DataSource?, isFirstResource: Boolean
-                    ): Boolean {
-                       // Toast.makeText(context, "Image loaded!", Toast.LENGTH_SHORT).show()
-                        return false
-                    }
-                })
                 .into(holder.image)
-
         } else {
             holder.image.setImageResource(R.drawable.default_image)
         }
 
         holder.image.setOnClickListener {
             HotelHolder.currentHotel = currentItem
-            val intent = Intent(context, CurrentHotelInfo::class.java)
+            val intent = Intent(context, CurrentHotelInfo::class.java).apply {
+                putStringArrayListExtra("HOTEL_IMAGES", ArrayList(currentItem.images?.map { it.image_url } ?: listOf()))
+            }
             context.startActivity(intent)
         }
     }
-
 
     fun toggleLayout(isVertical: Boolean) {
         isVerticalLayout = isVertical

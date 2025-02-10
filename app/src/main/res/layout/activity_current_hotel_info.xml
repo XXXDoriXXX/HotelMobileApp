@@ -1,57 +1,64 @@
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="?attr/colorPrimary">
+    android:layout_height="match_parent">
 
-    <!-- Верхнє зображення -->
-    <ImageView
-        android:id="@+id/hotel_image"
+    <!-- Основний ConstraintLayout -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
         android:layout_width="match_parent"
-        android:layout_height="450dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/default_hotel_image"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_height="match_parent"
+        android:background="?attr/colorPrimary">
 
-    <!-- Назад кнопка -->
-    <ImageView
-        android:id="@+id/back_button"
-        android:layout_width="18dp"
-        android:layout_height="26dp"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_back"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="?attr/colorOnPrimary" />
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/hotelImagesViewPager"
+            android:layout_width="match_parent"
+            android:layout_height="550dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:scaleType="centerCrop"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Поділитися кнопка -->
-    <ImageView
-        android:id="@+id/share_button"
-        android:layout_width="30dp"
-        android:layout_height="27dp"
-        android:layout_margin="16dp"
-        android:src="@drawable/share"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="?attr/colorOnPrimary" />
+        <!-- Назад кнопка -->
+        <ImageView
+            android:id="@+id/back_button"
+            android:layout_width="18dp"
+            android:layout_height="26dp"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="?attr/colorOnPrimary" />
 
-    <!-- Інформаційний блок -->
+        <!-- Поділитися кнопка -->
+        <ImageView
+            android:id="@+id/share_button"
+            android:layout_width="30dp"
+            android:layout_height="27dp"
+            android:layout_margin="16dp"
+            android:src="@drawable/share"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="?attr/colorOnPrimary" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Винесений BottomSheet у CoordinatorLayout -->
     <androidx.cardview.widget.CardView
-        android:id="@+id/info_card"
+        android:id="@+id/hotelDetailsBottomSheet"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        app:behavior_peekHeight="280dp"
+        app:behavior_hideable="false"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:layout_marginTop="-40dp"
+        android:layout_height="419dp"
+        android:layout_marginTop="0dp"
         app:cardCornerRadius="36dp"
         app:cardBackgroundColor="?attr/colorSurface"
-        app:cardElevation="0dp"
-        app:layout_constraintTop_toBottomOf="@id/hotel_image"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:cardElevation="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -66,7 +73,7 @@
                 android:fontFamily="@font/roboto_medium"
                 android:text="Trending"
                 android:textColor="?attr/colorOnSecondary"
-                android:textSize="14sp" />
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/hotel_name"
@@ -76,7 +83,7 @@
                 android:fontFamily="@font/roboto"
                 android:text="Blue Star Hotel"
                 android:textColor="?attr/colorOnPrimary"
-                android:textSize="20sp" />
+                android:textSize="32sp" />
 
             <TextView
                 android:id="@+id/hotel_description"
@@ -84,189 +91,196 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/roboto_regular"
-                android:text="Your go to location for a romantic stay in luxury. This 4.5-star splendor, located in Los Angeles, features countless amenities and fun."
+                android:text="Your go-to location for a romantic stay in luxury."
                 android:textColor="?attr/colorOnSecondary"
-                android:textSize="14sp" />
+                android:textSize="16sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="16dp"
                 android:orientation="horizontal"
-                android:gravity="bottom"
-                android:paddingHorizontal="0dp">
+                android:gravity="bottom">
 
-                <!-- Рейтинг -->
                 <RatingBar
                     android:id="@+id/rating_bar"
+                    android:layout_marginLeft="-46dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="-40dp"
                     android:scaleX=".6"
                     android:scaleY=".6"
-                    android:minHeight="24dip"
                     android:numStars="5"
                     android:rating="0"
                     android:stepSize="0.5" />
 
-
-                <!-- Кількість оглядів -->
                 <TextView
                     android:id="@+id/review_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="-36dp"
-                    android:layout_marginBottom="6dp"
-                    android:fontFamily="@font/roboto_regular"
+
+                    android:layout_marginLeft="66dp"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="16dp"
                     android:text="2.3k reviews"
                     android:textColor="?attr/colorOnSecondary"
-                    android:textSize="14sp" />
+                    android:textSize="16sp" />
             </LinearLayout>
-
         </LinearLayout>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/bottomCardView"
+            android:layout_width="412dp"
+            android:layout_height="172dp"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="bottom|center_horizontal"
+            app:cardCornerRadius="32dp"
+            app:cardBackgroundColor="#7da8b4"
+            app:cardElevation="6dp"
+            android:layout_marginBottom="0dp"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_marginTop="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:src="@drawable/wifi"
+                            app:tint="?attr/colorPrimary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="Wi-Fi"
+                            android:textColor="?attr/colorPrimary"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <!-- TV -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:src="@drawable/tv"
+                            app:tint="?attr/colorPrimary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="TV"
+                            android:textColor="?attr/colorPrimary"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <!-- AC -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:src="@drawable/ac"
+                            app:tint="?attr/colorPrimary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="AC"
+                            android:textColor="?attr/colorPrimary"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <!-- Gym -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:src="@drawable/gym"
+                            app:tint="?attr/colorPrimary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="Gym"
+                            android:textColor="?attr/colorPrimary"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <!-- Parking -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:src="@drawable/parking"
+                            app:tint="?attr/colorPrimary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="Parking"
+                            android:textColor="?attr/colorPrimary"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/book_now_button"
+                    android:layout_width="348dp"
+                    android:layout_height="55dp"
+                    android:layout_marginTop="16dp"
+                    android:backgroundTint="?attr/colorPrimary"
+                    android:fontFamily="@font/roboto_bold"
+                    android:text="B O O K   N O W"
+                    android:textColor="@android:color/white"
+                    android:textSize="22sp"
+                    app:cornerRadius="22dp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
     </androidx.cardview.widget.CardView>
 
-    <!-- Зручності -->
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal"
-        android:paddingTop="140dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/hotel_image">
 
-        <!-- Wi-Fi -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@drawable/wifi"
-                app:tint="?attr/colorOnPrimary" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Wi-Fi"
-                android:textColor="?attr/colorOnPrimary"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <!-- TV -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@drawable/tv"
-                app:tint="?attr/colorOnPrimary" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="TV"
-                android:textColor="?attr/colorOnPrimary"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <!-- AC -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@drawable/ac"
-                app:tint="?attr/colorOnPrimary" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="AC"
-                android:textColor="?attr/colorOnPrimary"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <!-- Gym -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@drawable/gym"
-                app:tint="?attr/colorOnPrimary" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Gym"
-                android:textColor="?attr/colorOnPrimary"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <!-- Parking -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@drawable/parking"
-                app:tint="?attr/colorOnPrimary" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Parking"
-                android:textColor="?attr/colorOnPrimary"
-                android:textSize="14sp" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- Кнопка "Book Now" -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/book_now_button"
-        android:layout_width="350dp"
-        android:layout_height="55dp"
-        android:layout_gravity="center"
-        android:backgroundTint="?attr/colorSecondary"
-        android:fontFamily="@font/roboto_bold"
-        android:text="B O O K   N O W"
-        android:textColor="?attr/colorOnPrimary"
-        android:textSize="16sp"
-        app:cornerRadius="12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
