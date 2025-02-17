@@ -120,7 +120,7 @@
 
                     android:layout_marginLeft="66dp"
                     android:layout_gravity="center"
-                    android:layout_marginRight="16dp"
+                    android:gravity="right"
                     android:text="2.3k reviews"
                     android:textColor="?attr/colorOnSecondary"
                     android:textSize="16sp" />
@@ -129,9 +129,10 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/bottomCardView"
-            android:layout_width="412dp"
+            android:layout_width="match_parent"
             android:layout_height="172dp"
             android:layout_marginTop="8dp"
+
             android:layout_gravity="bottom|center_horizontal"
             app:cardCornerRadius="32dp"
             app:cardBackgroundColor="#7da8b4"
@@ -275,7 +276,7 @@
                     android:backgroundTint="?attr/colorPrimary"
                     android:fontFamily="@font/roboto_bold"
                     android:text="B O O K   N O W"
-                    android:textColor="@android:color/white"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="22sp"
                     app:cornerRadius="22dp" />
             </LinearLayout>

@@ -2,6 +2,8 @@ package com.example.hotelapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.MotionEvent
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -11,9 +13,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.fragment.NavHostFragment
+import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.example.hotelapp.Holder.HotelHolder
 import com.example.hotelapp.Holder.apiHolder
+import com.example.hotelapp.R.id.roomDetailsBottomSheet
+import com.example.hotelapp.adapters.HotelImagesAdapter
+import com.example.hotelapp.classes.RoomImagesAdapter
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.datepicker.MaterialDatePicker
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -27,6 +34,10 @@ class Current_Room_Info : AppCompatActivity() {
     private var totalNights = 0
     private  var checkInDateFormatted: String? = null
     private  var checkOutDateFormatted: String? = null
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
+    private lateinit var viewPager: ViewPager2
+    private lateinit var adapter: RoomImagesAdapter
+    private lateinit var bottomSheet: View
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -81,26 +92,50 @@ class Current_Room_Info : AppCompatActivity() {
             }
         }
 
-        val roomimage: ImageView = findViewById(R.id.room_image)
         val descriprion:TextView=findViewById(R.id.room_description)
         descriprion.text=HotelHolder.currentRoom!!.description
         val backbtn:ImageView = findViewById(R.id.back_button)
         backbtn.setOnClickListener {
             finish()
         }
-        val imageUrl = HotelHolder.currentRoom?.images?.firstOrNull()?.image_url
-        if (!imageUrl.isNullOrEmpty()) {
-            Glide.with(this)
-                .load(apiHolder.BASE_URL+imageUrl)
-                .placeholder(R.drawable.default_image)
-                .into(roomimage)
-        } else {
-            roomimage.setImageResource(R.drawable.default_image)
-        }
         val roomnum:TextView = findViewById(R.id.room_number)
         val roomPrice:TextView=findViewById(R.id.room_price)
         roomnum.text ="Room number: "+ HotelHolder.currentRoom?.room_number.toString()
         roomPrice.text ="$"+ HotelHolder.currentRoom?.price_per_night.toString()
+
+        bottomSheet = findViewById(roomDetailsBottomSheet)
+        viewPager = findViewById(R.id.roomImagesViewPager)
+
+        val images = HotelHolder.currentRoom?.images?.map { it.image_url } ?: listOf()
+        adapter = RoomImagesAdapter(images)
+        viewPager.adapter = adapter
+
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet).apply {
+            state = BottomSheetBehavior.STATE_EXPANDED
+            isHideable = false
+            peekHeight = 700
+        }
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {}
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                val minHeight = 550
+                val maxHeight = 750
+                val adjustedOffset = 1 - slideOffset
+
+                val newHeight = (minHeight+1050 + (adjustedOffset * (maxHeight))).toInt()
+                viewPager.layoutParams.height = newHeight
+                viewPager.requestLayout()
+            }
+        })
+        viewPager.setOnTouchListener { _, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                }
+            }
+            false
+        }
     }
     private fun showDatePicker() {
         val dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
