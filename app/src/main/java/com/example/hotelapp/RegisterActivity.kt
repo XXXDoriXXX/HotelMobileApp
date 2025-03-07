@@ -81,7 +81,6 @@ class RegisterActivity : AppCompatActivity() {
             }
 
             val request = RegisterRequest(
-                id="1",
                 first_name = username,
                 last_name = usersecondname,
                 email = email,
@@ -90,7 +89,15 @@ class RegisterActivity : AppCompatActivity() {
                 is_owner = false,
                 birth_date = birthDate
             )
-            val user =User(username,usersecondname,email,phone,birthDate)
+            val user = User(
+                id = 0,
+                first_name = username,
+                last_name = usersecondname,
+                email = email,
+                phone = phone,
+                birth_date = birthDate
+            )
+
             UserHolder.currentUser = user
             authRepository.registerUser(request).enqueue(object : retrofit2.Callback<AuthResponse> {
                 override fun onResponse(call: Call<AuthResponse>, response: retrofit2.Response<AuthResponse>) {

@@ -4,6 +4,10 @@ import HotelItem
 import RatingRequest
 import RatingResponse
 import ViewResponse
+import com.example.hotelapp.models.BookingRequest
+import com.example.hotelapp.models.BookingResponse
+import com.example.hotelapp.models.PaymentRequest
+import com.example.hotelapp.models.StripePaymentResponse
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
@@ -34,6 +38,10 @@ interface HotelService {
     ): Call<RatingResponse>
     @GET("hotels/search")
     fun searchHotels(@Query("name") name: String): Call<List<HotelItem>>
+    @POST("/bookings/")
+    fun createBooking(@Body bookingRequest: BookingRequest): Call<BookingResponse>
+    @POST("stripe/create-payment-intent")
+    fun createPaymentIntent(@Body paymentRequest: PaymentRequest): Call<StripePaymentResponse>
 
 
 }

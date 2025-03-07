@@ -66,6 +66,7 @@ class UserRepository {
                 if (response.isSuccessful) {
                     response.body()?.let { jsonObject ->
                         val updatedUser = User(
+                            id = 0,
                             first_name = jsonObject.get("first_name")?.asString ?: "",
                             last_name = jsonObject.get("last_name")?.asString ?: "",
                             email = jsonObject.get("email")?.asString ?: "",

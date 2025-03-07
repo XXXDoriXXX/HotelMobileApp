@@ -82,7 +82,10 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     private fun updateProfile() {
+        val userId = UserHolder.currentUser?.id ?: return
+
         val updatedUser = User(
+            id = userId,
             first_name = firstNameField.text.toString().trim(),
             last_name = lastNameField.text.toString().trim(),
             email = emailField.text.toString().trim(),
@@ -94,7 +97,6 @@ class EditProfileActivity : AppCompatActivity() {
             onSuccess = {
                 sessionManager.saveUserData(updatedUser)
                 Toast.makeText(this, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
-
                 finish()
             },
             onError = { error ->

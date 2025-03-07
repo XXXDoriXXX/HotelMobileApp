@@ -13,6 +13,7 @@ object JwtUtils {
         val decodedPayload = String(Base64.decode(payload, Base64.DEFAULT))
         val jsonObject = JSONObject(decodedPayload)
         return User(
+            id = 0,
             first_name = jsonObject.optString("first_name", "Unknown"),
             last_name = jsonObject.optString("last_name", "Unknown"),
             email = jsonObject.optString("email", "Unknown"),

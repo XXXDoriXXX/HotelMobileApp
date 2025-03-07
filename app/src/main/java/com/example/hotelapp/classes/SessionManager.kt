@@ -66,6 +66,7 @@ class SessionManager(context: Context) {
 
         if (loggedIn) {
             val user = User(
+                id = 0,
                 first_name = prefs.getString(KEY_FIRST_NAME, "") ?: "",
                 last_name = prefs.getString(KEY_LAST_NAME, "") ?: "",
                 email = prefs.getString(KEY_EMAIL, "") ?: "",
