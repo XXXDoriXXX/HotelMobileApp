@@ -1,5 +1,6 @@
 package com.example.hotelapp
 
+import UserHolder
 import android.app.Activity
 import android.os.Bundle
 import android.view.MotionEvent
@@ -12,7 +13,10 @@ import com.example.hotelapp.Holder.HotelHolder
 import com.example.hotelapp.api.HotelService
 import com.example.hotelapp.classes.RoomImagesAdapter
 import com.example.hotelapp.models.PaymentRequest
+
 import com.example.hotelapp.R.id.roomDetailsBottomSheet
+import com.example.hotelapp.models.PaymentSuccessResponse
+import com.example.hotelapp.models.PaymentSuccessRequest
 import com.example.hotelapp.models.StripePaymentResponse
 import com.example.hotelapp.network.RetrofitClient
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -62,7 +66,7 @@ class Current_Room_Info : AppCompatActivity() {
             when (paymentSheetResult) {
                 is PaymentSheetResult.Completed -> {
                     Toast.makeText(this, "Оплата успішна!", Toast.LENGTH_LONG).show()
-                    finish()
+                    notifyPaymentSuccess()
                 }
                 is PaymentSheetResult.Canceled -> {
                     Toast.makeText(this, "Оплата скасована", Toast.LENGTH_SHORT).show()
@@ -176,5 +180,41 @@ class Current_Room_Info : AppCompatActivity() {
         val diffInMillis = endDateMillis - startDateMillis
         totalNights = TimeUnit.MILLISECONDS.toDays(diffInMillis).toInt()
         totalPriceText.text = "Total: $${totalNights * pricePerNight}"
+    }
+    private fun notifyPaymentSuccess() {
+        val clientId = UserHolder.currentUser?.id?:0
+        val roomId = HotelHolder.currentRoom?.id ?: 0
+
+        val inputFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dateStart = checkInDateFormatted?.let { outputFormat.format(inputFormat.parse(it)!!) } ?: ""
+        val dateEnd = checkOutDateFormatted?.let { outputFormat.format(inputFormat.parse(it)!!) } ?: ""
+
+        val totalPrice = totalNights * pricePerNight
+        val amount = totalPrice
+
+        val paymentSuccessRequest = PaymentSuccessRequest(
+            client_id = clientId,
+            room_id = roomId,
+            date_start = dateStart,
+            date_end = dateEnd,
+            total_price = totalPrice,
+            amount = amount
+        )
+
+        val apiService = RetrofitClient.retrofit.create(HotelService::class.java)
+        apiService.notifyPaymentSuccess(paymentSuccessRequest).enqueue(object : Callback<PaymentSuccessResponse> {
+            override fun onResponse(call: Call<PaymentSuccessResponse>, response: Response<PaymentSuccessResponse>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(this@Current_Room_Info, "Бронювання створено", Toast.LENGTH_SHORT).show()
+                    finish()
+                } else {
+                    Toast.makeText(this@Current_Room_Info, "Помилка при повідомленні бекенду", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<PaymentSuccessResponse>, t: Throwable) {
+                Toast.makeText(this@Current_Room_Info, "Помилка: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }

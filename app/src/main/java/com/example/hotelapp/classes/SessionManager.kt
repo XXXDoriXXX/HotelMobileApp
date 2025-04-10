@@ -72,6 +72,7 @@ class SessionManager(context: Context) {
                 email = prefs.getString(KEY_EMAIL, "") ?: "",
                 birth_date = prefs.getString(KEY_BIRTH_DATE, "") ?: "",
                 phone = prefs.getString(KEY_PHONE, "") ?: "",
+                avatarUrl = ""
 
             )
             UserHolder.currentUser = user

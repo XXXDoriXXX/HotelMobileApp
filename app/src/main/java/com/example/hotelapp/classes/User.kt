@@ -6,7 +6,8 @@ class User (
                val last_name: String,
                val email: String,
                val phone: String,
-               val birth_date: String
+               val birth_date: String,
+                val avatarUrl: String
 ){
 
 }

@@ -1,5 +1,6 @@
 package com.example.hotelapp
 
+import UserHolder
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -63,17 +64,16 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     private fun loadProfile() {
-        userRepository.loadProfileAvatar(this, avatarImageView) { cachedPath ->
-            avatarImageView.tag = cachedPath
-        }
-
         userRepository.loadProfileDetails(
+            context = this,
+            avatarImageView = avatarImageView,
             onSuccess = { user ->
                 firstNameField.setText(user.first_name)
                 lastNameField.setText(user.last_name)
                 emailField.setText(user.email)
                 phoneField.setText(user.phone)
                 birthDateField.setText(user.birth_date)
+                avatarImageView.tag = user.avatarUrl
             },
             onError = { error ->
                 Toast.makeText(this, "Error loading profile: $error", Toast.LENGTH_SHORT).show()
@@ -81,16 +81,18 @@ class EditProfileActivity : AppCompatActivity() {
         )
     }
 
+
     private fun updateProfile() {
         val userId = UserHolder.currentUser?.id ?: return
-
+        val userAvatarUrl = UserHolder.currentUser?.avatarUrl?:return
         val updatedUser = User(
             id = userId,
             first_name = firstNameField.text.toString().trim(),
             last_name = lastNameField.text.toString().trim(),
             email = emailField.text.toString().trim(),
             phone = phoneField.text.toString().trim(),
-            birth_date = birthDateField.text.toString().trim()
+            birth_date = birthDateField.text.toString().trim(),
+            avatarUrl = userAvatarUrl
         )
 
         userRepository.updateUserProfile(updatedUser,
@@ -120,9 +122,6 @@ class EditProfileActivity : AppCompatActivity() {
             avatarImageView = avatarImageView,
             onSuccess = {
                 ImageCacheProxy.clearCachedImage(avatarImageView.tag.toString())
-                userRepository.loadProfileAvatar(this, avatarImageView, forceRefresh = true) { newPath ->
-                    SessionManager(this).saveUserAvatar(newPath)
-                }
                 loadProfile()
             },
             onError = { error ->
@@ -130,6 +129,7 @@ class EditProfileActivity : AppCompatActivity() {
             }
         )
     }
+
 
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)

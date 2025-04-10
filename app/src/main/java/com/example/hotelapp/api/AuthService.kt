@@ -7,7 +7,7 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface AuthService {
-    @POST("auth/register")
+    @POST("auth/register/client")
     fun registerUser(@Body request: RegisterRequest): Call<AuthResponse>
 
     @POST("auth/login")

@@ -57,7 +57,12 @@ class UserRepository {
             }
         })
     }
-    fun loadProfileDetails(onSuccess: (User) -> Unit, onError: (String) -> Unit) {
+    fun loadProfileDetails(
+        context: Context,
+        avatarImageView: ImageView,
+        onSuccess: (User) -> Unit,
+        onError: (String) -> Unit
+    ) {
         val sessionManager = UserHolder.getSessionManager()
         val token = sessionManager.getAccessToken() ?: return onError("No access token available")
 
@@ -65,16 +70,33 @@ class UserRepository {
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                 if (response.isSuccessful) {
                     response.body()?.let { jsonObject ->
+                        val avatarUrl = jsonObject.get("avatar_url")?.asString.orEmpty()
+                        val fullAvatarUrl = "${apiHolder.BASE_URL}$avatarUrl"
+
                         val updatedUser = User(
                             id = 0,
                             first_name = jsonObject.get("first_name")?.asString ?: "",
                             last_name = jsonObject.get("last_name")?.asString ?: "",
                             email = jsonObject.get("email")?.asString ?: "",
                             phone = jsonObject.get("phone")?.asString ?: "",
-                            birth_date = jsonObject.get("birth_date")?.asString ?: ""
+                            birth_date = jsonObject.get("birth_date")?.asString ?: "",
+                            avatarUrl = avatarUrl
                         )
 
                         UserHolder.currentUser = updatedUser
+                        sessionManager.saveUserAvatar(fullAvatarUrl)
+
+                        Handler(Looper.getMainLooper()).post {
+                            Glide.with(context)
+                                .load(fullAvatarUrl)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .skipMemoryCache(true)
+                                .placeholder(R.drawable.default_avatar)
+                                .into(avatarImageView)
+
+                            avatarImageView.tag = fullAvatarUrl
+                        }
+
                         onSuccess(updatedUser)
                     }
                 } else {
@@ -87,60 +109,7 @@ class UserRepository {
             }
         })
     }
-    fun loadProfileAvatar(
-        context: Context,
-        avatarImageView: ImageView,
-        forceRefresh: Boolean = false,
-        onCachePathReady: (String) -> Unit
-    ) {
-        val sessionManager = UserHolder.getSessionManager()
-        val token = sessionManager.getAccessToken() ?: return
 
-        val cachedAvatarPath = sessionManager.getUserAvatar()
-
-        if (!forceRefresh && cachedAvatarPath != null) {
-            Glide.with(context)
-                .load(cachedAvatarPath)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .placeholder(R.drawable.default_avatar)
-                .into(avatarImageView)
-
-            avatarImageView.tag = cachedAvatarPath
-            onCachePathReady(cachedAvatarPath)
-            return
-        }
-
-        userService.getProfileAvatar("Bearer $token").enqueue(object : Callback<JsonObject> {
-            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-                if (response.isSuccessful) {
-                    val avatarUrl = response.body()?.get("avatar_url")?.asString
-                    if (!avatarUrl.isNullOrEmpty()) {
-                        val fullAvatarUrl = "${apiHolder.BASE_URL}$avatarUrl"
-
-                        ImageCacheProxy.getImage(fullAvatarUrl, forceRefresh) { newCachedPath ->
-                            sessionManager.saveUserAvatar(newCachedPath)
-                            Handler(Looper.getMainLooper()).post {
-                                Glide.with(context)
-                                    .load(newCachedPath)
-                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                    .skipMemoryCache(true)
-                                    .placeholder(R.drawable.default_avatar)
-                                    .into(avatarImageView)
-
-                                avatarImageView.tag = newCachedPath
-                                onCachePathReady(newCachedPath)
-                            }
-                        }
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                Log.e("UserRepository", "Error loading avatar: ${t.message}")
-            }
-        })
-    }
 
 
 

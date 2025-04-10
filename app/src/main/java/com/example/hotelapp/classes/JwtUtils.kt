@@ -18,7 +18,8 @@ object JwtUtils {
             last_name = jsonObject.optString("last_name", "Unknown"),
             email = jsonObject.optString("email", "Unknown"),
             phone = jsonObject.optString("phone", "Unknown"),
-            birth_date = jsonObject.optString("birth_date", "Unknown")
+            birth_date = jsonObject.optString("birth_date", "Unknown"),
+            avatarUrl = jsonObject.optString("avatar_url","Unknown")
         )
 
     }

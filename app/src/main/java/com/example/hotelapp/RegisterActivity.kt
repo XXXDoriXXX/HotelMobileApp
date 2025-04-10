@@ -86,7 +86,6 @@ class RegisterActivity : AppCompatActivity() {
                 email = email,
                 phone = phone,
                 password = password,
-                is_owner = false,
                 birth_date = birthDate
             )
             val user = User(
@@ -95,7 +94,8 @@ class RegisterActivity : AppCompatActivity() {
                 last_name = usersecondname,
                 email = email,
                 phone = phone,
-                birth_date = birthDate
+                birth_date = birthDate,
+                avatarUrl = ""
             )
 
             UserHolder.currentUser = user
