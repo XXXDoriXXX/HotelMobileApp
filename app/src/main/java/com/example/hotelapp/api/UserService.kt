@@ -1,6 +1,7 @@
 package com.example.hotelapp.api
 
 import com.example.hotelapp.classes.User
+import com.example.hotelapp.models.ChangeCredentialsRequest
 import com.example.hotelapp.models.ProfileRequest
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
@@ -13,11 +14,11 @@ import retrofit2.http.PUT
 import retrofit2.http.Part
 
 interface UserService {
-    @PUT("profile/")
-    fun updateUserProfile(
-        @Body request: ProfileRequest,
+    @PUT("profile/update/client")
+    fun updateCredentials(
+        @Body request: ChangeCredentialsRequest,
         @Header("Authorization") token: String
-    ): Call<Void>
+    ): Call<User>
     @Multipart
     @PUT("profile/change_avatar")
     fun changeAvatar(

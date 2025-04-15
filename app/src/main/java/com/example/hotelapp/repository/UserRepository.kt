@@ -25,11 +25,18 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
+import com.example.hotelapp.models.ChangeCredentialsRequest
+
 
 class UserRepository {
     private val userService = RetrofitClient.retrofit.create(UserService::class.java)
 
-    fun updateUserProfile(user: User, onSuccess: () -> Unit, onError: (String) -> Unit) {
+    fun updateCredentials(
+        context: Context,
+        request: ChangeCredentialsRequest,
+        onSuccess: (User) -> Unit,
+        onError: (String) -> Unit
+    ) {
         val sessionManager = UserHolder.getSessionManager()
         val token = sessionManager.getAccessToken()
         if (token.isNullOrEmpty()) {
@@ -37,23 +44,21 @@ class UserRepository {
             return
         }
 
-        val profileRequest = ProfileRequest(
-            first_name = user.first_name,
-            last_name = user.last_name,
-            phone = user.phone,
-            birth_date = user.birth_date
-        )
-
-        userService.updateUserProfile(profileRequest, "Bearer $token").enqueue(object : Callback<Void> {
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                if (response.isSuccessful) {
-                    onSuccess()
+        val service = RetrofitClient.retrofit.create(UserService::class.java)
+        service.updateCredentials(request, "Bearer $token").enqueue(object : Callback<User> {
+            override fun onResponse(call: Call<User>, response: Response<User>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val updatedUser = response.body()!!
+                    UserHolder.currentUser = updatedUser
+                    sessionManager.saveUserData(updatedUser)
+                    onSuccess(updatedUser)
                 } else {
-                    onError("Failed to update profile: ${response.errorBody()?.string() ?: "Unknown error"}")
+                    val msg = response.errorBody()?.string() ?: "Unknown error"
+                    onError("Update failed: $msg")
                 }
             }
 
-            override fun onFailure(call: Call<Void>, t: Throwable) {
+            override fun onFailure(call: Call<User>, t: Throwable) {
                 onError(t.localizedMessage ?: "Unknown error")
             }
         })
@@ -74,7 +79,7 @@ class UserRepository {
                     if (response.isSuccessful) {
                         response.body()?.let { jsonObject ->
                             val avatarUrl = jsonObject.get("avatar_url")?.takeUnless { it is JsonNull }?.asString.orEmpty()
-                            val fullAvatarUrl = if (avatarUrl.isNotEmpty()) "${apiHolder.BASE_URL}$avatarUrl" else ""
+                            val fullAvatarUrl = if (avatarUrl.isNotEmpty()) avatarUrl else ""
 
                             val updatedUser = User(
                                 id = jsonObject.get("id")?.takeUnless { it is JsonNull }?.asInt ?: 0,
@@ -153,7 +158,7 @@ class UserRepository {
                                 onSuccess()
                             }
                         } else {
-                            onSuccess() // Still call success if avatarUrl is null
+                            onSuccess()
                         }
                     } else {
                         val errorMessage = response.errorBody()?.string() ?: "Failed to update avatar"

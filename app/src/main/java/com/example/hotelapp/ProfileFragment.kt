@@ -3,6 +3,7 @@ package com.example.hotelapp
 import UserHolder
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.example.hotelapp.Holder.apiHolder
 import com.example.hotelapp.classes.ImageCacheProxy
 import com.example.hotelapp.classes.User
 import com.example.hotelapp.repository.UserRepository
@@ -46,10 +48,10 @@ class ProfileFragment : Fragment() {
         profileEmail = view.findViewById(R.id.profile_email)
         profileName = view.findViewById(R.id.profile_name)
 
+        loadProfileFromLocal()
         swipeRefreshLayout.setOnRefreshListener {
-            loadProfile(useCache = false)
+            loadProfileFromServer()
         }
-
         editProfileBtn.setOnClickListener {
             startActivity(Intent(requireContext(), EditProfileActivity::class.java))
         }
@@ -75,32 +77,33 @@ class ProfileFragment : Fragment() {
             }
         }
 
-        loadProfile()
-
         return view
     }
 
-    private fun loadProfile(useCache: Boolean = true) {
+    private fun loadProfileFromLocal() {
+        val user = UserHolder.currentUser ?: return
+
+        profileName.text = "${user.last_name} ${user.first_name}"
+        profileEmail.text = user.email
+        Log.v("ProfileFragment", "Avatar updated: ${user.avatarUrl}")
+        user.avatarUrl.let { avatarUrl ->
+            avatarImageView.tag = avatarUrl
+            Glide.with(requireContext())
+                .load(avatarUrl)
+                .placeholder(R.drawable.default_avatar)
+                .into(avatarImageView)
+        }
+    }
+    private fun loadProfileFromServer() {
         swipeRefreshLayout.isRefreshing = true
         userRepository.loadProfileDetails(
             context = requireContext(),
             avatarImageView = avatarImageView,
             onSuccess = { user ->
                 sessionManager.saveUserData(user)
-                profileName.text = "${user.last_name} ${user.first_name}"
-                profileEmail.text = user.email
+                UserHolder.currentUser = user
+                loadProfileFromLocal()
                 swipeRefreshLayout.isRefreshing = false
-
-
-                user.avatarUrl?.let { avatarUrl ->
-                    avatarImageView.tag = avatarUrl
-                    Glide.with(requireContext())
-                        .load(avatarUrl)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .skipMemoryCache(true)
-                        .placeholder(R.drawable.default_avatar)
-                        .into(avatarImageView)
-                }
             },
             onError = { error ->
                 Toast.makeText(requireContext(), "Error loading profile: $error", Toast.LENGTH_SHORT).show()
@@ -108,4 +111,6 @@ class ProfileFragment : Fragment() {
             }
         )
     }
+
+
 }
