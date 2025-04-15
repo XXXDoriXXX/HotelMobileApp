@@ -77,6 +77,15 @@
                 android:padding="12dp" />
 
             <EditText
+                android:id="@+id/edit_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:padding="12dp" />
+
+            <EditText
                 android:id="@+id/edit_birth_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -105,14 +114,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp">
-            <EditText
-                android:id="@+id/edit_email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:hint="Email"
-                android:inputType="textEmailAddress"
-                android:padding="12dp" />
+
             <EditText
                 android:id="@+id/edit_old_password"
                 android:layout_width="match_parent"
@@ -139,17 +141,6 @@
                 android:hint="Confirm Password"
                 android:inputType="textPassword"
                 android:padding="12dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_change_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:backgroundTint="?attr/colorAccent"
-                android:text="Change Password"
-                android:textColor="?attr/colorOnPrimary"
-                android:textSize="16sp"
-                app:cornerRadius="12dp" />
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>

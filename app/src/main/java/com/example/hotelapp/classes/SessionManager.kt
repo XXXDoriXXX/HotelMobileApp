@@ -18,6 +18,8 @@ class SessionManager(context: Context) {
         private const val KEY_EMAIL = "email"
         private const val KEY_PHONE = "phone"
         private const val KEY_BIRTH_DATE = "birth_date"
+        private const val KEY_AVATAR_URL = "avatar_url"
+
 
     }
     fun getAccessToken(): String? {
@@ -44,14 +46,17 @@ class SessionManager(context: Context) {
     }
     fun saveUserData(user: User) {
         prefs.edit().apply {
-            putString("first_name", user.first_name)
-            putString("last_name", user.last_name)
-            putString("email", user.email)
-            putString("phone", user.phone)
-            putString("birth_date", user.birth_date)
+            putString(KEY_FIRST_NAME, user.first_name)
+            putString(KEY_LAST_NAME, user.last_name)
+            putString(KEY_EMAIL, user.email)
+            putString(KEY_PHONE, user.phone)
+            putString(KEY_BIRTH_DATE, user.birth_date)
+            putString(KEY_AVATAR_URL, user.avatarUrl)
             apply()
         }
     }
+
+
     fun saveUserAvatar(avatarPath: String) {
         prefs.edit().putString("cached_avatar_path", avatarPath).apply()
     }
@@ -66,13 +71,15 @@ class SessionManager(context: Context) {
 
         if (loggedIn) {
             val user = User(
+                id = 0,
                 first_name = prefs.getString(KEY_FIRST_NAME, "") ?: "",
                 last_name = prefs.getString(KEY_LAST_NAME, "") ?: "",
                 email = prefs.getString(KEY_EMAIL, "") ?: "",
                 birth_date = prefs.getString(KEY_BIRTH_DATE, "") ?: "",
                 phone = prefs.getString(KEY_PHONE, "") ?: "",
-
+                avatarUrl = prefs.getString(KEY_AVATAR_URL, "") ?: ""
             )
+
             UserHolder.currentUser = user
         }
 

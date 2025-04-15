@@ -53,9 +53,8 @@ class ItemsHotelAdapter(
         Log.d("ItemsHotelAdapter", "Loading image: ${apiHolder.BASE_URL + imageUrl}")
 
         if (!imageUrl.isNullOrEmpty()) {
-            val fullAvatarUrl = "${apiHolder.BASE_URL}$imageUrl"
             Glide.with(holder.image.context)
-                .load(fullAvatarUrl)
+                .load(imageUrl)
                 .placeholder(R.drawable.default_image)
                 .error(R.drawable.default_image)
                 .into(holder.image)

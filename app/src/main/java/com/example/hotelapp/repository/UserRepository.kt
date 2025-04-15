@@ -1,4 +1,5 @@
 package com.example.hotelapp.repository
+
 import android.content.Context
 import android.net.Uri
 import android.os.Handler
@@ -12,11 +13,11 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.hotelapp.Holder.apiHolder
 import com.example.hotelapp.R
 import com.example.hotelapp.api.UserService
-import com.example.hotelapp.classes.ImageCacheProxy
 import com.example.hotelapp.classes.User
 import com.example.hotelapp.models.ProfileRequest
 import com.example.hotelapp.network.RetrofitClient
 import com.google.gson.JsonObject
+import com.google.gson.JsonNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -24,11 +25,18 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
+import com.example.hotelapp.models.ChangeCredentialsRequest
+
 
 class UserRepository {
     private val userService = RetrofitClient.retrofit.create(UserService::class.java)
 
-    fun updateUserProfile(user: User, onSuccess: () -> Unit, onError: (String) -> Unit) {
+    fun updateCredentials(
+        context: Context,
+        request: ChangeCredentialsRequest,
+        onSuccess: (User) -> Unit,
+        onError: (String) -> Unit
+    ) {
         val sessionManager = UserHolder.getSessionManager()
         val token = sessionManager.getAccessToken()
         if (token.isNullOrEmpty()) {
@@ -36,48 +44,80 @@ class UserRepository {
             return
         }
 
-        val profileRequest = ProfileRequest(
-            first_name = user.first_name,
-            last_name = user.last_name,
-            phone = user.phone,
-            birth_date = user.birth_date
-        )
-
-        userService.updateUserProfile(profileRequest, "Bearer $token").enqueue(object : Callback<Void> {
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                if (response.isSuccessful) {
-                    onSuccess()
+        val service = RetrofitClient.retrofit.create(UserService::class.java)
+        service.updateCredentials(request, "Bearer $token").enqueue(object : Callback<User> {
+            override fun onResponse(call: Call<User>, response: Response<User>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val updatedUser = response.body()!!
+                    UserHolder.currentUser = updatedUser
+                    sessionManager.saveUserData(updatedUser)
+                    onSuccess(updatedUser)
                 } else {
-                    onError("Failed to update profile: ${response.errorBody()?.string() ?: "Unknown error"}")
+                    val msg = response.errorBody()?.string() ?: "Unknown error"
+                    onError("Update failed: $msg")
                 }
             }
 
-            override fun onFailure(call: Call<Void>, t: Throwable) {
+            override fun onFailure(call: Call<User>, t: Throwable) {
                 onError(t.localizedMessage ?: "Unknown error")
             }
         })
     }
-    fun loadProfileDetails(onSuccess: (User) -> Unit, onError: (String) -> Unit) {
+
+    fun loadProfileDetails(
+        context: Context,
+        avatarImageView: ImageView,
+        onSuccess: (User) -> Unit,
+        onError: (String) -> Unit
+    ) {
         val sessionManager = UserHolder.getSessionManager()
         val token = sessionManager.getAccessToken() ?: return onError("No access token available")
 
         userService.getProfileDetails("Bearer $token").enqueue(object : Callback<JsonObject> {
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-                if (response.isSuccessful) {
-                    response.body()?.let { jsonObject ->
-                        val updatedUser = User(
-                            first_name = jsonObject.get("first_name")?.asString ?: "",
-                            last_name = jsonObject.get("last_name")?.asString ?: "",
-                            email = jsonObject.get("email")?.asString ?: "",
-                            phone = jsonObject.get("phone")?.asString ?: "",
-                            birth_date = jsonObject.get("birth_date")?.asString ?: ""
-                        )
+                try {
+                    if (response.isSuccessful) {
+                        response.body()?.let { jsonObject ->
+                            val avatarUrl = jsonObject.get("avatar_url")?.takeUnless { it is JsonNull }?.asString.orEmpty()
+                            val fullAvatarUrl = if (avatarUrl.isNotEmpty()) avatarUrl else ""
 
-                        UserHolder.currentUser = updatedUser
-                        onSuccess(updatedUser)
+                            val updatedUser = User(
+                                id = jsonObject.get("id")?.takeUnless { it is JsonNull }?.asInt ?: 0,
+                                first_name = jsonObject.get("first_name")?.takeUnless { it is JsonNull }?.asString ?: "",
+                                last_name = jsonObject.get("last_name")?.takeUnless { it is JsonNull }?.asString ?: "",
+                                email = jsonObject.get("email")?.takeUnless { it is JsonNull }?.asString ?: "",
+                                phone = jsonObject.get("phone")?.takeUnless { it is JsonNull }?.asString ?: "",
+                                birth_date = jsonObject.get("birth_date")?.takeUnless { it is JsonNull }?.asString ?: "",
+                                avatarUrl = avatarUrl
+                            )
+
+                            UserHolder.currentUser = updatedUser
+                            sessionManager.saveUserAvatar(fullAvatarUrl)
+
+                            Handler(Looper.getMainLooper()).post {
+                                if (fullAvatarUrl.isNotEmpty()) {
+                                    Glide.with(context)
+                                        .load(fullAvatarUrl)
+                                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                        .skipMemoryCache(true)
+                                        .placeholder(R.drawable.default_avatar)
+                                        .into(avatarImageView)
+
+                                    avatarImageView.tag = fullAvatarUrl
+                                } else {
+                                    Glide.with(context)
+                                        .load(R.drawable.default_avatar)
+                                        .into(avatarImageView)
+                                }
+                            }
+
+                            onSuccess(updatedUser)
+                        } ?: onError("Empty response body")
+                    } else {
+                        onError("Failed to load profile: ${response.errorBody()?.string() ?: "Unknown error"}")
                     }
-                } else {
-                    onError("Failed to load profile: ${response.errorBody()?.string() ?: "Unknown error"}")
+                } catch (e: Exception) {
+                    onError("Error parsing response: ${e.message}")
                 }
             }
 
@@ -86,86 +126,6 @@ class UserRepository {
             }
         })
     }
-    fun loadProfileAvatar(
-        context: Context,
-        avatarImageView: ImageView,
-        forceRefresh: Boolean = false,
-        onCachePathReady: (String) -> Unit
-    ) {
-        val sessionManager = UserHolder.getSessionManager()
-        val token = sessionManager.getAccessToken() ?: return
-
-        val cachedAvatarPath = sessionManager.getUserAvatar()
-
-        if (!forceRefresh && cachedAvatarPath != null) {
-            Glide.with(context)
-                .load(cachedAvatarPath)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .placeholder(R.drawable.default_avatar)
-                .into(avatarImageView)
-
-            avatarImageView.tag = cachedAvatarPath
-            onCachePathReady(cachedAvatarPath)
-            return
-        }
-
-        userService.getProfileAvatar("Bearer $token").enqueue(object : Callback<JsonObject> {
-            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-                if (response.isSuccessful) {
-                    val avatarUrl = response.body()?.get("avatar_url")?.asString
-                    if (!avatarUrl.isNullOrEmpty()) {
-                        val fullAvatarUrl = "${apiHolder.BASE_URL}$avatarUrl"
-
-                        ImageCacheProxy.getImage(fullAvatarUrl, forceRefresh) { newCachedPath ->
-                            sessionManager.saveUserAvatar(newCachedPath)
-                            Handler(Looper.getMainLooper()).post {
-                                Glide.with(context)
-                                    .load(newCachedPath)
-                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                    .skipMemoryCache(true)
-                                    .placeholder(R.drawable.default_avatar)
-                                    .into(avatarImageView)
-
-                                avatarImageView.tag = newCachedPath
-                                onCachePathReady(newCachedPath)
-                            }
-                        }
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                Log.e("UserRepository", "Error loading avatar: ${t.message}")
-            }
-        })
-    }
-
-
-
-    fun clearAvatarCache() {
-        val sessionManager = UserHolder.getSessionManager()
-        val token = sessionManager.getAccessToken() ?: return
-
-        userService.getProfileAvatar("Bearer $token").enqueue(object : Callback<JsonObject> {
-            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-                if (response.isSuccessful) {
-                    val avatarUrl = response.body()?.get("avatar_url")?.asString
-                    if (!avatarUrl.isNullOrEmpty()) {
-                        val fullAvatarUrl = "${apiHolder.BASE_URL}$avatarUrl"
-                        ImageCacheProxy.clearCachedImage(fullAvatarUrl)
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                Log.e("UserRepository", "Error clearing avatar cache: ${t.message}")
-            }
-        })
-    }
-
-
-
 
     fun uploadNewAvatar(context: Context, uri: Uri, avatarImageView: ImageView, onSuccess: () -> Unit, onError: (String) -> Unit) {
         val sessionManager = UserHolder.getSessionManager()
@@ -178,33 +138,35 @@ class UserRepository {
 
         userService.changeAvatar("Bearer $token", body).enqueue(object : Callback<JsonObject> {
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-                if (response.isSuccessful) {
-                    val avatarUrl = response.body()?.get("avatar_url")?.asString
-                    Log.d("UserRepository", "Avatar updated: $avatarUrl")
+                try {
+                    if (response.isSuccessful) {
+                        val avatarUrl = response.body()?.get("avatar_url")?.takeUnless { it is JsonNull }?.asString
+                        Log.d("UserRepository", "Avatar updated: $avatarUrl")
 
-                    if (!avatarUrl.isNullOrEmpty()) {
-                        val fullAvatarUrl = "${apiHolder.BASE_URL}$avatarUrl"
+                        if (!avatarUrl.isNullOrEmpty()) {
+                            val fullAvatarUrl = "${apiHolder.BASE_URL}$avatarUrl"
 
-                        ImageCacheProxy.clearCachedImage(fullAvatarUrl)
-
-                        ImageCacheProxy.getImage(fullAvatarUrl) { newCachedPath ->
                             Handler(Looper.getMainLooper()).post {
                                 Glide.with(context)
-                                    .load(newCachedPath)
+                                    .load(fullAvatarUrl)
                                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                                     .skipMemoryCache(true)
                                     .placeholder(R.drawable.default_avatar)
                                     .into(avatarImageView)
 
-                                avatarImageView.tag = newCachedPath
+                                avatarImageView.tag = fullAvatarUrl
                                 onSuccess()
                             }
+                        } else {
+                            onSuccess()
                         }
+                    } else {
+                        val errorMessage = response.errorBody()?.string() ?: "Failed to update avatar"
+                        Log.e("UserRepository", errorMessage)
+                        onError(errorMessage)
                     }
-                } else {
-                    val errorMessage = response.errorBody()?.string() ?: "Failed to update avatar"
-                    Log.e("UserRepository", errorMessage)
-                    onError(errorMessage)
+                } catch (e: Exception) {
+                    onError("Error processing avatar update: ${e.message}")
                 }
             }
 
@@ -215,21 +177,20 @@ class UserRepository {
         })
     }
 
-
-
     private fun getPathFromUri(context: Context, uri: Uri): String? {
         val projection = arrayOf(MediaStore.Images.Media.DATA)
         val cursor = context.contentResolver.query(uri, projection, null, null, null)
-        cursor?.moveToFirst()
-        val columnIndex = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-        val filePath = cursor?.getString(columnIndex ?: 0)
-        cursor?.close()
-        return filePath
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+                return it.getString(columnIndex)
+            }
+        }
+        return null
     }
 
     fun updateCache(user: User) {
         val sessionManager = UserHolder.getSessionManager()
         sessionManager.saveUserData(user)
     }
-
 }

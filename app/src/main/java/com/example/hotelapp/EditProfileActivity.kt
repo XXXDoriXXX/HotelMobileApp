@@ -1,5 +1,6 @@
 package com.example.hotelapp
 
+import UserHolder
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -15,6 +16,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.hotelapp.classes.ImageCacheProxy
 import com.example.hotelapp.classes.User
+import com.example.hotelapp.models.ChangeCredentialsRequest
 import com.example.hotelapp.repository.UserRepository
 import com.example.hotelapp.utils.SessionManager
 
@@ -63,17 +65,16 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     private fun loadProfile() {
-        userRepository.loadProfileAvatar(this, avatarImageView) { cachedPath ->
-            avatarImageView.tag = cachedPath
-        }
-
         userRepository.loadProfileDetails(
+            context = this,
+            avatarImageView = avatarImageView,
             onSuccess = { user ->
                 firstNameField.setText(user.first_name)
                 lastNameField.setText(user.last_name)
                 emailField.setText(user.email)
                 phoneField.setText(user.phone)
                 birthDateField.setText(user.birth_date)
+                avatarImageView.tag = user.avatarUrl
             },
             onError = { error ->
                 Toast.makeText(this, "Error loading profile: $error", Toast.LENGTH_SHORT).show()
@@ -81,27 +82,42 @@ class EditProfileActivity : AppCompatActivity() {
         )
     }
 
+
     private fun updateProfile() {
-        val updatedUser = User(
+        val user = UserHolder.currentUser ?: return
+        val userId = user.id
+        val userAvatarUrl = user.avatarUrl
+
+        val currentPassword = findViewById<EditText>(R.id.edit_old_password).text.toString().trim()
+        val newPassword = findViewById<EditText>(R.id.edit_new_password).text.toString().trim()
+        val confirmPassword = findViewById<EditText>(R.id.edit_confirm_password).text.toString().trim()
+
+        val changeRequest = ChangeCredentialsRequest(
+            current_password = currentPassword.ifEmpty { " " },
+            confirm_password = confirmPassword.ifEmpty { " " },
+            new_password = if (newPassword.isNotEmpty()) newPassword else null,
+            new_email = if (emailField.text.toString().trim() != user.email) emailField.text.toString().trim() else null,
             first_name = firstNameField.text.toString().trim(),
             last_name = lastNameField.text.toString().trim(),
-            email = emailField.text.toString().trim(),
             phone = phoneField.text.toString().trim(),
             birth_date = birthDateField.text.toString().trim()
         )
 
-        userRepository.updateUserProfile(updatedUser,
-            onSuccess = {
-                sessionManager.saveUserData(updatedUser)
-                Toast.makeText(this, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
 
+        userRepository.updateCredentials(
+            context = this,
+            request = changeRequest,
+            onSuccess = { updatedUser ->
+                sessionManager.saveUserData(updatedUser)
+                Toast.makeText(this, "Дані оновлено успішно!", Toast.LENGTH_SHORT).show()
                 finish()
             },
             onError = { error ->
-                Toast.makeText(this, "Update failed: $error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Помилка: $error", Toast.LENGTH_LONG).show()
             }
         )
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -117,10 +133,6 @@ class EditProfileActivity : AppCompatActivity() {
             uri = uri,
             avatarImageView = avatarImageView,
             onSuccess = {
-                ImageCacheProxy.clearCachedImage(avatarImageView.tag.toString())
-                userRepository.loadProfileAvatar(this, avatarImageView, forceRefresh = true) { newPath ->
-                    SessionManager(this).saveUserAvatar(newPath)
-                }
                 loadProfile()
             },
             onError = { error ->
@@ -128,6 +140,7 @@ class EditProfileActivity : AppCompatActivity() {
             }
         )
     }
+
 
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)

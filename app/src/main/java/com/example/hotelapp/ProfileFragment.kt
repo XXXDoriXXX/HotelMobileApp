@@ -3,6 +3,7 @@ package com.example.hotelapp
 import UserHolder
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,11 +14,13 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.example.hotelapp.Holder.apiHolder
 import com.example.hotelapp.classes.ImageCacheProxy
 import com.example.hotelapp.classes.User
 import com.example.hotelapp.repository.UserRepository
 import com.example.hotelapp.utils.SessionManager
-
 class ProfileFragment : Fragment() {
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var sessionManager: SessionManager
@@ -45,11 +48,10 @@ class ProfileFragment : Fragment() {
         profileEmail = view.findViewById(R.id.profile_email)
         profileName = view.findViewById(R.id.profile_name)
 
+        loadProfileFromLocal()
         swipeRefreshLayout.setOnRefreshListener {
-            loadProfile(useCache = false)
+            loadProfileFromServer()
         }
-
-
         editProfileBtn.setOnClickListener {
             startActivity(Intent(requireContext(), EditProfileActivity::class.java))
         }
@@ -75,44 +77,40 @@ class ProfileFragment : Fragment() {
             }
         }
 
-
-        loadProfile()
-
         return view
     }
 
-    private fun refreshProfile() {
+    private fun loadProfileFromLocal() {
+        val user = UserHolder.currentUser ?: return
+
+        profileName.text = "${user.last_name} ${user.first_name}"
+        profileEmail.text = user.email
+        Log.v("ProfileFragment", "Avatar updated: ${user.avatarUrl}")
+        user.avatarUrl.let { avatarUrl ->
+            avatarImageView.tag = avatarUrl
+            Glide.with(requireContext())
+                .load(avatarUrl)
+                .placeholder(R.drawable.default_avatar)
+                .into(avatarImageView)
+        }
+    }
+    private fun loadProfileFromServer() {
         swipeRefreshLayout.isRefreshing = true
-        loadProfile()
+        userRepository.loadProfileDetails(
+            context = requireContext(),
+            avatarImageView = avatarImageView,
+            onSuccess = { user ->
+                sessionManager.saveUserData(user)
+                UserHolder.currentUser = user
+                loadProfileFromLocal()
+                swipeRefreshLayout.isRefreshing = false
+            },
+            onError = { error ->
+                Toast.makeText(requireContext(), "Error loading profile: $error", Toast.LENGTH_SHORT).show()
+                swipeRefreshLayout.isRefreshing = false
+            }
+        )
     }
 
-     fun loadProfile(useCache: Boolean = true) {
-        val sessionManager = SessionManager(requireContext())
 
-        if (useCache) {
-            val cachedUser = UserHolder.currentUser
-
-            profileName.text = "${cachedUser?.last_name} ${cachedUser?.first_name}"
-            profileEmail.text = cachedUser?.email
-        }
-
-        userRepository.loadProfileAvatar(requireContext(), avatarImageView, !useCache) { cachedPath ->
-            avatarImageView.tag = cachedPath
-        }
-
-        if (!useCache) {
-            userRepository.loadProfileDetails(
-                onSuccess = { user ->
-                    sessionManager.saveUserData(user)
-                    profileName.text = "${user.last_name} ${user.first_name}"
-                    profileEmail.text = user.email
-                    swipeRefreshLayout.isRefreshing = false
-                },
-                onError = { error ->
-                    Toast.makeText(requireContext(), "Error loading profile: $error", Toast.LENGTH_SHORT).show()
-                    swipeRefreshLayout.isRefreshing = false
-                }
-            )
-        }
-    }
 }
