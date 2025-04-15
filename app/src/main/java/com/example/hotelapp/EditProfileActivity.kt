@@ -121,7 +121,6 @@ class EditProfileActivity : AppCompatActivity() {
             uri = uri,
             avatarImageView = avatarImageView,
             onSuccess = {
-                ImageCacheProxy.clearCachedImage(avatarImageView.tag.toString())
                 loadProfile()
             },
             onError = { error ->

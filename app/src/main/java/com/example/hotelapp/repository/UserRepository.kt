@@ -1,4 +1,5 @@
 package com.example.hotelapp.repository
+
 import android.content.Context
 import android.net.Uri
 import android.os.Handler
@@ -12,11 +13,11 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.hotelapp.Holder.apiHolder
 import com.example.hotelapp.R
 import com.example.hotelapp.api.UserService
-import com.example.hotelapp.classes.ImageCacheProxy
 import com.example.hotelapp.classes.User
 import com.example.hotelapp.models.ProfileRequest
 import com.example.hotelapp.network.RetrofitClient
 import com.google.gson.JsonObject
+import com.google.gson.JsonNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -57,6 +58,7 @@ class UserRepository {
             }
         })
     }
+
     fun loadProfileDetails(
         context: Context,
         avatarImageView: ImageView,
@@ -68,39 +70,49 @@ class UserRepository {
 
         userService.getProfileDetails("Bearer $token").enqueue(object : Callback<JsonObject> {
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-                if (response.isSuccessful) {
-                    response.body()?.let { jsonObject ->
-                        val avatarUrl = jsonObject.get("avatar_url")?.asString.orEmpty()
-                        val fullAvatarUrl = "${apiHolder.BASE_URL}$avatarUrl"
+                try {
+                    if (response.isSuccessful) {
+                        response.body()?.let { jsonObject ->
+                            val avatarUrl = jsonObject.get("avatar_url")?.takeUnless { it is JsonNull }?.asString.orEmpty()
+                            val fullAvatarUrl = if (avatarUrl.isNotEmpty()) "${apiHolder.BASE_URL}$avatarUrl" else ""
 
-                        val updatedUser = User(
-                            id = 0,
-                            first_name = jsonObject.get("first_name")?.asString ?: "",
-                            last_name = jsonObject.get("last_name")?.asString ?: "",
-                            email = jsonObject.get("email")?.asString ?: "",
-                            phone = jsonObject.get("phone")?.asString ?: "",
-                            birth_date = jsonObject.get("birth_date")?.asString ?: "",
-                            avatarUrl = avatarUrl
-                        )
+                            val updatedUser = User(
+                                id = jsonObject.get("id")?.takeUnless { it is JsonNull }?.asInt ?: 0,
+                                first_name = jsonObject.get("first_name")?.takeUnless { it is JsonNull }?.asString ?: "",
+                                last_name = jsonObject.get("last_name")?.takeUnless { it is JsonNull }?.asString ?: "",
+                                email = jsonObject.get("email")?.takeUnless { it is JsonNull }?.asString ?: "",
+                                phone = jsonObject.get("phone")?.takeUnless { it is JsonNull }?.asString ?: "",
+                                birth_date = jsonObject.get("birth_date")?.takeUnless { it is JsonNull }?.asString ?: "",
+                                avatarUrl = avatarUrl
+                            )
 
-                        UserHolder.currentUser = updatedUser
-                        sessionManager.saveUserAvatar(fullAvatarUrl)
+                            UserHolder.currentUser = updatedUser
+                            sessionManager.saveUserAvatar(fullAvatarUrl)
 
-                        Handler(Looper.getMainLooper()).post {
-                            Glide.with(context)
-                                .load(fullAvatarUrl)
-                                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                .skipMemoryCache(true)
-                                .placeholder(R.drawable.default_avatar)
-                                .into(avatarImageView)
+                            Handler(Looper.getMainLooper()).post {
+                                if (fullAvatarUrl.isNotEmpty()) {
+                                    Glide.with(context)
+                                        .load(fullAvatarUrl)
+                                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                        .skipMemoryCache(true)
+                                        .placeholder(R.drawable.default_avatar)
+                                        .into(avatarImageView)
 
-                            avatarImageView.tag = fullAvatarUrl
-                        }
+                                    avatarImageView.tag = fullAvatarUrl
+                                } else {
+                                    Glide.with(context)
+                                        .load(R.drawable.default_avatar)
+                                        .into(avatarImageView)
+                                }
+                            }
 
-                        onSuccess(updatedUser)
+                            onSuccess(updatedUser)
+                        } ?: onError("Empty response body")
+                    } else {
+                        onError("Failed to load profile: ${response.errorBody()?.string() ?: "Unknown error"}")
                     }
-                } else {
-                    onError("Failed to load profile: ${response.errorBody()?.string() ?: "Unknown error"}")
+                } catch (e: Exception) {
+                    onError("Error parsing response: ${e.message}")
                 }
             }
 
@@ -109,33 +121,6 @@ class UserRepository {
             }
         })
     }
-
-
-
-
-    fun clearAvatarCache() {
-        val sessionManager = UserHolder.getSessionManager()
-        val token = sessionManager.getAccessToken() ?: return
-
-        userService.getProfileAvatar("Bearer $token").enqueue(object : Callback<JsonObject> {
-            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-                if (response.isSuccessful) {
-                    val avatarUrl = response.body()?.get("avatar_url")?.asString
-                    if (!avatarUrl.isNullOrEmpty()) {
-                        val fullAvatarUrl = "${apiHolder.BASE_URL}$avatarUrl"
-                        ImageCacheProxy.clearCachedImage(fullAvatarUrl)
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                Log.e("UserRepository", "Error clearing avatar cache: ${t.message}")
-            }
-        })
-    }
-
-
-
 
     fun uploadNewAvatar(context: Context, uri: Uri, avatarImageView: ImageView, onSuccess: () -> Unit, onError: (String) -> Unit) {
         val sessionManager = UserHolder.getSessionManager()
@@ -148,33 +133,35 @@ class UserRepository {
 
         userService.changeAvatar("Bearer $token", body).enqueue(object : Callback<JsonObject> {
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-                if (response.isSuccessful) {
-                    val avatarUrl = response.body()?.get("avatar_url")?.asString
-                    Log.d("UserRepository", "Avatar updated: $avatarUrl")
+                try {
+                    if (response.isSuccessful) {
+                        val avatarUrl = response.body()?.get("avatar_url")?.takeUnless { it is JsonNull }?.asString
+                        Log.d("UserRepository", "Avatar updated: $avatarUrl")
 
-                    if (!avatarUrl.isNullOrEmpty()) {
-                        val fullAvatarUrl = "${apiHolder.BASE_URL}$avatarUrl"
+                        if (!avatarUrl.isNullOrEmpty()) {
+                            val fullAvatarUrl = "${apiHolder.BASE_URL}$avatarUrl"
 
-                        ImageCacheProxy.clearCachedImage(fullAvatarUrl)
-
-                        ImageCacheProxy.getImage(fullAvatarUrl) { newCachedPath ->
                             Handler(Looper.getMainLooper()).post {
                                 Glide.with(context)
-                                    .load(newCachedPath)
+                                    .load(fullAvatarUrl)
                                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                                     .skipMemoryCache(true)
                                     .placeholder(R.drawable.default_avatar)
                                     .into(avatarImageView)
 
-                                avatarImageView.tag = newCachedPath
+                                avatarImageView.tag = fullAvatarUrl
                                 onSuccess()
                             }
+                        } else {
+                            onSuccess() // Still call success if avatarUrl is null
                         }
+                    } else {
+                        val errorMessage = response.errorBody()?.string() ?: "Failed to update avatar"
+                        Log.e("UserRepository", errorMessage)
+                        onError(errorMessage)
                     }
-                } else {
-                    val errorMessage = response.errorBody()?.string() ?: "Failed to update avatar"
-                    Log.e("UserRepository", errorMessage)
-                    onError(errorMessage)
+                } catch (e: Exception) {
+                    onError("Error processing avatar update: ${e.message}")
                 }
             }
 
@@ -185,21 +172,20 @@ class UserRepository {
         })
     }
 
-
-
     private fun getPathFromUri(context: Context, uri: Uri): String? {
         val projection = arrayOf(MediaStore.Images.Media.DATA)
         val cursor = context.contentResolver.query(uri, projection, null, null, null)
-        cursor?.moveToFirst()
-        val columnIndex = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-        val filePath = cursor?.getString(columnIndex ?: 0)
-        cursor?.close()
-        return filePath
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+                return it.getString(columnIndex)
+            }
+        }
+        return null
     }
 
     fun updateCache(user: User) {
         val sessionManager = UserHolder.getSessionManager()
         sessionManager.saveUserData(user)
     }
-
 }

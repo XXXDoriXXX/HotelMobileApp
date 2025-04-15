@@ -81,38 +81,31 @@ class ProfileFragment : Fragment() {
     }
 
     private fun loadProfile(useCache: Boolean = true) {
-        if (useCache) {
-            val cachedUser = UserHolder.currentUser
-            profileName.text = "${cachedUser?.last_name} ${cachedUser?.first_name}"
-            profileEmail.text = cachedUser?.email
+        swipeRefreshLayout.isRefreshing = true
+        userRepository.loadProfileDetails(
+            context = requireContext(),
+            avatarImageView = avatarImageView,
+            onSuccess = { user ->
+                sessionManager.saveUserData(user)
+                profileName.text = "${user.last_name} ${user.first_name}"
+                profileEmail.text = user.email
+                swipeRefreshLayout.isRefreshing = false
 
-            cachedUser?.avatarUrl?.let { avatarUrl ->
-                avatarImageView.tag = avatarUrl
-                Glide.with(requireContext())
-                    .load(avatarUrl)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .placeholder(R.drawable.default_avatar)
-                    .into(avatarImageView)
-            }
-        }
 
-        if (!useCache) {
-            swipeRefreshLayout.isRefreshing = true
-            userRepository.loadProfileDetails(
-                context = requireContext(),
-                avatarImageView = avatarImageView,
-                onSuccess = { user ->
-                    sessionManager.saveUserData(user)
-                    profileName.text = "${user.last_name} ${user.first_name}"
-                    profileEmail.text = user.email
-                    swipeRefreshLayout.isRefreshing = false
-                },
-                onError = { error ->
-                    Toast.makeText(requireContext(), "Error loading profile: $error", Toast.LENGTH_SHORT).show()
-                    swipeRefreshLayout.isRefreshing = false
+                user.avatarUrl?.let { avatarUrl ->
+                    avatarImageView.tag = avatarUrl
+                    Glide.with(requireContext())
+                        .load(avatarUrl)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(true)
+                        .placeholder(R.drawable.default_avatar)
+                        .into(avatarImageView)
                 }
-            )
-        }
+            },
+            onError = { error ->
+                Toast.makeText(requireContext(), "Error loading profile: $error", Toast.LENGTH_SHORT).show()
+                swipeRefreshLayout.isRefreshing = false
+            }
+        )
     }
 }
