@@ -56,12 +56,12 @@ class CurrentHotelInfo : AppCompatActivity() {
             }
         }
         description.text = currentHotel!!.description
-        review.text = currentHotel?.views.toString()+" reviews"
+        review.text = currentHotel?.toString()+" reviews"
 
         hotelRepository.incrementViews(
             currentHotel!!.id,
             onResult = { response ->
-                currentHotel!!.views=response.views
+
                 review.text=response.views.toString()+" reviews"
                 println("Views updated: ${response.views}")
             },

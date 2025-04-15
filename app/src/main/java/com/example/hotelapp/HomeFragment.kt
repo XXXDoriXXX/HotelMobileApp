@@ -1,5 +1,6 @@
 package com.example.hotelapp
 
+import HotelItem
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -29,7 +31,11 @@ class HomeFragment : Fragment() {
     private lateinit var hotelAdapter: ItemsHotelAdapter
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private val hotelRepository = UserHolder.getHotelRepository()
-
+    private var currentCategory = "trending"
+    private var currentPage = 0
+    private val pageSize = 25
+    private val allHotels = mutableListOf<HotelItem>()
+    private var isLoading = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -45,13 +51,36 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         try {
+            val tabTrending = view.findViewById<TextView>(R.id.tab_trending)
+            val tabBest = view.findViewById<TextView>(R.id.tab_best)
+            val tabPopular = view.findViewById<TextView>(R.id.tab_popular)
+
+            tabTrending.setOnClickListener {
+                currentCategory = "trending"
+                currentPage = 0
+                loadHotels()
+            }
+
+            tabBest.setOnClickListener {
+                currentCategory = "best"
+                currentPage = 0
+                loadHotels()
+            }
+
+            tabPopular.setOnClickListener {
+                currentCategory = "popular"
+                currentPage = 0
+                loadHotels()
+            }
+
+
             layoutToggleButton = view.findViewById(R.id.layoutToggleButton)
             searchInputField = view.findViewById(R.id.search_input_field)
             itemsList = view.findViewById(R.id.itemsHotelList)
             swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
             itemsList.layoutManager =
                 LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
-            loadDefaultHotels()
+
             layoutToggleButton.setOnClickListener {
                 toggleLayout()
             }
@@ -59,27 +88,18 @@ class HomeFragment : Fragment() {
                 refreshHotels()
                 searchInputField.text = null;
             }
-            val debounceSearch = debounce<String>(
-                delayMillis = 500L,
-                coroutineScope = viewLifecycleOwner.lifecycleScope
-            ) { query ->
-                performSearch(query)
-            }
+            itemsList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
 
-            searchInputField.addTextChangedListener(object : TextWatcher {
-                override fun afterTextChanged(s: Editable?) {
-                    debounceSearch(s.toString())
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    val totalItemCount = layoutManager.itemCount
+                    val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
+
+                    if (!isLoading && lastVisibleItem >= totalItemCount - 5) {
+                        loadMoreHotels()
+                    }
                 }
-
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
-                }
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             })
 
         } catch (e: Exception) {
@@ -92,49 +112,42 @@ class HomeFragment : Fragment() {
     }
 
     private fun refreshHotels() {
-        loadDefaultHotels()
+        loadHotels()
         swipeRefreshLayout.isRefreshing = true
     }
 
-    private fun loadDefaultHotels() {
-        hotelRepository.getHotels(
+    private fun loadHotels() {
+        currentPage = 0
+        allHotels.clear()
+        hotelAdapter = ItemsHotelAdapter(allHotels, requireContext(), isVerticalLayout)
+        itemsList.adapter = hotelAdapter
+        updateLayoutManager()
+        loadMoreHotels()
+    }
+
+
+    private fun loadMoreHotels() {
+        isLoading = true
+        hotelRepository.getHotelsByCategory(
+            category = currentCategory,
+            skip = currentPage * pageSize,
+            limit = pageSize,
             onResult = { hotels ->
-                if (isAdded) {
-                    hotelAdapter = ItemsHotelAdapter(hotels, requireContext(), isVerticalLayout)
-                    itemsList.adapter = hotelAdapter
-                    updateLayoutManager()
-                    swipeRefreshLayout.isRefreshing = false
+                if (hotels.isNotEmpty()) {
+                    val oldSize = allHotels.size
+                    allHotels.addAll(hotels)
+                    hotelAdapter.notifyItemRangeInserted(oldSize, hotels.size)
+                    currentPage++
                 }
+                isLoading = false
             },
-            onError = { error ->
-                if (isAdded) {
-                    swipeRefreshLayout.isRefreshing = false
-                    Toast.makeText(requireContext(), "Error: ${error.message}", Toast.LENGTH_LONG).show()
-                }
+            onError = {
+                isLoading = false
+                Toast.makeText(requireContext(), "Помилка підвантаження", Toast.LENGTH_SHORT).show()
             }
         )
     }
 
-    private fun performSearch(query: String) {
-        if (query.isBlank()) {
-            loadDefaultHotels()
-            return
-        }
-
-        hotelRepository.searchHotels(query,
-            onResult = { hotels ->
-                if (isAdded) {
-                    itemsList.adapter = ItemsHotelAdapter(hotels, requireContext(), isVerticalLayout)
-                }
-            },
-            onError = { error ->
-                if (isAdded) {
-                    Toast.makeText(requireContext(), "Search: ${error.message}", Toast.LENGTH_LONG)
-                        .show()
-                }
-            }
-        )
-    }
 
     private fun <T> debounce(
         delayMillis: Long = 500L,
@@ -149,6 +162,11 @@ class HomeFragment : Fragment() {
                 action(param)
             }
         }
+    }
+    private fun loadInitialHotels() {
+        currentPage = 0
+        allHotels.clear()
+        loadMoreHotels()
     }
 
     companion object {

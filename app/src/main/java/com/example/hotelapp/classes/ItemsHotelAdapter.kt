@@ -47,7 +47,7 @@ class ItemsHotelAdapter(
         val currentItem = items[position]
         holder.hotelName.text = currentItem.name
         holder.description.text = "Address: ${currentItem.address}"
-        holder.rating.rating = currentItem.rating
+        //holder.rating.rating = currentItem.rating
 
         val imageUrl = currentItem.images?.firstOrNull()?.image_url
         Log.d("ItemsHotelAdapter", "Loading image: ${apiHolder.BASE_URL + imageUrl}")

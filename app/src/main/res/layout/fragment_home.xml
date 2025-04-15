@@ -128,7 +128,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <TextView
+            <TextView android:id="@+id/tab_trending"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
                 android:layout_weight="1"
@@ -140,7 +140,7 @@
                 android:fontFamily="@font/roboto_medium"
                 android:textSize="14sp" />
 
-            <TextView
+            <TextView android:id="@+id/tab_best"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -152,7 +152,7 @@
                 android:fontFamily="@font/roboto_medium"
                 android:textSize="14sp" />
 
-            <TextView
+            <TextView android:id="@+id/tab_popular"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

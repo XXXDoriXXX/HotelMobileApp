@@ -46,4 +46,13 @@ interface HotelService {
     fun createPaymentIntent(@Body paymentRequest: PaymentRequest): Call<StripePaymentResponse>
     @POST("stripe/payment-success")
     fun notifyPaymentSuccess(@Body paymentSuccessRequest: PaymentSuccessRequest): Call<PaymentSuccessResponse>
+    @GET("hotels/trending")
+    fun getTrendingHotels(@Query("skip") skip: Int, @Query("limit") limit: Int): Call<List<HotelItem>>
+
+    @GET("hotels/best-deals")
+    fun getBestDeals(@Query("skip") skip: Int, @Query("limit") limit: Int): Call<List<HotelItem>>
+
+    @GET("hotels/popular")
+    fun getPopularHotels(@Query("skip") skip: Int, @Query("limit") limit: Int): Call<List<HotelItem>>
+
 }
