@@ -128,27 +128,30 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <TextView android:id="@+id/tab_trending"
+            <TextView
+                android:id="@+id/tab_trending"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
                 android:layout_weight="1"
-                android:background="@drawable/light_rounded_corners"
+                android:background="@drawable/tab_background_selector"
                 android:padding="8dp"
                 android:gravity="center"
                 android:text="Trending"
-                android:textColor="?attr/colorOnPrimary"
+                android:textColor="@color/tab_text_selector"
+                android:textSize="14sp"
                 android:fontFamily="@font/roboto_medium"
-                android:textSize="14sp" />
+               />
+
 
             <TextView android:id="@+id/tab_best"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/rounded_corners"
+                android:background="@drawable/tab_background_selector"
                 android:padding="8dp"
                 android:gravity="center"
                 android:text="Best Deals"
-                android:textColor="?attr/colorOnSecondary"
+                android:textColor="@color/tab_text_selector"
                 android:fontFamily="@font/roboto_medium"
                 android:textSize="14sp" />
 
@@ -156,11 +159,11 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/rounded_corners"
+                android:background="@drawable/tab_background_selector"
                 android:padding="8dp"
                 android:gravity="center"
                 android:text="Popular"
-                android:textColor="?attr/colorOnSecondary"
+                android:textColor="@color/tab_text_selector"
                 android:fontFamily="@font/roboto_medium"
                 android:textSize="14sp" />
         </LinearLayout>

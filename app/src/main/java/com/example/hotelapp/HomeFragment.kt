@@ -55,24 +55,7 @@ class HomeFragment : Fragment() {
             val tabBest = view.findViewById<TextView>(R.id.tab_best)
             val tabPopular = view.findViewById<TextView>(R.id.tab_popular)
 
-            tabTrending.setOnClickListener {
-                currentCategory = "trending"
-                currentPage = 0
-                loadHotels()
-            }
-
-            tabBest.setOnClickListener {
-                currentCategory = "best"
-                currentPage = 0
-                loadHotels()
-            }
-
-            tabPopular.setOnClickListener {
-                currentCategory = "popular"
-                currentPage = 0
-                loadHotels()
-            }
-
+            val tabs = listOf(tabTrending, tabBest, tabPopular)
 
             layoutToggleButton = view.findViewById(R.id.layoutToggleButton)
             searchInputField = view.findViewById(R.id.search_input_field)
@@ -84,10 +67,12 @@ class HomeFragment : Fragment() {
             layoutToggleButton.setOnClickListener {
                 toggleLayout()
             }
+
             swipeRefreshLayout.setOnRefreshListener {
                 refreshHotels()
-                searchInputField.text = null;
+                searchInputField.text = null
             }
+
             itemsList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
@@ -101,6 +86,28 @@ class HomeFragment : Fragment() {
                     }
                 }
             })
+
+            // Після ініціалізації ВСЬОГО — таби та loadHotels
+            tabTrending.isSelected = true
+            currentCategory = "trending"
+            currentPage = 0
+            loadHotels()
+
+            tabs.forEach { tab ->
+                tab.setOnClickListener {
+                    tabs.forEach { it.isSelected = false }
+                    tab.isSelected = true
+
+                    when (tab.id) {
+                        R.id.tab_trending -> currentCategory = "trending"
+                        R.id.tab_best -> currentCategory = "best"
+                        R.id.tab_popular -> currentCategory = "popular"
+                    }
+
+                    currentPage = 0
+                    loadHotels()
+                }
+            }
 
         } catch (e: Exception) {
             Toast.makeText(
