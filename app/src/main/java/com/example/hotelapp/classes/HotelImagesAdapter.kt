@@ -24,7 +24,7 @@ class HotelImagesAdapter(private val images: List<String>) :
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
         Glide.with(holder.imageView.context)
-            .load(apiHolder.BASE_URL + images[position])
+            .load(images[position])
             .placeholder(R.drawable.default_image)
             .into(holder.imageView)
     }

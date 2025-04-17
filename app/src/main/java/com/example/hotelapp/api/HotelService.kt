@@ -1,11 +1,13 @@
 package com.example.hotelapp.api
 import HotelImage
 import HotelItem
+import HotelResponseWrapper
 import RatingRequest
 import RatingResponse
 import ViewResponse
 import com.example.hotelapp.models.BookingRequest
 import com.example.hotelapp.models.BookingResponse
+import com.example.hotelapp.models.HotelWithStatsResponse
 import com.example.hotelapp.models.PaymentRequest
 import com.example.hotelapp.models.PaymentSuccessRequest
 import com.example.hotelapp.models.PaymentSuccessResponse
@@ -46,4 +48,40 @@ interface HotelService {
     fun createPaymentIntent(@Body paymentRequest: PaymentRequest): Call<StripePaymentResponse>
     @POST("stripe/payment-success")
     fun notifyPaymentSuccess(@Body paymentSuccessRequest: PaymentSuccessRequest): Call<PaymentSuccessResponse>
+    @GET("hotels/trending")
+    fun getTrendingHotels(
+        @Query("city") city: String,
+        @Query("country") country: String,
+        @Query("skip") skip: Int,
+        @Query("limit") limit: Int
+    ): Call<List<HotelResponseWrapper>>
+
+    @GET("hotels/best-deals")
+    fun getBestDeals(
+        @Query("city") city: String,
+        @Query("country") country: String,
+        @Query("skip") skip: Int,
+        @Query("limit") limit: Int
+    ): Call<List<HotelResponseWrapper>>
+
+    @GET("hotels/popular")
+    fun getPopularHotels(
+        @Query("city") city: String,
+        @Query("country") country: String,
+        @Query("skip") skip: Int,
+        @Query("limit") limit: Int
+    ): Call<List<HotelResponseWrapper>>
+    @GET("hotels/{hotel_id}")
+    fun getHotelWithStats(
+        @Path("hotel_id") hotelId: Int,
+        @Header("Authorization") token: String
+    ): Call<HotelWithStatsResponse>
+    @PUT("hotels/{hotel_id}/rate")
+    fun rateHotelPut(
+        @Path("hotel_id") hotelId: Int,
+        @Body value: Float,
+        @Header("Authorization") token: String
+    ): Call<Void>
+
+
 }

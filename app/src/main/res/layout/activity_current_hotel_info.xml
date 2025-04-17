@@ -150,123 +150,21 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:orientation="horizontal">
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginBottom="8dp">
 
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/amenitiesRecyclerView"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="25dp"
-                            android:layout_height="25dp"
-                            android:src="@drawable/wifi"
-                            app:tint="?attr/colorPrimary" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="Wi-Fi"
-                            android:textColor="?attr/colorPrimary"
-                            android:textSize="14sp" />
-                    </LinearLayout>
-
-                    <!-- TV -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="25dp"
-                            android:layout_height="25dp"
-                            android:src="@drawable/tv"
-                            app:tint="?attr/colorPrimary" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="TV"
-                            android:textColor="?attr/colorPrimary"
-                            android:textSize="14sp" />
-                    </LinearLayout>
-
-                    <!-- AC -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="25dp"
-                            android:layout_height="25dp"
-                            android:src="@drawable/ac"
-                            app:tint="?attr/colorPrimary" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="AC"
-                            android:textColor="?attr/colorPrimary"
-                            android:textSize="14sp" />
-                    </LinearLayout>
-
-                    <!-- Gym -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="25dp"
-                            android:layout_height="25dp"
-                            android:src="@drawable/gym"
-                            app:tint="?attr/colorPrimary" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="Gym"
-                            android:textColor="?attr/colorPrimary"
-                            android:textSize="14sp" />
-                    </LinearLayout>
-
-                    <!-- Parking -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="25dp"
-                            android:layout_height="25dp"
-                            android:src="@drawable/parking"
-                            app:tint="?attr/colorPrimary" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="Parking"
-                            android:textColor="?attr/colorPrimary"
-                            android:textSize="14sp" />
-                    </LinearLayout>
+                        android:orientation="horizontal"
+                        android:overScrollMode="never"
+                        android:scrollbars="none"
+                        android:clipToPadding="false" />
                 </LinearLayout>
+
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/book_now_button"
