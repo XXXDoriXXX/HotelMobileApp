@@ -10,9 +10,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.hotelapp.Holder.HotelHolder
 import com.example.hotelapp.adapters.HotelImagesAdapter
+import com.example.hotelapp.classes.AmenitiesAdapter
+import com.example.hotelapp.classes.AmenityDisplay
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class CurrentHotelInfo : AppCompatActivity() {
@@ -58,6 +61,22 @@ class CurrentHotelInfo : AppCompatActivity() {
         val backButton: ImageView = findViewById(R.id.back_button)
         bottomSheet = findViewById(R.id.hotelDetailsBottomSheet)
         viewPager = findViewById(R.id.hotelImagesViewPager)
+        val amenitiesView = findViewById<RecyclerView>(R.id.amenitiesRecyclerView)
+        val amenities = hotel.amenities.map {
+            when (it.amenity_id) {
+                1 -> AmenityDisplay(R.drawable.wifi, "Wi-Fi")
+                2 -> AmenityDisplay(R.drawable.tv, "TV")
+                3 -> AmenityDisplay(R.drawable.ac, "AC")
+                4 -> AmenityDisplay(R.drawable.gym, "Gym")
+                5 -> AmenityDisplay(R.drawable.parking, "Parking")
+                else -> AmenityDisplay(R.drawable.ic_other, "Other")
+            }
+        }
+
+        val amenitiesAdapter = AmenitiesAdapter(amenities)
+        amenitiesView.adapter = amenitiesAdapter
+        amenitiesView.layoutManager =
+            androidx.recyclerview.widget.LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
 
         hotelName.text = hotel.name
         descriptionText.text = hotel.description

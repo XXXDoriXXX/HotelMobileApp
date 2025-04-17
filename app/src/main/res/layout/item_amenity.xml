@@ -1,0 +1,22 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/amenity_icon"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:tint="?attr/colorPrimary" />
+
+    <TextView
+        android:id="@+id/amenity_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Amenity"
+        android:textColor="?attr/colorPrimary"
+        android:textSize="14sp"
+        android:gravity="center"/>
+</LinearLayout>
