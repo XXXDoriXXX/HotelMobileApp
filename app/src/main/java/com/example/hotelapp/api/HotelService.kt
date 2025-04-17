@@ -7,6 +7,7 @@ import RatingResponse
 import ViewResponse
 import com.example.hotelapp.models.BookingRequest
 import com.example.hotelapp.models.BookingResponse
+import com.example.hotelapp.models.HotelWithStatsResponse
 import com.example.hotelapp.models.PaymentRequest
 import com.example.hotelapp.models.PaymentSuccessRequest
 import com.example.hotelapp.models.PaymentSuccessResponse
@@ -70,5 +71,17 @@ interface HotelService {
         @Query("skip") skip: Int,
         @Query("limit") limit: Int
     ): Call<List<HotelResponseWrapper>>
+    @GET("hotels/{hotel_id}")
+    fun getHotelWithStats(
+        @Path("hotel_id") hotelId: Int,
+        @Header("Authorization") token: String
+    ): Call<HotelWithStatsResponse>
+    @PUT("hotels/{hotel_id}/rate")
+    fun rateHotelPut(
+        @Path("hotel_id") hotelId: Int,
+        @Body value: Float,
+        @Header("Authorization") token: String
+    ): Call<Void>
+
 
 }

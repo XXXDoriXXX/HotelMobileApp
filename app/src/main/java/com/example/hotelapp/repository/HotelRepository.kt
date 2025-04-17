@@ -1,4 +1,5 @@
 import com.example.hotelapp.api.HotelService
+import com.example.hotelapp.models.HotelWithStatsResponse
 import com.example.hotelapp.utils.SessionManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -80,6 +81,68 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
             }
         })
 
+    }
+    fun getHotelById(
+        hotelId: Int,
+        onResult: (HotelItem) -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        val token = sessionManager.getAccessToken()
+        if (token.isNullOrEmpty()) {
+            onError(Exception("No access token available"))
+            return
+        }
+
+        apiService.getHotelWithStats(hotelId, "Bearer $token")
+            .enqueue(object : Callback<HotelWithStatsResponse> {
+                override fun onResponse(
+                    call: Call<HotelWithStatsResponse>,
+                    response: Response<HotelWithStatsResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val body = response.body()
+                        if (body != null) {
+                            body.hotel.rating = body.rating
+                            body.hotel.views = body.views
+                            onResult(body.hotel)
+                        } else onError(Exception("Empty response"))
+                    } else {
+                        onError(Exception("Failed to fetch hotel: ${response.message()}"))
+                    }
+                }
+
+                override fun onFailure(call: Call<HotelWithStatsResponse>, t: Throwable) {
+                    onError(t)
+                }
+            })
+    }
+
+    fun rateHotelPUT(
+        hotelId: Int,
+        ratingValue: Float,
+        onResult: () -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        val token = sessionManager.getAccessToken()
+        if (token.isNullOrEmpty()) {
+            onError(Exception("No access token"))
+            return
+        }
+
+        apiService.rateHotelPut(hotelId, ratingValue, "Bearer $token")
+            .enqueue(object : Callback<Void> {
+                override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                    if (response.isSuccessful) {
+                        onResult()
+                    } else {
+                        onError(Exception("Rating failed: ${response.message()}"))
+                    }
+                }
+
+                override fun onFailure(call: Call<Void>, t: Throwable) {
+                    onError(t)
+                }
+            })
     }
 
 
