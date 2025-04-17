@@ -1,6 +1,7 @@
 package com.example.hotelapp.api
 import HotelImage
 import HotelItem
+import HotelResponseWrapper
 import RatingRequest
 import RatingResponse
 import ViewResponse
@@ -47,12 +48,27 @@ interface HotelService {
     @POST("stripe/payment-success")
     fun notifyPaymentSuccess(@Body paymentSuccessRequest: PaymentSuccessRequest): Call<PaymentSuccessResponse>
     @GET("hotels/trending")
-    fun getTrendingHotels(@Query("skip") skip: Int, @Query("limit") limit: Int): Call<List<HotelItem>>
+    fun getTrendingHotels(
+        @Query("city") city: String,
+        @Query("country") country: String,
+        @Query("skip") skip: Int,
+        @Query("limit") limit: Int
+    ): Call<List<HotelResponseWrapper>>
 
     @GET("hotels/best-deals")
-    fun getBestDeals(@Query("skip") skip: Int, @Query("limit") limit: Int): Call<List<HotelItem>>
+    fun getBestDeals(
+        @Query("city") city: String,
+        @Query("country") country: String,
+        @Query("skip") skip: Int,
+        @Query("limit") limit: Int
+    ): Call<List<HotelResponseWrapper>>
 
     @GET("hotels/popular")
-    fun getPopularHotels(@Query("skip") skip: Int, @Query("limit") limit: Int): Call<List<HotelItem>>
+    fun getPopularHotels(
+        @Query("city") city: String,
+        @Query("country") country: String,
+        @Query("skip") skip: Int,
+        @Query("limit") limit: Int
+    ): Call<List<HotelResponseWrapper>>
 
 }

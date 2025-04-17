@@ -43,32 +43,45 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
     }
     fun getHotelsByCategory(
         category: String,
+        city: String,
+        country: String,
         skip: Int,
         limit: Int,
         onResult: (List<HotelItem>) -> Unit,
         onError: (Throwable) -> Unit
     ) {
         val call = when (category) {
-            "trending" -> apiService.getTrendingHotels(skip, limit)
-            "best" -> apiService.getBestDeals(skip, limit)
-            "popular" -> apiService.getPopularHotels(skip, limit)
+            "trending" -> apiService.getTrendingHotels(city, country, skip, limit)
+            "best" -> apiService.getBestDeals(city, country, skip, limit)
+            "popular" -> apiService.getPopularHotels(city, country, skip, limit)
             else -> return onError(Exception("Unknown category"))
         }
 
-        call.enqueue(object : Callback<List<HotelItem>> {
-            override fun onResponse(call: Call<List<HotelItem>>, response: Response<List<HotelItem>>) {
+        call.enqueue(object : Callback<List<HotelResponseWrapper>> {
+            override fun onResponse(
+                call: Call<List<HotelResponseWrapper>>,
+                response: Response<List<HotelResponseWrapper>>
+            ) {
                 if (response.isSuccessful) {
-                    onResult(response.body() ?: emptyList())
+                    val hotels = response.body()?.map {
+                        it.hotel.apply {
+                            rating = it.rating
+                            views = it.views
+                        }
+                    } ?: emptyList()
+                    onResult(hotels)
                 } else {
                     onError(Exception("Failed to fetch hotels: ${response.message()}"))
                 }
             }
 
-            override fun onFailure(call: Call<List<HotelItem>>, t: Throwable) {
+            override fun onFailure(call: Call<List<HotelResponseWrapper>>, t: Throwable) {
                 onError(t)
             }
         })
+
     }
+
 
     fun rateHotel(
         hotelId: Int,

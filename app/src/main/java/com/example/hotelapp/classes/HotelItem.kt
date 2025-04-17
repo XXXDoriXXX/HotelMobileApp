@@ -6,7 +6,9 @@ data class HotelItem(
     val description: String,
     val images: List<HotelImage>,
     val address: Address,
-    val amenities: List<Amenity>
+    val amenities: List<Amenity>,
+    var rating: Float = 0f,
+    var views: Int = 0
 )
 
 data class HotelImage(
@@ -29,4 +31,9 @@ data class Amenity(
     val id: Int,
     val hotel_id: Int,
     val amenity_id: Int
+)
+data class HotelResponseWrapper(
+    val hotel: HotelItem,
+    val rating: Float,
+    val views: Int
 )

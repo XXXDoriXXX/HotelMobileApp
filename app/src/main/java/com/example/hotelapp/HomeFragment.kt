@@ -1,6 +1,7 @@
 package com.example.hotelapp
 
 import HotelItem
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -36,6 +37,8 @@ class HomeFragment : Fragment() {
     private val pageSize = 25
     private val allHotels = mutableListOf<HotelItem>()
     private var isLoading = false
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -51,10 +54,13 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         try {
+            val prefs = requireContext().getSharedPreferences("prefs", Context.MODE_PRIVATE)
+            val address = prefs.getString("last_location", "Unknown")
+
             val tabTrending = view.findViewById<TextView>(R.id.tab_trending)
             val tabBest = view.findViewById<TextView>(R.id.tab_best)
             val tabPopular = view.findViewById<TextView>(R.id.tab_popular)
-
+            view.findViewById<TextView>(R.id.location_text)?.text = address
             val tabs = listOf(tabTrending, tabBest, tabPopular)
 
             layoutToggleButton = view.findViewById(R.id.layoutToggleButton)
@@ -135,8 +141,18 @@ class HomeFragment : Fragment() {
 
     private fun loadMoreHotels() {
         isLoading = true
+
+        val address = requireContext().getSharedPreferences("prefs", Context.MODE_PRIVATE)
+            .getString("last_location", "Unknown City, Unknown Country") ?: "Unknown City, Unknown Country"
+
+        val parts = address.split(",").map { it.trim() }
+        val city = parts.getOrNull(0) ?: "Unknown"
+        val country = parts.getOrNull(1) ?: "Unknown"
+
         hotelRepository.getHotelsByCategory(
             category = currentCategory,
+            city = city,
+            country = country,
             skip = currentPage * pageSize,
             limit = pageSize,
             onResult = { hotels ->
@@ -154,6 +170,7 @@ class HomeFragment : Fragment() {
             }
         )
     }
+
 
 
     private fun <T> debounce(
