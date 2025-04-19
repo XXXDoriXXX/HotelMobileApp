@@ -77,6 +77,8 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/search_input_field"
+                android:imeOptions="actionDone"
+                android:inputType="text"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -87,7 +89,49 @@
                 android:textColor="?attr/colorOnPrimary"
                 android:textColorHint="?attr/colorOnSecondary"
                 android:textSize="14sp" />
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp">
+
+                <!-- RecyclerView -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/filters_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:visibility="gone"
+                    android:scrollbars="none"
+                    android:overScrollMode="never" />
+
+                <View
+                    android:layout_width="24dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="start"
+                    android:background="@drawable/left_fade" />
+
+                <View
+                    android:layout_width="24dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="end"
+                    android:background="@drawable/right_fade" />
+            </FrameLayout>
+
+            <ImageView
+                android:id="@+id/filter_button"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_filter"
+                android:padding="6dp"
+                app:tint="?attr/colorOnSecondary" />
+
         </LinearLayout>
+
+
 
         <!-- Розташування -->
         <LinearLayout
@@ -145,7 +189,7 @@
 
             <TextView android:id="@+id/tab_best"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_weight="1"
                 android:background="@drawable/tab_background_selector"
                 android:padding="8dp"
@@ -157,7 +201,7 @@
 
             <TextView android:id="@+id/tab_popular"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_weight="1"
                 android:background="@drawable/tab_background_selector"
                 android:padding="8dp"

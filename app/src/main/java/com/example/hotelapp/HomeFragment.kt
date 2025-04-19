@@ -1,6 +1,7 @@
 package com.example.hotelapp
 
 import HotelItem
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
@@ -8,7 +9,10 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -22,6 +26,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import android.widget.PopupMenu
+import android.widget.PopupWindow
+import com.example.hotelapp.classes.FiltersAdapter
 
 class HomeFragment : Fragment() {
 
@@ -37,7 +44,13 @@ class HomeFragment : Fragment() {
     private val pageSize = 25
     private val allHotels = mutableListOf<HotelItem>()
     private var isLoading = false
-
+    private lateinit var filtersRecycler: RecyclerView
+    private lateinit var filterButton: ImageView
+    private val activeFilters = mutableMapOf<String, String>()
+    private var pendingFilterType: String? = null
+    private lateinit var filtersAdapter: FiltersAdapter
+    private val filterList = mutableListOf<Pair<String, String>>()
+    private val allFilterTypes = mutableListOf("Name", "Rating", "Views", "Comfort", "Address")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,9 +75,31 @@ class HomeFragment : Fragment() {
             val tabPopular = view.findViewById<TextView>(R.id.tab_popular)
             view.findViewById<TextView>(R.id.location_text)?.text = address
             val tabs = listOf(tabTrending, tabBest, tabPopular)
+            filtersRecycler = view.findViewById(R.id.filters_recycler)
+            filtersAdapter = FiltersAdapter(filterList) { removedKey ->
+                activeFilters.remove(removedKey)
+                allFilterTypes.add(removedKey.replaceFirstChar { it.uppercase() })
+                applyFilters()
+                if (filterList.isEmpty()) filtersRecycler.visibility = View.GONE
+            }
+
+            filtersRecycler.adapter = filtersAdapter
+            filtersRecycler.layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
+
+            filterButton = view.findViewById(R.id.filter_button)
+
+            filterButton.setOnClickListener {
+                showFilterPopupWindow(it)
+            }
+            val layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
+            layoutManager.reverseLayout = true
+            layoutManager.stackFromEnd = true
+            filtersRecycler.layoutManager = layoutManager
 
             layoutToggleButton = view.findViewById(R.id.layoutToggleButton)
             searchInputField = view.findViewById(R.id.search_input_field)
+            pendingFilterType = "Name"
+            searchInputField.hint = "Enter Name..."
             itemsList = view.findViewById(R.id.itemsHotelList)
             swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
             itemsList.layoutManager =
@@ -73,6 +108,48 @@ class HomeFragment : Fragment() {
             layoutToggleButton.setOnClickListener {
                 toggleLayout()
             }
+            searchInputField.setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE ||
+                    actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH
+                ) {
+                    val inputValue = searchInputField.text.toString().trim()
+
+                    if (inputValue.isNotEmpty()) {
+                        if (pendingFilterType != null) {
+                            activeFilters[pendingFilterType!!.lowercase()] = inputValue
+                            filterList.add(Pair(pendingFilterType!!, inputValue))
+                            allFilterTypes.remove(pendingFilterType!!)
+                            filtersAdapter.notifyItemInserted(filterList.size - 1)
+                            filtersRecycler.visibility = View.VISIBLE
+                            filtersRecycler.smoothScrollToPosition(filterList.size - 1)
+                            pendingFilterType = null
+                            searchInputField.hint = "Search..."
+                        } else {
+                            val last = filterList.lastOrNull()
+                            if (last != null) {
+                                val index = filterList.size - 1
+                                val key = last.first
+                                filterList[index] = Pair(key, inputValue)
+                                activeFilters[key.lowercase()] = inputValue
+                                filtersAdapter.notifyItemChanged(index)
+                            }
+                        }
+
+                        searchInputField.text = null
+
+                        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE)
+                                as android.view.inputmethod.InputMethodManager
+                        imm.hideSoftInputFromWindow(searchInputField.windowToken, 0)
+
+                        applyFilters()
+                    }
+
+                    true
+                } else false
+            }
+
+
+            searchInputField.hint = if (pendingFilterType != null) "Enter ${pendingFilterType}..." else "Search..."
 
             swipeRefreshLayout.setOnRefreshListener {
                 refreshHotels()
@@ -93,7 +170,6 @@ class HomeFragment : Fragment() {
                 }
             })
 
-            // Після ініціалізації ВСЬОГО — таби та loadHotels
             tabTrending.isSelected = true
             currentCategory = "trending"
             currentPage = 0
@@ -122,6 +198,50 @@ class HomeFragment : Fragment() {
                 Toast.LENGTH_LONG
             ).show()
         }
+    }
+    private fun showFilterPopupWindow(anchor: View) {
+        val popupView = layoutInflater.inflate(R.layout.layout_filter_popup, null) as LinearLayout
+        popupView.removeAllViews()
+
+        val popupWindow = PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true)
+
+        for (filter in allFilterTypes) {
+            val item = TextView(requireContext()).apply {
+                text = filter
+                setPadding(32, 24, 32, 24)
+                textSize = 16f
+                setTextColor(resources.getColor(R.color.colorOnPrimary, null))
+                background = resources.getDrawable(R.drawable.light_rounded_corners, null)
+                setOnClickListener {
+                    pendingFilterType = filter
+                    searchInputField.hint = "Enter $filter..."
+                    searchInputField.requestFocus()
+                    popupWindow.dismiss()
+                }
+            }
+            popupView.addView(item)
+        }
+
+        popupWindow.elevation = 12f
+        popupWindow.isOutsideTouchable = true
+        popupWindow.setBackgroundDrawable(null)
+        popupWindow.showAsDropDown(anchor, -8, 16)
+    }
+
+
+
+
+    private fun applyFilters() {
+        if (activeFilters.isEmpty()) {
+            loadHotels()
+            return
+        }
+
+        // TODO: Викликати backend з activeFilters
+        Toast.makeText(requireContext(), "Applied filters: $activeFilters", Toast.LENGTH_SHORT).show()
+
+        // Наприклад:
+        // hotelRepository.searchHotelsByFilters(activeFilters, onResult = {...})
     }
 
     private fun refreshHotels() {
