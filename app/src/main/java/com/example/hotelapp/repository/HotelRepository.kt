@@ -1,4 +1,5 @@
 import com.example.hotelapp.api.HotelService
+import com.example.hotelapp.models.HotelSearchParams
 import com.example.hotelapp.models.HotelWithStatsResponse
 import com.example.hotelapp.utils.SessionManager
 import retrofit2.Call
@@ -143,6 +144,35 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
                     onError(t)
                 }
             })
+    }
+
+    fun searchHotelsByFilters(
+        filters: HotelSearchParams,
+        onResult: (List<HotelItem>) -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        apiService.searchHotels(filters).enqueue(object : Callback<List<HotelResponseWrapper>> {
+            override fun onResponse(
+                call: Call<List<HotelResponseWrapper>>,
+                response: Response<List<HotelResponseWrapper>>
+            ) {
+                if (response.isSuccessful) {
+                    val hotels = response.body()?.map {
+                        it.hotel.apply {
+                            rating = it.rating
+                            views = it.views
+                        }
+                    } ?: emptyList()
+                    onResult(hotels)
+                } else {
+                    onError(Exception("Search failed: ${response.message()}"))
+                }
+            }
+
+            override fun onFailure(call: Call<List<HotelResponseWrapper>>, t: Throwable) {
+                onError(t)
+            }
+        })
     }
 
 

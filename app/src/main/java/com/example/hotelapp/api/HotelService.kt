@@ -7,6 +7,7 @@ import RatingResponse
 import ViewResponse
 import com.example.hotelapp.models.BookingRequest
 import com.example.hotelapp.models.BookingResponse
+import com.example.hotelapp.models.HotelSearchParams
 import com.example.hotelapp.models.HotelWithStatsResponse
 import com.example.hotelapp.models.PaymentRequest
 import com.example.hotelapp.models.PaymentSuccessRequest
@@ -82,6 +83,11 @@ interface HotelService {
         @Body value: Float,
         @Header("Authorization") token: String
     ): Call<Void>
+    @POST("hotels/search")
+    fun searchHotels(
+        @Body filters: HotelSearchParams
+    ): Call<List<HotelResponseWrapper>>
+
 
 
 }
