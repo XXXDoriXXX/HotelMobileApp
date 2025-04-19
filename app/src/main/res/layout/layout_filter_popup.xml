@@ -1,0 +1,47 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/filter_popup_background"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/item_rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?android:selectableItemBackground"
+        android:padding="12dp"
+        android:text="Rating"
+        android:textColor="#b2c9e1"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/item_views"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?android:selectableItemBackground"
+        android:padding="12dp"
+        android:text="Views"
+        android:textColor="#b2c9e1"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/item_comfort"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?android:selectableItemBackground"
+        android:padding="12dp"
+        android:text="Comfort"
+        android:textColor="#b2c9e1"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/item_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?android:selectableItemBackground"
+        android:padding="12dp"
+        android:text="Address"
+        android:textColor="#b2c9e1"
+        android:textSize="16sp" />
+</LinearLayout>

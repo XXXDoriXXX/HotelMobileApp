@@ -4,5 +4,6 @@
     <color name="colorOnPrimary">#1C1C1C</color>
     <color name="colorOnSecondary">#728398</color>
     <color name="colorSurface">#FFFFFF</color>
+    <color name="chipBackground">#e0f2f1</color>
 
 </resources>

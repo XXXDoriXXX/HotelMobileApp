@@ -1,0 +1,6 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/filter_rating" android:title="Rating" />
+    <item android:id="@+id/filter_views" android:title="Views" />
+    <item android:id="@+id/filter_comfort" android:title="Comfort" />
+    <item android:id="@+id/filter_address" android:title="Address" />
+</menu>
