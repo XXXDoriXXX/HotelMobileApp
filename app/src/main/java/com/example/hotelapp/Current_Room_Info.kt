@@ -5,6 +5,7 @@ import android.app.Activity
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -48,6 +49,7 @@ class Current_Room_Info : AppCompatActivity() {
     private lateinit var bottomSheet: View
     private lateinit var paymentSheet: PaymentSheet
     private var paymentIntentClientSecret: String? = null
+    private lateinit var paymentSpinner: Spinner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +64,31 @@ class Current_Room_Info : AppCompatActivity() {
             applicationContext,
             "pk_test_51QvkR6GEyS0IOVdo5SlLrdTyZZUpbbGk43hrF1S21dgLW1ezHtwJwFvYbkY6cIZaTBU6m1rtylA5URnQ020KWLcb00N6N8OD8r"
         )
+        paymentSpinner = findViewById(R.id.payment_method_spinner)
+
+        val paymentMethods = listOf("Card", "Cash", "Google Pay")
+        val spinnerAdapter = object : ArrayAdapter<String>(
+            this,
+            R.layout.spinner_item_textview,
+            android.R.id.text1,
+            paymentMethods
+        ) {
+            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val inflater = layoutInflater
+                val view = inflater.inflate(R.layout.spinner_dropdown_item, parent, false)
+                val text = view.findViewById<TextView>(R.id.spinner_item_text)
+                val separator = view.findViewById<View>(R.id.separator)
+
+                text.text = getItem(position)
+                separator?.visibility = if (position == count - 1) View.GONE else View.VISIBLE
+
+                return view
+            }
+        }
+        paymentSpinner.adapter = spinnerAdapter
+
+
+
         paymentSheet = PaymentSheet(this) { paymentSheetResult ->
             when (paymentSheetResult) {
                 is PaymentSheetResult.Completed -> {
@@ -80,11 +107,23 @@ class Current_Room_Info : AppCompatActivity() {
 
         payButton.setOnClickListener {
             if (totalNights > 0) {
-                fetchPaymentIntent()
+                val selectedMethod = paymentSpinner.selectedItem.toString()
+                when (selectedMethod) {
+                    "Card" -> fetchPaymentIntent()
+                    "Cash" -> {
+                        Toast.makeText(this, "Оплата буде здійснена готівкою при заселенні", Toast.LENGTH_SHORT).show()
+                        notifyPaymentSuccess()
+                    }
+                    "Google Pay" -> {
+                        Toast.makeText(this, "Google Pay ще не реалізовано", Toast.LENGTH_SHORT).show()
+                    }
+                }
             } else {
-                Toast.makeText(this, "Спочатку виберіть дати", Toast.LENGTH_SHORT).show()
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                Toast.makeText(this, "Будь ласка, виберіть дати та метод оплати", Toast.LENGTH_SHORT).show()
             }
         }
+
         bottomSheet = findViewById(roomDetailsBottomSheet)
         viewPager = findViewById(R.id.roomImagesViewPager)
         val images = HotelHolder.currentRoom?.images?.map { it.image_url } ?: listOf()

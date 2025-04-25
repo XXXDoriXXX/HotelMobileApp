@@ -2,6 +2,7 @@ package com.example.hotelapp.classes
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,8 +39,9 @@ class ItemsRoomAdapter(var items:List<RoomItem>, var context: Context) : Recycle
 
             val imageUrl = items[position].images?.firstOrNull()?.image_url
             if (!imageUrl.isNullOrEmpty()) {
+                Log.d("RoomImageURL", "Loading image: $imageUrl")
                 Glide.with(context)
-                    .load(apiHolder.BASE_URL+imageUrl)
+                    .load(imageUrl)
                     .placeholder(R.drawable.default_image)
                     .into(holder.image)
             } else {

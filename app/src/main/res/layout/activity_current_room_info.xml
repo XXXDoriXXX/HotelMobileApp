@@ -11,7 +11,6 @@
     android:layout_height="match_parent"
     android:background="?attr/colorPrimary">
 
-    <!-- Верхнє зображення -->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/roomImagesViewPager"
         android:layout_width="match_parent"
@@ -22,7 +21,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Кнопка "Назад" -->
     <ImageView
         android:id="@+id/back_button"
         android:layout_width="18dp"
@@ -34,14 +32,14 @@
         app:tint="?attr/colorOnPrimary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-    <!-- Інформаційний блок -->
+
     <androidx.cardview.widget.CardView
         android:id="@+id/roomDetailsBottomSheet"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         app:behavior_peekHeight="480dp"
         app:behavior_hideable="false"
         android:layout_width="match_parent"
-        android:layout_height="419dp"
+        android:layout_height="519dp"
         android:layout_marginTop="0dp"
         app:cardCornerRadius="36dp"
         app:cardBackgroundColor="?attr/colorSurface"
@@ -49,7 +47,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="600dp"
+            android:layout_height="700dp"
             android:orientation="vertical"
             android:padding="16dp">
             <TextView
@@ -71,7 +69,6 @@
                 android:textColor="?attr/colorSecondary"
                 android:textSize="18sp" />
 
-            <!-- Опис -->
             <TextView
                 android:id="@+id/room_description"
                 android:layout_width="match_parent"
@@ -81,20 +78,31 @@
                 android:text="A luxurious room equipped with all amenities for a comfortable stay."
                 android:textColor="?attr/colorOnSecondary"
                 android:textSize="14sp" />
+            <Spinner
+                android:id="@+id/payment_method_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginHorizontal="8dp"
+                android:background="@drawable/spinner_background"
+                android:popupBackground="@drawable/spinner_background"
+                android:dropDownVerticalOffset="24dp"
+                android:padding="8dp"
+                android:textColor="@color/colorPrimary"
 
-            <!-- Вибір дати -->
+                />
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/select_dates_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
+                android:padding="12dp"
                 android:backgroundTint="?attr/colorSecondary"
                 android:text="Select Dates"
-                app:cornerRadius="26dp"
+                app:cornerRadius="12dp"
                 android:textColor="?attr/colorOnPrimary"
                 android:textSize="16sp" />
 
-            <!-- Загальна вартість -->
             <TextView
                 android:id="@+id/total_price"
                 android:layout_width="match_parent"
@@ -196,6 +204,7 @@
                             android:textSize="12sp" />
                     </LinearLayout>
                 </LinearLayout>
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/pay_button"
                     android:layout_width="match_parent"

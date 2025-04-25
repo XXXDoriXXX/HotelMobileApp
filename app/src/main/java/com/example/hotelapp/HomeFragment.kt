@@ -37,7 +37,7 @@ class HomeFragment : Fragment() {
     private val pageSize = 25
     private val allHotels = mutableListOf<HotelItem>()
     private var isLoading = false
-    private var canLoadMore = true // прапорець, що вказує, чи можна завантажувати більше даних (щоб уникнути дублювання запиту при старті)
+    private var canLoadMore = true
     private lateinit var filtersRecycler: RecyclerView
     private lateinit var filterButton: ImageView
     private val activeFilters = mutableMapOf<String, String>()
@@ -45,9 +45,21 @@ class HomeFragment : Fragment() {
     private lateinit var filtersAdapter: FiltersAdapter
     private val filterList = mutableListOf<Pair<String, String>>()
     private val allFilterTypes = mutableListOf(
-        "City", "Country", "Min_Price", "Max_Price", "Min_Rating",
-        "Room_Type", "Check_In", "Check_Out"
+        "Name",
+        "Description",
+        "City",
+        "Country",
+        "State",
+        "Postal_Code",
+        "Min_Price",
+        "Max_Price",
+        "Min_Rating",
+        "Room_Type",
+        "Amenity_Ids",
+        "Check_In",
+        "Check_Out"
     )
+
     private var isSearching = false
 
     override fun onCreateView(
@@ -137,7 +149,7 @@ class HomeFragment : Fragment() {
                 val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                 val totalItemCount = layoutManager.itemCount
                 val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
-                if (!isLoading && canLoadMore && lastVisibleItem >= totalItemCount - 5) { // додано умову canLoadMore для уникнення дублювання запиту
+                if (!isLoading && canLoadMore && lastVisibleItem >= totalItemCount - 5) {
                     loadMoreHotels()
                 }
             }
@@ -173,7 +185,7 @@ class HomeFragment : Fragment() {
                 setPadding(32, 24, 32, 24)
                 textSize = 16f
                 setTextColor(resources.getColor(R.color.colorOnPrimary, null))
-                background = resources.getDrawable(R.drawable.light_rounded_corners, null)
+                background = resources.getDrawable(R.drawable.filter_popup_background, null)
                 setOnClickListener {
                     pendingFilterType = filter
                     searchInputField.hint = "Enter $filter..."
@@ -195,20 +207,33 @@ class HomeFragment : Fragment() {
             loadHotels()
             return
         }
+
+        // Parse amenity IDs from a comma‑separated string, e.g. "1,2,3"
+        val amenityIds = activeFilters["amenity_ids"]
+            ?.split(",")
+            ?.mapNotNull { it.trim().toIntOrNull() }
+
+        // Build the new search params, including prefix/partial fields
         val searchParams = HotelSearchParams(
-            city = activeFilters["city"],
-            country = activeFilters["country"],
+            name = activeFilters["name"],                     // префікс назви готелю
+            description = activeFilters["description"],       // частковий пошук опису
+            city = activeFilters["city"],                     // префікс міста
+            country = activeFilters["country"],               // префікс країни
+            state = activeFilters["state"],                   // префікс штату/регіону
+            postal_code = activeFilters["postal_code"],       // поштовий індекс
             min_price = activeFilters["min_price"]?.toFloatOrNull(),
             max_price = activeFilters["max_price"]?.toFloatOrNull(),
             min_rating = activeFilters["min_rating"]?.toFloatOrNull(),
             room_type = activeFilters["room_type"],
+            amenity_ids = amenityIds,
             check_in = activeFilters["check_in"],
             check_out = activeFilters["check_out"],
-            sort_by = "rating",
-            sort_dir = "desc",
+            sort_by = activeFilters["sort_by"] ?: "rating",
+            sort_dir = activeFilters["sort_dir"] ?: "desc",
             skip = 0,
             limit = 25
         )
+
         hotelRepository.searchHotelsByFilters(
             filters = searchParams,
             onResult = { hotels ->
@@ -216,10 +241,9 @@ class HomeFragment : Fragment() {
                 allHotels.addAll(hotels)
                 hotelAdapter = ItemsHotelAdapter(allHotels, requireContext(), isVerticalLayout)
                 itemsList.adapter = hotelAdapter
-
             },
-            onError = {
-                Toast.makeText(requireContext(), "Search failed: ${it.message}", Toast.LENGTH_SHORT).show()
+            onError = { err ->
+                Toast.makeText(requireContext(), "Search failed: ${err.message}", Toast.LENGTH_SHORT).show()
                 isSearching = false
             }
         )
@@ -239,7 +263,7 @@ class HomeFragment : Fragment() {
         isLoading = true
         currentPage = 0
         allHotels.clear()
-        canLoadMore = true // скидаємо прапорець canLoadMore для нового завантаження
+        canLoadMore = true
         hotelAdapter = ItemsHotelAdapter(allHotels, requireContext(), isVerticalLayout)
         itemsList.adapter = hotelAdapter
         updateLayoutManager()
@@ -268,14 +292,14 @@ class HomeFragment : Fragment() {
                     currentPage++
                 }
                 if (hotels.size < pageSize) {
-                    canLoadMore = false // якщо отримано менше ніж pageSize, більше сторінок немає
+                    canLoadMore = false
                 }
                 isLoading = false
-                swipeRefreshLayout.isRefreshing = false // зупиняємо анімацію оновлення
+                swipeRefreshLayout.isRefreshing = false
             },
             onError = {
                 isLoading = false
-                swipeRefreshLayout.isRefreshing = false // зупиняємо анімацію оновлення
+                swipeRefreshLayout.isRefreshing = false
                 Toast.makeText(requireContext(), "Помилка підвантаження", Toast.LENGTH_SHORT).show()
             }
         )
