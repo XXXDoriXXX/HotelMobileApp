@@ -43,6 +43,7 @@ class RoomsListActivity : AppCompatActivity() {
 
         itemsList = findViewById(R.id.rooms_list)
         itemsList.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
+        itemsList.adapter = ItemsRoomAdapter(emptyList(), this)
 
         val backButton: ImageView = findViewById(R.id.back_button)
         backButton.setOnClickListener {
@@ -50,63 +51,21 @@ class RoomsListActivity : AppCompatActivity() {
         }
 
         searchInputField = findViewById(R.id.search_input_field)
-
-        val debounceSearch = debounce<String>(
-            delayMillis = 500L,
-            coroutineScope = lifecycleScope
-        ) { query ->
-            performSearch(query)
-        }
-
-        searchInputField.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                debounceSearch(s.toString())
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
-
-        loadRooms("")
+        loadRooms()
     }
 
-    private fun loadRooms(query: String) {
+    private fun loadRooms() {
         val hotelId = HotelHolder.currentHotel?.id ?: return
 
-        roomRepository.searchRooms(hotelId, query,
-            callback = { rooms, error ->
-
-                if (rooms != null) {
-                    if (rooms.isNotEmpty()) {
-                        itemsList.adapter = ItemsRoomAdapter(rooms, this)
-                    }
-                }
-                else {
-                    Toast.makeText(this, "No rooms found for your search.", Toast.LENGTH_SHORT).show()
-                    itemsList.adapter = ItemsRoomAdapter(emptyList(), this)
-                }
-
-            }
-        )
-    }
-
-    private fun performSearch(query: String) {
-        loadRooms(query)
-    }
-
-    private fun <T> debounce(
-        delayMillis: Long = 500L,
-        coroutineScope: CoroutineScope,
-        action: (T) -> Unit
-    ): (T) -> Unit {
-        var debounceJob: Job? = null
-        return { param: T ->
-            debounceJob?.cancel()
-            debounceJob = coroutineScope.launch {
-                delay(delayMillis)
-                action(param)
+        roomRepository.getRooms(hotelId) { rooms, error ->
+            if (rooms != null) {
+                itemsList.adapter = ItemsRoomAdapter(rooms, this)
+            } else {
+                Toast.makeText(this, "Failed to load rooms.", Toast.LENGTH_SHORT).show()
+                itemsList.adapter = ItemsRoomAdapter(emptyList(), this)
             }
         }
     }
+
+
 }

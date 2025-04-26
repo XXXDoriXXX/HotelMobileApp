@@ -1,11 +1,12 @@
 package com.example.hotelapp.models
 
+import com.google.gson.annotations.SerializedName
+
 data class PaymentRequest(
     val amount: Float
 )
 
 data class StripePaymentResponse(
-    val id: String,
-    val clientSecret: String,
-    val status: String
+    @SerializedName("checkout_url")
+    val checkoutUrl: String
 )

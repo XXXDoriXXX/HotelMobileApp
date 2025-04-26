@@ -39,6 +39,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".BookingSuccessActivity"
+            android:exported="true">
+            <intent-filter>
+            <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:scheme="myapp"
+                    android:host="booking"
+                    android:pathPrefix="/success"/>
+            </intent-filter>
+        </activity>
+
+
         <activity
             android:name=".LoginActivity"
             android:exported="false" />
