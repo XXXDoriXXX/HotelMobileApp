@@ -88,6 +88,11 @@ interface HotelService {
         @Body filters: HotelSearchParams
     ): Call<List<HotelResponseWrapper>>
 
+    @POST("/bookings/checkout")
+    fun createBookingCheckout(
+        @Body bookingRequest: BookingRequest,
+        @Header("Authorization") token: String
+    ): Call<StripePaymentResponse>
 
 
 }

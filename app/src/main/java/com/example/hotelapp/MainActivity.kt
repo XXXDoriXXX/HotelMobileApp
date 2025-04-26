@@ -48,6 +48,13 @@ class MainActivity : AppCompatActivity() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         val navController = findNavController(R.id.fragmentContainerView)
         bottomNavigationView.setupWithNavController(navController)
+        val startFragment = intent.getStringExtra("startFragment")
+        if (startFragment != null) {
+            when (startFragment) {
+                "home" -> navController.navigate(R.id.homeFragment)
+                "history" -> navController.navigate(R.id.historyFragment)
+            }
+        }
         requestLocationPermissionsAndFetch()
     }
 
