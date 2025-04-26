@@ -94,5 +94,7 @@ interface HotelService {
         @Header("Authorization") token: String
     ): Call<StripePaymentResponse>
 
+    @GET("/bookings/my")
+    fun getMyBookings(@Header("Authorization") token: String): Call<List<BookingResponse>>
 
 }

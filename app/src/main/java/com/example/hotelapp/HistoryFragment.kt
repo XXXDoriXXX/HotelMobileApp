@@ -1,50 +1,84 @@
 package com.example.hotelapp
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hotelapp.Holder.HotelHolder
+import com.example.hotelapp.api.HotelService
 import com.example.hotelapp.classes.ItemHistoryAdapter
+import com.example.hotelapp.classes.OrderItem
+import com.example.hotelapp.network.RetrofitClient
+import com.example.hotelapp.repository.BookingRepository
+import com.example.hotelapp.utils.SessionManager
 
 class HistoryFragment : Fragment() {
 
     private lateinit var orderHistoryRecyclerView: RecyclerView
     private lateinit var adapter: ItemHistoryAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val view = inflater.inflate(R.layout.fragment_history, container, false)
+        val apiService = RetrofitClient.retrofit.create(HotelService::class.java)
+        val repository = BookingRepository(apiService, SessionManager(requireContext()))
         orderHistoryRecyclerView = view.findViewById(R.id.order_history_recycler_view)
-        HotelHolder.orders = listOf(
-            OrderItem("Blue Star Hotel", "VIP", "Jan 10", "Jan 15", 999f),
-            OrderItem("Grand Palace", "Standard", "Feb 5", "Feb 10", 499f),
-            OrderItem("Luxury Stay", "Premium", "Mar 1", "Mar 5", 899f)
-        ).toMutableList()
+        adapter = ItemHistoryAdapter(HotelHolder.orders, requireContext())
 
         orderHistoryRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        orderHistoryRecyclerView.adapter = ItemHistoryAdapter(HotelHolder.orders,requireContext())
+        orderHistoryRecyclerView.adapter = adapter
+        repository.getMyBookings(
+            onResult = { bookings ->
+                val orderItems = bookings.map {
+                    OrderItem(
+                        hotelName = it.hotel_name,
+                        roomType = it.room_type,
+                        checkInDate = it.date_start.substring(0, 10), // тільки yyyy-MM-dd
+                        checkOutDate = it.date_end.substring(0, 10),
+                        totalPrice = it.total_price,
+                        status = mapStatus(it.status)
+                    )
+                }.toMutableList()
+
+                HotelHolder.orders = orderItems
+                adapter = ItemHistoryAdapter(orderItems, requireContext())
+                orderHistoryRecyclerView.adapter = adapter
+            },
+            onError = {
+                Toast.makeText(requireContext(), "Не вдалося завантажити бронювання", Toast.LENGTH_SHORT).show()
+            }
+        )
 
         return view
     }
-    fun addOrderToList(order: OrderItem) {
-        adapter.addOrder(order) // Оновлюємо список у адаптері
-    }
-    companion object {
-        private const val ARG_PARAM1 = "param1"
-        private const val ARG_PARAM2 = "param2"
 
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            HomeFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onResume() {
+        super.onResume()
+        adapter.notifyDataSetChanged()
     }
+
+    fun addOrderToList(order: OrderItem) {
+        HotelHolder.orders.add(order)
+        adapter.notifyItemInserted(HotelHolder.orders.size - 1)
+    }
+
+    companion object {
+        @JvmStatic
+        fun newInstance() = HistoryFragment()
+    }
+    private fun mapStatus(status: String): String {
+        return when (status.lowercase()) {
+            "confirmed" -> "Підтверджено"
+            "pending" -> "Очікує"
+            "cancelled" -> "Скасовано"
+            else -> "Невідомо"
+        }
+    }
+
 }

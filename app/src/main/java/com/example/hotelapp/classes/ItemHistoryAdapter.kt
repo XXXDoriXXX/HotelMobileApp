@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.hotelapp.OrderItem
 import com.example.hotelapp.R
 
 class ItemHistoryAdapter(
@@ -15,19 +14,28 @@ class ItemHistoryAdapter(
 ) : RecyclerView.Adapter<ItemHistoryAdapter.MyViewHolder>() {
 
     class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
         private val hotelName: TextView = itemView.findViewById(R.id.order_hotel_name)
         private val roomType: TextView = itemView.findViewById(R.id.order_room_type)
         private val orderDates: TextView = itemView.findViewById(R.id.order_dates)
         private val totalPrice: TextView = itemView.findViewById(R.id.order_total_price)
+        private val statusText: TextView = itemView.findViewById(R.id.order_status)
 
         fun bind(order: OrderItem) {
             hotelName.text = order.hotelName
             roomType.text = "Room: ${order.roomType}"
             orderDates.text = "${order.checkInDate} - ${order.checkOutDate}"
             totalPrice.text = "Total: $${order.totalPrice}"
+            statusText.text = order.status
+
+            when (order.status) {
+                "Очікує" -> statusText.setBackgroundResource(R.drawable.status_label_background_yellow)
+                "Скасовано" -> statusText.setBackgroundResource(R.drawable.status_label_background_red)
+                "Підтверджено" -> statusText.setBackgroundResource(R.drawable.status_label_background_green)
+                else -> statusText.setBackgroundResource(R.drawable.status_label_background)
+            }
         }
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_order, parent, false)
@@ -39,7 +47,7 @@ class ItemHistoryAdapter(
     }
     fun addOrder(order: OrderItem) {
         items.add(order)
-        notifyItemInserted(items.size - 1) // Сповіщаємо про додавання нового елемента
+        notifyItemInserted(items.size - 1)
     }
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         try {

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center"
+    android:background="@color/colorSurface">
+
+    <TextView
+        android:id="@+id/booking_hotel_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hotel Name"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/booking_room_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Room: VIP"
+        android:textSize="18sp"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/booking_dates"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Jan 10 - Jan 15"
+        android:textSize="18sp"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/booking_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total: $999"
+        android:textSize="20sp"
+        android:textColor="@color/colorSecondary"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:id="@+id/cancel_booking_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Відмінити бронювання"
+        android:backgroundTint="@color/colorPrimary"
+        android:textColor="@android:color/white"/>
+</LinearLayout>
