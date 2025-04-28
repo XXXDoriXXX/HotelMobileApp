@@ -58,11 +58,17 @@ class BookingRepository(private val api: HotelService, private val session: Sess
         roomId: Int,
         dateStart: String,
         dateEnd: String,
+        paymentMethod: String,
         onSuccess: (String) -> Unit,
         onFailure: (Throwable) -> Unit
     ) {
         val token = session.getAccessToken() ?: return onFailure(Throwable("No token"))
-        val request = BookingRequest(room_id = roomId, date_start = dateStart, date_end = dateEnd)
+        val request = BookingRequest(
+            room_id = roomId,
+            date_start = dateStart,
+            date_end = dateEnd,
+            payment_method = paymentMethod
+        )
 
         api.createBookingCheckout(request, "Bearer $token")
             .enqueue(object : Callback<StripePaymentResponse> {

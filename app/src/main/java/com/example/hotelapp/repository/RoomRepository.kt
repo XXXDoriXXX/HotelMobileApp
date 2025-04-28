@@ -1,6 +1,7 @@
 package com.example.hotelapp.repository
 
 import com.example.hotelapp.api.RoomService
+import com.example.hotelapp.classes.BookedDate
 import com.example.hotelapp.classes.RoomItem
 import com.example.hotelapp.network.RetrofitClient
 import retrofit2.Call
@@ -22,6 +23,21 @@ class RoomRepository {
             }
 
             override fun onFailure(call: Call<List<RoomItem>>, t: Throwable) {
+                callback(null, t)
+            }
+        })
+    }
+    fun getBookedDates(roomId: Int, callback: (List<BookedDate>?, Throwable?) -> Unit) {
+        roomService.getBookedDates(roomId).enqueue(object : retrofit2.Callback<List<BookedDate>> {
+            override fun onResponse(call: Call<List<BookedDate>>, response: retrofit2.Response<List<BookedDate>>) {
+                if (response.isSuccessful) {
+                    callback(response.body(), null)
+                } else {
+                    callback(null, Throwable(response.message()))
+                }
+            }
+
+            override fun onFailure(call: Call<List<BookedDate>>, t: Throwable) {
                 callback(null, t)
             }
         })

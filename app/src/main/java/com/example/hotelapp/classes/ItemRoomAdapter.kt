@@ -10,7 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.hotelapp.ui.Current_Room_Info
+import com.example.hotelapp.ui.CurrentRoomInfo
 import com.example.hotelapp.Holder.HotelHolder
 import com.example.hotelapp.R
 
@@ -52,7 +52,7 @@ class ItemsRoomAdapter(var items:List<RoomItem>, var context: Context) : Recycle
             holder.price.text = "$"+items[position].price_per_night.toString()
             holder.image.setOnClickListener {
                 HotelHolder.currentRoom = items[position]
-                val intent = Intent(context, Current_Room_Info::class.java)
+                val intent = Intent(context, CurrentRoomInfo::class.java)
                 context.startActivity(intent)
 
             }

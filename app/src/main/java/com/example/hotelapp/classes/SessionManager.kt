@@ -20,7 +20,6 @@ class SessionManager(context: Context) {
         private const val KEY_BIRTH_DATE = "birth_date"
         private const val KEY_AVATAR_URL = "avatar_url"
 
-
     }
     fun getAccessToken(): String? {
         return prefs.getString(KEY_ACCESS_TOKEN, null)
