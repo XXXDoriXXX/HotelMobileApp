@@ -16,12 +16,13 @@ import com.example.hotelapp.classes.OrderItem
 import com.example.hotelapp.network.RetrofitClient
 import com.example.hotelapp.repository.BookingRepository
 import com.example.hotelapp.utils.SessionManager
+import com.facebook.shimmer.ShimmerFrameLayout
 
 class HistoryFragment : Fragment() {
 
     private lateinit var orderHistoryRecyclerView: RecyclerView
     private lateinit var adapter: ItemHistoryAdapter
-
+    private lateinit var shimmerLayout: ShimmerFrameLayout
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -31,33 +32,48 @@ class HistoryFragment : Fragment() {
         val repository = BookingRepository(apiService, SessionManager(requireContext()))
         orderHistoryRecyclerView = view.findViewById(R.id.order_history_recycler_view)
         adapter = ItemHistoryAdapter(HotelHolder.orders, requireContext())
-
+        shimmerLayout = view.findViewById(R.id.shimmerLayout)
         orderHistoryRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         orderHistoryRecyclerView.adapter = adapter
+        shimmerLayout.startShimmer()
+        shimmerLayout.visibility = View.VISIBLE
+        orderHistoryRecyclerView.visibility = View.GONE
+
         repository.getMyBookings(
             onResult = { bookings ->
-                val orderItems = bookings.map {
-                    OrderItem(
-                        bookingId = it.booking_id,
-                        hotelName = it.hotel_name,
-                        roomType = it.room_type,
-                        checkInDate = it.date_start.substring(0, 10),
-                        checkOutDate = it.date_end.substring(0, 10),
-                        totalPrice = it.total_price,
-                        status = mapStatus(it.status),
-                        hotel_image_url = it.hotel_image_url
-                    )
-                }.toMutableList()
+                if (isAdded) {
+                    shimmerLayout.stopShimmer()
+                    shimmerLayout.visibility = View.GONE
+                    orderHistoryRecyclerView.visibility = View.VISIBLE
 
+                    val orderItems = bookings.map {
+                        OrderItem(
+                            bookingId = it.booking_id,
+                            hotelName = it.hotel_name,
+                            roomType = it.room_type,
+                            checkInDate = it.date_start.substring(0, 10),
+                            checkOutDate = it.date_end.substring(0, 10),
+                            totalPrice = it.total_price,
+                            status = mapStatus(it.status),
+                            hotel_image_url = it.hotel_image_url
+                        )
+                    }.toMutableList()
 
-                HotelHolder.orders = orderItems
-                adapter = ItemHistoryAdapter(orderItems, requireContext())
-                orderHistoryRecyclerView.adapter = adapter
+                    HotelHolder.orders = orderItems
+                    adapter = ItemHistoryAdapter(orderItems, requireContext())
+                    orderHistoryRecyclerView.adapter = adapter
+                }
             },
             onError = {
-                Toast.makeText(requireContext(), "Не вдалося завантажити бронювання", Toast.LENGTH_SHORT).show()
+                if (isAdded) {
+                    shimmerLayout.stopShimmer()
+                    shimmerLayout.visibility = View.GONE
+                    orderHistoryRecyclerView.visibility = View.VISIBLE
+                    Toast.makeText(requireContext(), "Не вдалося завантажити бронювання", Toast.LENGTH_SHORT).show()
+                }
             }
         )
+
 
         return view
     }
