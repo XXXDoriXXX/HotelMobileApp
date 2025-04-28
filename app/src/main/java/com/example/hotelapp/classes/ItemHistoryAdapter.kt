@@ -38,12 +38,13 @@ class ItemHistoryAdapter(
                 else -> statusText.setBackgroundResource(R.drawable.status_label_background)
             }
 
-            val fullImageUrl = "${order.hotel_image_url}"
+            val fullImageUrl = order.hotel_image_url
             Glide.with(itemView.context)
                 .load(fullImageUrl)
                 .placeholder(R.drawable.default_image)
                 .error(R.drawable.default_image)
                 .into(hotelImage)
+
         }
     }
 
