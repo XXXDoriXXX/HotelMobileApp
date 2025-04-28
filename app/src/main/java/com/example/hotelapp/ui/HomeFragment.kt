@@ -1,28 +1,22 @@
-package com.example.hotelapp
+package com.example.hotelapp.ui
 
 import HotelItem
-import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.hotelapp.R
 import com.example.hotelapp.classes.ItemsHotelAdapter
 import com.google.android.material.textfield.TextInputEditText
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import com.example.hotelapp.classes.FiltersAdapter
 import com.example.hotelapp.models.HotelSearchParams
+import com.facebook.shimmer.ShimmerFrameLayout
 
 class HomeFragment : Fragment() {
     private lateinit var searchInputField: TextInputEditText
@@ -59,7 +53,7 @@ class HomeFragment : Fragment() {
         "Check_In",
         "Check_Out"
     )
-
+    private lateinit var shimmerLayoutHome: ShimmerFrameLayout
     private var isSearching = false
 
     override fun onCreateView(
@@ -76,7 +70,11 @@ class HomeFragment : Fragment() {
         val tabPopular = view.findViewById<TextView>(R.id.tab_popular)
         val tabs = listOf(tabTrending, tabBest, tabPopular)
         view.findViewById<TextView>(R.id.location_text)?.text = address
-
+        shimmerLayoutHome = view.findViewById(R.id.shimmerLayoutHome)
+        itemsList = view.findViewById(R.id.itemsHotelList)
+        shimmerLayoutHome.startShimmer()
+        shimmerLayoutHome.visibility = View.VISIBLE
+        itemsList.visibility = View.GONE
         filtersRecycler = view.findViewById(R.id.filters_recycler)
         filtersAdapter = FiltersAdapter(filterList) { removedKey ->
             activeFilters.remove(removedKey)
@@ -208,19 +206,17 @@ class HomeFragment : Fragment() {
             return
         }
 
-        // Parse amenity IDs from a comma‑separated string, e.g. "1,2,3"
         val amenityIds = activeFilters["amenity_ids"]
             ?.split(",")
             ?.mapNotNull { it.trim().toIntOrNull() }
 
-        // Build the new search params, including prefix/partial fields
         val searchParams = HotelSearchParams(
-            name = activeFilters["name"],                     // префікс назви готелю
-            description = activeFilters["description"],       // частковий пошук опису
-            city = activeFilters["city"],                     // префікс міста
-            country = activeFilters["country"],               // префікс країни
-            state = activeFilters["state"],                   // префікс штату/регіону
-            postal_code = activeFilters["postal_code"],       // поштовий індекс
+            name = activeFilters["name"],
+            description = activeFilters["description"],
+            city = activeFilters["city"],
+            country = activeFilters["country"],
+            state = activeFilters["state"],
+            postal_code = activeFilters["postal_code"],
             min_price = activeFilters["min_price"]?.toFloatOrNull(),
             max_price = activeFilters["max_price"]?.toFloatOrNull(),
             min_rating = activeFilters["min_rating"]?.toFloatOrNull(),
@@ -273,11 +269,19 @@ class HomeFragment : Fragment() {
     private fun loadMoreHotels() {
         if (isSearching) return
         isLoading = true
+
+        if (currentPage == 0) {
+            shimmerLayoutHome.startShimmer()
+            shimmerLayoutHome.visibility = View.VISIBLE
+            itemsList.visibility = View.GONE
+        }
+
         val address = requireContext().getSharedPreferences("prefs", Context.MODE_PRIVATE)
             .getString("last_location", "Unknown City, Unknown Country") ?: "Unknown City, Unknown Country"
         val parts = address.split(",").map { it.trim() }
         val city = parts.getOrNull(0) ?: "Unknown"
         val country = parts.getOrNull(1) ?: "Unknown"
+
         hotelRepository.getHotelsByCategory(
             category = currentCategory,
             city = city,
@@ -285,6 +289,8 @@ class HomeFragment : Fragment() {
             skip = currentPage * pageSize,
             limit = pageSize,
             onResult = { hotels ->
+                if (!isAdded) return@getHotelsByCategory
+
                 if (hotels.isNotEmpty()) {
                     val oldSize = allHotels.size
                     allHotels.addAll(hotels)
@@ -296,14 +302,25 @@ class HomeFragment : Fragment() {
                 }
                 isLoading = false
                 swipeRefreshLayout.isRefreshing = false
+
+                shimmerLayoutHome.stopShimmer()
+                shimmerLayoutHome.visibility = View.GONE
+                itemsList.visibility = View.VISIBLE
             },
             onError = {
+                if (!isAdded) return@getHotelsByCategory
                 isLoading = false
                 swipeRefreshLayout.isRefreshing = false
+
+                shimmerLayoutHome.stopShimmer()
+                shimmerLayoutHome.visibility = View.GONE
+                itemsList.visibility = View.VISIBLE
+
                 Toast.makeText(requireContext(), "Помилка підвантаження", Toast.LENGTH_SHORT).show()
             }
         )
     }
+
 
     private fun updateLayoutManager() {
         val oldPosition = (itemsList.layoutManager as? LinearLayoutManager)?.findFirstVisibleItemPosition() ?: 0

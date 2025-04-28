@@ -2,6 +2,8 @@ package com.example.hotelapp.repository
 
 import com.example.hotelapp.api.HotelService
 import com.example.hotelapp.models.BookingRequest
+import com.example.hotelapp.models.BookingResponse
+import com.example.hotelapp.models.RefundResponse
 import com.example.hotelapp.models.StripePaymentResponse
 import com.example.hotelapp.utils.SessionManager
 import retrofit2.Call
@@ -9,6 +11,49 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class BookingRepository(private val api: HotelService, private val session: SessionManager) {
+
+    fun getMyBookings(onResult: (List<BookingResponse>) -> Unit, onError: (Throwable) -> Unit) {
+        val token = session.getAccessToken() ?: return onError(Throwable("No token"))
+
+        api.getMyBookings("Bearer $token").enqueue(object : Callback<List<BookingResponse>> {
+            override fun onResponse(
+                call: Call<List<BookingResponse>>,
+                response: Response<List<BookingResponse>>
+            ) {
+                if (response.isSuccessful) {
+                    onResult(response.body() ?: emptyList())
+                } else {
+                    onError(Throwable("Failed to fetch booking history"))
+                }
+            }
+
+            override fun onFailure(call: Call<List<BookingResponse>>, t: Throwable) {
+                onError(t)
+            }
+        })
+    }
+    fun requestRefund(
+        bookingId: Int,
+        onSuccess: (Float) -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        val token = session.getAccessToken() ?: return onError(Throwable("No token"))
+        api.requestRefund(bookingId, "Bearer $token").enqueue(object : Callback<RefundResponse> {
+            override fun onResponse(call: Call<RefundResponse>, response: Response<RefundResponse>) {
+                if (response.isSuccessful) {
+                    val refund = response.body()?.refunded ?: 0f
+                    onSuccess(refund)
+                } else {
+                    onError(Throwable("Не вдалося отримати суму повернення"))
+                }
+            }
+
+            override fun onFailure(call: Call<RefundResponse>, t: Throwable) {
+                onError(t)
+            }
+        })
+    }
+
     fun createCheckout(
         roomId: Int,
         dateStart: String,

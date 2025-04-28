@@ -1,10 +1,17 @@
 package com.example.hotelapp.models
 
 data class BookingResponse(
-    val id: Int,
-    val client_id: Int,
-    val room_id: Int,
+    val booking_id: Int,
+    val hotel_name: String,
+    val room_type: String,
     val date_start: String,
     val date_end: String,
-    val total_price: Float
+    val total_price: Float,
+    val status: String,
+    val hotel_images: List<HotelImage>?
+)
+data class HotelImage(
+    val id: Int,
+    val hotel_id: Int,
+    val image_url: String
 )

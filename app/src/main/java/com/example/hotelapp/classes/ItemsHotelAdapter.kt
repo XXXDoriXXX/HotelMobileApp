@@ -9,15 +9,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import HotelItem
-import android.graphics.drawable.Drawable
 import android.util.Log
 import android.widget.RatingBar
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.request.target.Target
-import com.bumptech.glide.load.engine.GlideException
-import com.example.hotelapp.CurrentHotelInfo
+import com.example.hotelapp.ui.CurrentHotelInfo
 import com.example.hotelapp.Holder.HotelHolder
 import com.example.hotelapp.Holder.apiHolder
 import com.example.hotelapp.R

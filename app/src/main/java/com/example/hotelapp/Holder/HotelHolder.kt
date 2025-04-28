@@ -1,7 +1,7 @@
 package com.example.hotelapp.Holder
 
 import HotelItem
-import com.example.hotelapp.OrderItem
+import com.example.hotelapp.classes.OrderItem
 import com.example.hotelapp.classes.RoomItem
 
 object HotelHolder {

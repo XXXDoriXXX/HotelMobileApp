@@ -1,12 +1,12 @@
-package com.example.hotelapp
+package com.example.hotelapp.ui
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.RadioButton
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.hotelapp.R
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

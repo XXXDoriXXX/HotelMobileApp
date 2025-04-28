@@ -7,31 +7,34 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:usesCleartextTraffic="true"
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HotelApp"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".ui.BookingDetailsActivity"
+            android:exported="false" />
+
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"
             android:value="true" />
+
         <activity
-            android:name=".FullScreenAvatarActivity"
+            android:name=".ui.FullScreenAvatarActivity"
             android:exported="false" />
         <activity
-            android:name=".EditProfileActivity"
-            android:exported="false" />
-       <!-- SplashActivity як стартова активність -->
+            android:name=".ui.EditProfileActivity"
+            android:exported="false" /> <!-- SplashActivity як стартова активність -->
         <activity
-            android:name=".SplashActivity"
+            android:name=".ui.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,42 +42,41 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name=".BookingSuccessActivity"
+            android:name=".ui.BookingSuccessActivity"
             android:exported="true">
             <intent-filter>
-            <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
-                    android:scheme="myapp"
                     android:host="booking"
-                    android:pathPrefix="/success"/>
+                    android:pathPrefix="/success"
+                    android:scheme="myapp" />
             </intent-filter>
         </activity>
-
-
         <activity
-            android:name=".LoginActivity"
+            android:name=".ui.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterActivity"
+            android:name=".ui.RegisterActivity"
             android:exported="true" />
         <activity
-            android:name=".Current_Room_Info"
+            android:name=".ui.Current_Room_Info"
             android:exported="false" />
         <activity
-            android:name=".RoomsListActivity"
+            android:name=".ui.RoomsListActivity"
             android:exported="false" />
         <activity
-            android:name=".SettingsActivity"
+            android:name=".ui.SettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".CurrentHotelInfo"
+            android:name=".ui.CurrentHotelInfo"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="false" />
 
         <meta-data

@@ -1,10 +1,11 @@
-package com.example.hotelapp
+package com.example.hotelapp.ui
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.hotelapp.R
 
 class BookingSuccessActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,21 +1,18 @@
-package com.example.hotelapp
+package com.example.hotelapp.ui
 
-import UserHolder
 import android.app.ProgressDialog
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.viewpager2.widget.ViewPager2
 import com.example.hotelapp.Holder.HotelHolder
+import com.example.hotelapp.R
 import com.example.hotelapp.api.HotelService
 import com.example.hotelapp.classes.RoomImagesAdapter
-import com.example.hotelapp.models.BookingRequest
 import com.example.hotelapp.network.RetrofitClient
 import com.example.hotelapp.repository.BookingRepository
 import com.example.hotelapp.utils.SessionManager
@@ -52,7 +49,6 @@ class Current_Room_Info : AppCompatActivity() {
         payButton = findViewById(R.id.pay_button)
         paymentSpinner = findViewById(R.id.payment_method_spinner)
 
-        // Спінер з методами
         val paymentMethods = listOf("Card", "Cash", "Google Pay")
         val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, paymentMethods)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
