@@ -1,4 +1,4 @@
-package com.example.hotelapp
+package com.example.hotelapp.ui
 
 import android.os.Bundle
 import android.view.View
@@ -10,6 +10,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.example.hotelapp.R
 import com.example.hotelapp.utils.SessionManager
 
 class FullScreenAvatarActivity : AppCompatActivity() {

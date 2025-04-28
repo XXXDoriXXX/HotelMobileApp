@@ -1,4 +1,4 @@
-package com.example.hotelapp
+package com.example.hotelapp.ui
 
 import UserHolder
 import android.content.Intent
@@ -15,10 +15,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.example.hotelapp.Holder.apiHolder
-import com.example.hotelapp.classes.ImageCacheProxy
-import com.example.hotelapp.classes.User
+import com.example.hotelapp.R
 import com.example.hotelapp.repository.UserRepository
 import com.example.hotelapp.utils.SessionManager
 class ProfileFragment : Fragment() {

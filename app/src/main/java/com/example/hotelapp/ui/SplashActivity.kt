@@ -1,12 +1,10 @@
-package com.example.hotelapp
+package com.example.hotelapp.ui
 
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.example.hotelapp.Holder.apiHolder
 
 
 class SplashActivity : AppCompatActivity() {

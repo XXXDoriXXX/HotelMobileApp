@@ -1,8 +1,6 @@
-package com.example.hotelapp
+package com.example.hotelapp.ui
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -11,16 +9,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hotelapp.Holder.HotelHolder
+import com.example.hotelapp.R
 import com.example.hotelapp.classes.ItemsRoomAdapter
 import com.example.hotelapp.repository.RoomRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class RoomsListActivity : AppCompatActivity() {
     private val roomRepository = RoomRepository()

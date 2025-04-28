@@ -3,6 +3,7 @@ package com.example.hotelapp.repository
 import com.example.hotelapp.api.HotelService
 import com.example.hotelapp.models.BookingRequest
 import com.example.hotelapp.models.BookingResponse
+import com.example.hotelapp.models.RefundResponse
 import com.example.hotelapp.models.StripePaymentResponse
 import com.example.hotelapp.utils.SessionManager
 import retrofit2.Call
@@ -27,6 +28,27 @@ class BookingRepository(private val api: HotelService, private val session: Sess
             }
 
             override fun onFailure(call: Call<List<BookingResponse>>, t: Throwable) {
+                onError(t)
+            }
+        })
+    }
+    fun requestRefund(
+        bookingId: Int,
+        onSuccess: (Float) -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        val token = session.getAccessToken() ?: return onError(Throwable("No token"))
+        api.requestRefund(bookingId, "Bearer $token").enqueue(object : Callback<RefundResponse> {
+            override fun onResponse(call: Call<RefundResponse>, response: Response<RefundResponse>) {
+                if (response.isSuccessful) {
+                    val refund = response.body()?.refunded ?: 0f
+                    onSuccess(refund)
+                } else {
+                    onError(Throwable("Не вдалося отримати суму повернення"))
+                }
+            }
+
+            override fun onFailure(call: Call<RefundResponse>, t: Throwable) {
                 onError(t)
             }
         })

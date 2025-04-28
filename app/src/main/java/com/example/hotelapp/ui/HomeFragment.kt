@@ -1,26 +1,19 @@
-package com.example.hotelapp
+package com.example.hotelapp.ui
 
 import HotelItem
-import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.hotelapp.R
 import com.example.hotelapp.classes.ItemsHotelAdapter
 import com.google.android.material.textfield.TextInputEditText
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import com.example.hotelapp.classes.FiltersAdapter
 import com.example.hotelapp.models.HotelSearchParams
 

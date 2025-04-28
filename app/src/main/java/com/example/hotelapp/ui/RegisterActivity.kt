@@ -1,4 +1,4 @@
-package com.example.hotelapp
+package com.example.hotelapp.ui
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,6 +10,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.hotelapp.R
 import com.example.hotelapp.classes.User
 import com.example.hotelapp.models.AuthResponse
 import com.example.hotelapp.models.RegisterRequest

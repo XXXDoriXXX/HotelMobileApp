@@ -1,4 +1,4 @@
-package com.example.hotelapp
+package com.example.hotelapp.ui
 
 import HotelItem
 import android.content.Intent
@@ -13,6 +13,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.hotelapp.Holder.HotelHolder
+import com.example.hotelapp.R
 import com.example.hotelapp.adapters.HotelImagesAdapter
 import com.example.hotelapp.classes.AmenitiesAdapter
 import com.example.hotelapp.classes.AmenityDisplay

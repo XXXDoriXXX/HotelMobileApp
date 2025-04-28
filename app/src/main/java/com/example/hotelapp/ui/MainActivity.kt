@@ -1,4 +1,4 @@
-package com.example.hotelapp
+package com.example.hotelapp.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -15,7 +15,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
-import com.example.hotelapp.Holder.apiHolder
+import com.example.hotelapp.R
 import com.example.hotelapp.classes.ImageCacheProxy
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomnavigation.BottomNavigationView

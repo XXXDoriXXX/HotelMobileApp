@@ -48,5 +48,14 @@
         android:layout_height="wrap_content"
         android:text="Відмінити бронювання"
         android:backgroundTint="@color/colorPrimary"
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/repeat_booking_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Повторити бронювання"
+        android:backgroundTint="@color/colorSecondary"
         android:textColor="@android:color/white"/>
 </LinearLayout>

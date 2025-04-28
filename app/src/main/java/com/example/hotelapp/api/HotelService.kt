@@ -12,6 +12,7 @@ import com.example.hotelapp.models.HotelWithStatsResponse
 import com.example.hotelapp.models.PaymentRequest
 import com.example.hotelapp.models.PaymentSuccessRequest
 import com.example.hotelapp.models.PaymentSuccessResponse
+import com.example.hotelapp.models.RefundResponse
 import com.example.hotelapp.models.StripePaymentResponse
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
@@ -96,5 +97,10 @@ interface HotelService {
 
     @GET("/bookings/my")
     fun getMyBookings(@Header("Authorization") token: String): Call<List<BookingResponse>>
+    @POST("/bookings/{booking_id}/refund-request")
+    fun requestRefund(
+        @Path("booking_id") bookingId: Int,
+        @Header("Authorization") token: String
+    ): Call<RefundResponse>
 
 }

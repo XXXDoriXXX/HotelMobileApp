@@ -7,5 +7,6 @@ data class BookingResponse(
     val date_start: String,
     val date_end: String,
     val total_price: Float,
-    val status: String
+    val status: String,
+    val hotel_image_url: String
 )

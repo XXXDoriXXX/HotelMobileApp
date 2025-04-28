@@ -1,4 +1,4 @@
-package com.example.hotelapp
+package com.example.hotelapp.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hotelapp.Holder.HotelHolder
+import com.example.hotelapp.R
 import com.example.hotelapp.api.HotelService
 import com.example.hotelapp.classes.ItemHistoryAdapter
 import com.example.hotelapp.classes.OrderItem
@@ -37,14 +38,17 @@ class HistoryFragment : Fragment() {
             onResult = { bookings ->
                 val orderItems = bookings.map {
                     OrderItem(
+                        bookingId = it.booking_id,
                         hotelName = it.hotel_name,
                         roomType = it.room_type,
-                        checkInDate = it.date_start.substring(0, 10), // тільки yyyy-MM-dd
+                        checkInDate = it.date_start.substring(0, 10),
                         checkOutDate = it.date_end.substring(0, 10),
                         totalPrice = it.total_price,
-                        status = mapStatus(it.status)
+                        status = mapStatus(it.status),
+                        hotel_image_url = it.hotel_image_url
                     )
                 }.toMutableList()
+
 
                 HotelHolder.orders = orderItems
                 adapter = ItemHistoryAdapter(orderItems, requireContext())
@@ -74,10 +78,10 @@ class HistoryFragment : Fragment() {
     }
     private fun mapStatus(status: String): String {
         return when (status.lowercase()) {
-            "confirmed" -> "Підтверджено"
-            "pending" -> "Очікує"
-            "cancelled" -> "Скасовано"
-            else -> "Невідомо"
+            "confirmed" -> "Confirmed"
+            "pending" -> "Pending"
+            "cancelled" -> "Cancelled"
+            else -> "Unknown"
         }
     }
 

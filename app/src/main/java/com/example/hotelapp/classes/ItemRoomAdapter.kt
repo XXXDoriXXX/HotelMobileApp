@@ -10,9 +10,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.hotelapp.Current_Room_Info
+import com.example.hotelapp.ui.Current_Room_Info
 import com.example.hotelapp.Holder.HotelHolder
-import com.example.hotelapp.Holder.apiHolder
 import com.example.hotelapp.R
 
 class ItemsRoomAdapter(var items:List<RoomItem>, var context: Context) : RecyclerView.Adapter<ItemsRoomAdapter.MyViewHolder>(){
