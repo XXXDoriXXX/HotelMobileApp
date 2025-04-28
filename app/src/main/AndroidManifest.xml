@@ -64,7 +64,7 @@
             android:name=".ui.RegisterActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.Current_Room_Info"
+            android:name=".ui.CurrentRoomInfo"
             android:exported="false" />
         <activity
             android:name=".ui.RoomsListActivity"

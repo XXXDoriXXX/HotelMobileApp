@@ -12,17 +12,22 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.hotelapp.Holder.HotelHolder
 import com.example.hotelapp.R
 import com.example.hotelapp.api.HotelService
+import com.example.hotelapp.classes.BusyDatesValidator
+import com.example.hotelapp.classes.CompositeValidator
 import com.example.hotelapp.classes.RoomImagesAdapter
 import com.example.hotelapp.network.RetrofitClient
 import com.example.hotelapp.repository.BookingRepository
+import com.example.hotelapp.repository.RoomRepository
 import com.example.hotelapp.utils.SessionManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class Current_Room_Info : AppCompatActivity() {
+class CurrentRoomInfo : AppCompatActivity() {
 
     private lateinit var selectDatesButton: Button
     private lateinit var totalPriceText: TextView
@@ -37,10 +42,13 @@ class Current_Room_Info : AppCompatActivity() {
     private lateinit var bottomSheet: View
     private lateinit var paymentSpinner: Spinner
     private lateinit var sessionManager: SessionManager
+    private var busyDates: List<Pair<Long, Long>> = listOf()
+    private lateinit var roomRepository: RoomRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_current_room_info)
+        roomRepository = RoomRepository()
 
         sessionManager = SessionManager(this)
 
@@ -54,7 +62,8 @@ class Current_Room_Info : AppCompatActivity() {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         paymentSpinner.adapter = spinnerAdapter
 
-        selectDatesButton.setOnClickListener { showDatePicker() }
+        selectDatesButton.setOnClickListener { loadBookedDatesAndShowPicker() }
+
 
         payButton.setOnClickListener {
             if (totalNights > 0) {
@@ -90,8 +99,19 @@ class Current_Room_Info : AppCompatActivity() {
     }
 
     private fun showDatePicker() {
+        val validator = CompositeValidator(
+            listOf(
+                BusyDatesValidator(busyDates),
+                DateValidatorPointForward.now()
+            )
+        )
+
+        val constraintsBuilder = CalendarConstraints.Builder()
+            .setValidator(validator)
+
         val dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
             .setTitleText("Виберіть дати")
+            .setCalendarConstraints(constraintsBuilder.build())
             .build()
 
         dateRangePicker.show(supportFragmentManager, "date_range_picker")
@@ -111,10 +131,32 @@ class Current_Room_Info : AppCompatActivity() {
         }
     }
 
+
     private fun calculateTotalPrice(startDateMillis: Long, endDateMillis: Long) {
         val diffInMillis = endDateMillis - startDateMillis
         totalNights = TimeUnit.MILLISECONDS.toDays(diffInMillis).toInt()
         totalPriceText.text = "Total: $${totalNights * pricePerNight}"
+    }
+
+    private fun loadBookedDatesAndShowPicker() {
+        val roomId = HotelHolder.currentRoom?.id ?: return
+
+        roomRepository.getBookedDates(roomId) { bookedDates, error ->
+            if (error != null) {
+                Toast.makeText(this, "Не вдалося завантажити заброньовані дати", Toast.LENGTH_SHORT).show()
+                return@getBookedDates
+            }
+
+            busyDates = bookedDates?.map {
+                val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                Pair(
+                    sdf.parse(it.start_date)!!.time,
+                    sdf.parse(it.end_date)!!.time
+                )
+            } ?: listOf()
+
+            showDatePicker()
+        }
     }
 
     private fun startCheckoutFlow() {
@@ -123,6 +165,8 @@ class Current_Room_Info : AppCompatActivity() {
         val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val dateStart = checkInDateFormatted?.let { outputFormat.format(inputFormat.parse(it)!!) } ?: return
         val dateEnd = checkOutDateFormatted?.let { outputFormat.format(inputFormat.parse(it)!!) } ?: return
+
+        val selectedPaymentMethod = paymentSpinner.selectedItem.toString().lowercase()
 
         val progress = ProgressDialog(this).apply {
             setMessage("Створюємо бронювання...")
@@ -133,7 +177,7 @@ class Current_Room_Info : AppCompatActivity() {
         val apiService = RetrofitClient.retrofit.create(HotelService::class.java)
         val repository = BookingRepository(apiService, sessionManager)
 
-        repository.createCheckout(roomId, dateStart, dateEnd, { url ->
+        repository.createCheckout(roomId, dateStart, dateEnd, selectedPaymentMethod, { url ->
             progress.dismiss()
             val intent = CustomTabsIntent.Builder().build()
             intent.launchUrl(this, Uri.parse(url))
@@ -142,4 +186,5 @@ class Current_Room_Info : AppCompatActivity() {
             Toast.makeText(this, "Помилка: ${error.message}", Toast.LENGTH_LONG).show()
         })
     }
+
 }

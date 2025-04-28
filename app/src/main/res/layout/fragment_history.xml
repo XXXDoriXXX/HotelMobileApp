@@ -39,6 +39,12 @@
             <include layout="@layout/item_order_shimmer" />
             <include layout="@layout/item_order_shimmer" />
             <include layout="@layout/item_order_shimmer" />
+            <include layout="@layout/item_order_shimmer" />
+            <include layout="@layout/item_order_shimmer" />
+            <include layout="@layout/item_order_shimmer" />
+            <include layout="@layout/item_order_shimmer" />
+            <include layout="@layout/item_order_shimmer" />
+            <include layout="@layout/item_order_shimmer" />
 
         </LinearLayout>
     </com.facebook.shimmer.ShimmerFrameLayout>

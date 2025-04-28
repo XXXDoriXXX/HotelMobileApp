@@ -12,10 +12,11 @@ class BookingViewModel(private val repo: BookingRepository) : ViewModel() {
         roomId: Int,
         dateStart: String,
         dateEnd: String,
+        paymentMethod: String,
         onRedirect: (String) -> Unit
     ) {
         isLoading.value = true
-        repo.createCheckout(roomId, dateStart, dateEnd, {
+        repo.createCheckout(roomId, dateStart, dateEnd, paymentMethod, {
             isLoading.value = false
             onRedirect(it)
         }, {
@@ -23,4 +24,5 @@ class BookingViewModel(private val repo: BookingRepository) : ViewModel() {
             error.value = it.message
         })
     }
+
 }
