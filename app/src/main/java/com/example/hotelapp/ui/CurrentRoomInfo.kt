@@ -103,7 +103,8 @@ class CurrentRoomInfo : AppCompatActivity() {
         val validator = CompositeValidator(
             listOf(
                 BusyDatesValidator(busyDates),
-                DateValidatorPointForward.now()
+                DateValidatorPointForward.from(System.currentTimeMillis() - 3600000)
+
             )
         )
 

@@ -68,17 +68,23 @@ class ItemHistoryAdapter(
 
             holder.itemView.setOnClickListener {
                 val order = items[position]
-                val intent = Intent(context, com.example.hotelapp.ui.BookingDetailsActivity::class.java).apply {
-                    putExtra("bookingId", order.bookingId)
-                    putExtra("hotelName", order.hotelName)
-                    putExtra("roomType", order.roomType)
-                    putExtra("dates", "${order.checkInDate} - ${order.checkOutDate}")
-                    putExtra("totalPrice", order.totalPrice)
+
+                if (context is androidx.fragment.app.FragmentActivity) {
+                    val bottomSheet = com.example.hotelapp.ui.BookingDetailsBottomSheet.newInstance(
+                        bookingId = order.bookingId,
+                        hotelName = order.hotelName,
+                        roomType = order.roomType,
+                        dates = "${order.checkInDate} - ${order.checkOutDate}",
+                        totalPrice = order.totalPrice,
+                        roomId = order.room_id
+                    )
+
+                    bottomSheet.show((context as androidx.fragment.app.FragmentActivity).supportFragmentManager, bottomSheet.tag)
                 }
-                context.startActivity(intent)
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
+
 }

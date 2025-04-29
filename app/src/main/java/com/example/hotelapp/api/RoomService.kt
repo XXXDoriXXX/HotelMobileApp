@@ -17,5 +17,8 @@ interface RoomService {
     fun getBookedDates(
         @Path("room_id") roomId: Int
     ): Call<List<BookedDate>>
+    @GET("rooms/{room_id}")
+    fun getRoomById(@Path("room_id") roomId: Int): Call<RoomItem>
+
 
 }

@@ -1,61 +1,132 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center"
-    android:background="@color/colorSurface">
+    android:background="?attr/colorPrimary">
 
-    <TextView
-        android:id="@+id/booking_hotel_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hotel Name"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp"/>
-
-    <TextView
-        android:id="@+id/booking_room_type"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Room: VIP"
-        android:textSize="18sp"
-        android:layout_marginBottom="8dp"/>
-
-    <TextView
-        android:id="@+id/booking_dates"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Jan 10 - Jan 15"
-        android:textSize="18sp"
-        android:layout_marginBottom="8dp"/>
-
-    <TextView
-        android:id="@+id/booking_price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Total: $999"
-        android:textSize="20sp"
-        android:textColor="@color/colorSecondary"
-        android:layout_marginBottom="24dp"/>
-
-    <Button
-        android:id="@+id/cancel_booking_button"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Відмінити бронювання"
-        android:backgroundTint="@color/colorPrimary"
-        android:textColor="@android:color/white"
-        android:layout_marginBottom="16dp"/>
+        android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/repeat_booking_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Повторити бронювання"
-        android:backgroundTint="@color/colorSecondary"
-        android:textColor="@android:color/white"/>
-</LinearLayout>
+        <TextView
+            android:id="@+id/booking_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ваше бронювання"
+            android:textSize="24sp"
+            android:textColor="?attr/colorOnPrimary"
+            android:fontFamily="@font/roboto_bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="24dp"/>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/bookingDetailsCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="?attr/colorSurface"
+            app:layout_constraintTop_toBottomOf="@id/booking_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+
+                <TextView
+                    android:id="@+id/booking_hotel_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Назва готелю"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:id="@+id/booking_room_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Тип кімнати: VIP"
+                    android:textSize="18sp"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:layout_marginBottom="4dp"/>
+
+                <TextView
+                    android:id="@+id/booking_dates"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="10 січня - 15 січня"
+                    android:textSize="18sp"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:layout_marginBottom="4dp"/>
+
+                <TextView
+                    android:id="@+id/booking_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Вартість: $999"
+                    android:textSize="20sp"
+                    android:textColor="?attr/colorSecondary"
+                    android:layout_marginTop="16dp"/>
+            </LinearLayout>
+            <FrameLayout
+                android:id="@+id/status_background"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/gradient_status_pending"
+                android:padding="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_gravity="center_horizontal">
+
+                <TextView
+                    android:id="@+id/booking_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pending"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:gravity="center"/>
+            </FrameLayout>
+        </androidx.cardview.widget.CardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/cancel_booking_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Відмінити бронювання"
+            app:cornerRadius="16dp"
+            android:backgroundTint="?attr/colorError"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@id/bookingDetailsCard"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginHorizontal="32dp"
+            android:layout_marginTop="24dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/repeat_booking_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Повторити бронювання"
+            app:cornerRadius="16dp"
+            android:backgroundTint="?attr/colorSecondary"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@id/cancel_booking_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginHorizontal="32dp"
+            android:layout_marginTop="16dp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

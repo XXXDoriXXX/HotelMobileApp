@@ -55,7 +55,8 @@ class HistoryFragment : Fragment() {
                             checkOutDate = it.date_end.substring(0, 10),
                             totalPrice = it.total_price,
                             status = mapStatus(it.status),
-                            hotel_image_url = it.hotel_images?.firstOrNull()?.image_url ?: ""
+                            hotel_image_url = it.hotel_images?.firstOrNull()?.image_url ?: "",
+                            room_id = it.room_id
                         )
                     }.toMutableList()
 

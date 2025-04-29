@@ -3,6 +3,7 @@ package com.example.hotelapp.classes
 data class OrderItem(
     val bookingId: Int,
     val hotelName: String,
+    val room_id: Int,
     val roomType: String,
     val checkInDate: String,
     val checkOutDate: String,
