@@ -36,12 +36,13 @@ interface HotelService {
         @Path("hotel_id") hotelId: Int,
         @Header("Authorization") token: String
     ): Call<ViewResponse>
-    @POST("hotels/{hotel_id}/rate")
+    @PUT("hotels/{hotel_id}/rate")
     fun rateHotel(
         @Path("hotel_id") hotelId: Int,
-        @Body ratingRequest: RatingRequest,
+        @Body rating: Float,
         @Header("Authorization") token: String
-    ): Call<RatingResponse>
+    ): Call<Void>
+
     @GET("hotels/search")
     fun searchHotels(@Query("name") name: String): Call<List<HotelItem>>
     @POST("/bookings/")
@@ -78,12 +79,6 @@ interface HotelService {
         @Path("hotel_id") hotelId: Int,
         @Header("Authorization") token: String
     ): Call<HotelWithStatsResponse>
-    @PUT("hotels/{hotel_id}/rate")
-    fun rateHotelPut(
-        @Path("hotel_id") hotelId: Int,
-        @Body value: Float,
-        @Header("Authorization") token: String
-    ): Call<Void>
     @POST("hotels/search")
     fun searchHotels(
         @Body filters: HotelSearchParams

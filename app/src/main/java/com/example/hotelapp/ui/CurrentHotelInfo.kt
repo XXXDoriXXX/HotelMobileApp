@@ -85,7 +85,7 @@ class CurrentHotelInfo : AppCompatActivity() {
         viewsText.text = "${hotel.views} views"
 
         ratingBar.setOnRatingBarChangeListener { _, rating, _ ->
-            hotelRepository.rateHotelPUT(
+            hotelRepository.rateHotel(
                 hotel.id,
                 rating,
                 onResult = {

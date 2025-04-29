@@ -52,6 +52,7 @@ dependencies {
     implementation ("com.squareup.okhttp3:logging-interceptor:4.10.0")
     implementation ("com.github.bumptech.glide:glide:4.15.1")
     implementation ("com.google.android.flexbox:flexbox:3.0.0")
+    implementation("com.airbnb.android:lottie:6.3.0")
     implementation ("com.facebook.shimmer:shimmer:0.5.0")
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.lifecycle.livedata.ktx)

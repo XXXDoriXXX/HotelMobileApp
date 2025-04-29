@@ -78,8 +78,8 @@ class BookingRepository(private val api: HotelService, private val session: Sess
                         val body = response.body()
                         if (body != null) {
                             when {
-                                body.has("checkoutUrl") -> {
-                                    val checkoutUrl = body.get("checkoutUrl").asString
+                                body.has("checkout_url") -> {
+                                    val checkoutUrl = body.get("checkout_url").asString
                                     onSuccess(checkoutUrl)
                                 }
                                 body.has("message") -> {

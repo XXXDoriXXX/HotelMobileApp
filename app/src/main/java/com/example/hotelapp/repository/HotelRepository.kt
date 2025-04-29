@@ -118,34 +118,6 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
             })
     }
 
-    fun rateHotelPUT(
-        hotelId: Int,
-        ratingValue: Float,
-        onResult: () -> Unit,
-        onError: (Throwable) -> Unit
-    ) {
-        val token = sessionManager.getAccessToken()
-        if (token.isNullOrEmpty()) {
-            onError(Exception("No access token"))
-            return
-        }
-
-        apiService.rateHotelPut(hotelId, ratingValue, "Bearer $token")
-            .enqueue(object : Callback<Void> {
-                override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                    if (response.isSuccessful) {
-                        onResult()
-                    } else {
-                        onError(Exception("Rating failed: ${response.message()}"))
-                    }
-                }
-
-                override fun onFailure(call: Call<Void>, t: Throwable) {
-                    onError(t)
-                }
-            })
-    }
-
     fun searchHotelsByFilters(
         filters: HotelSearchParams,
         onResult: (List<HotelItem>) -> Unit,
@@ -179,7 +151,7 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
     fun rateHotel(
         hotelId: Int,
         rating: Float,
-        onResult: (RatingResponse) -> Unit,
+        onResult: () -> Unit,
         onError: (Throwable) -> Unit
     ) {
         val token = sessionManager.getAccessToken()
@@ -188,21 +160,23 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
             return
         }
 
-        val request = RatingRequest(rating)
-        apiService.rateHotel(hotelId, request, "Bearer $token").enqueue(object : retrofit2.Callback<RatingResponse> {
-            override fun onResponse(call: Call<RatingResponse>, response: Response<RatingResponse>) {
-                if (response.isSuccessful) {
-                    response.body()?.let(onResult)
-                } else {
-                    onError(Exception("Failed to rate hotel: ${response.message()}"))
+        apiService.rateHotel(hotelId, rating, "Bearer $token")
+            .enqueue(object : Callback<Void> {
+                override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                    if (response.isSuccessful) {
+                        onResult()
+                    } else {
+                        val error = response.errorBody()?.string()
+                        onError(Exception("Failed to rate hotel: $error"))
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<RatingResponse>, t: Throwable) {
-                onError(t)
-            }
-        })
+                override fun onFailure(call: Call<Void>, t: Throwable) {
+                    onError(t)
+                }
+            })
     }
+
     fun searchHotels(
         name: String,
         onResult: (List<HotelItem>) -> Unit,
