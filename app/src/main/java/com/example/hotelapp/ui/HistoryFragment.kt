@@ -61,6 +61,7 @@ class HistoryFragment : Fragment() {
                     }.toMutableList()
 
                     HotelHolder.orders = orderItems
+
                     adapter = ItemHistoryAdapter(orderItems, requireContext())
                     orderHistoryRecyclerView.adapter = adapter
                 }
@@ -93,14 +94,14 @@ class HistoryFragment : Fragment() {
         @JvmStatic
         fun newInstance() = HistoryFragment()
     }
-    private fun mapStatus(status: String): String {
-        return when (status.lowercase()) {
+    private fun mapStatus(status: String?): String {
+        return when (status?.lowercase()) {
             "confirmed" -> "Confirmed"
-            "pending_payment" -> "Pending"
-            "awaiting_confirmation" -> "Pending"
+            "pending_payment", "awaiting_confirmation" -> "Pending"
             "cancelled" -> "Cancelled"
             else -> "Unknown"
         }
     }
+
 
 }

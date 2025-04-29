@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.example.hotelapp.Holder.HotelHolder
@@ -61,14 +62,12 @@ class BookingDetailsBottomSheet : BottomSheetDialogFragment() {
         }
 
         val view = inflater.inflate(R.layout.activity_booking_details, container, false)
-        val statusText = view.findViewById<TextView>(R.id.booking_status)
-
-        statusText.text = status
-
+        val status_background = view.findViewById<FrameLayout>(R.id.status_background)
+        Log.d("DEBUG", "status: $status")
         when (status) {
-            "Pending" -> statusText.setBackgroundResource(R.drawable.status_label_background_yellow)
-            "Confirmed" -> statusText.setBackgroundResource(R.drawable.status_label_background_green)
-            "Cancelled" -> statusText.setBackgroundResource(R.drawable.status_label_background_red)
+            "Pending" -> status_background.setBackgroundResource(R.drawable.status_label_background_yellow)
+            "Confirmed" -> status_background.setBackgroundResource(R.drawable.status_label_background_green)
+            "Cancelled" -> status_background.setBackgroundResource(R.drawable.status_label_background_red)
         }
 
         view.findViewById<TextView>(R.id.booking_hotel_name).text = hotelName
@@ -140,7 +139,8 @@ class BookingDetailsBottomSheet : BottomSheetDialogFragment() {
             roomType: String,
             dates: String,
             totalPrice: Float,
-            roomId: Int
+            roomId: Int,
+            status: String
         ) = BookingDetailsBottomSheet().apply {
             arguments = Bundle().apply {
                 putInt("bookingId", bookingId)
@@ -149,6 +149,7 @@ class BookingDetailsBottomSheet : BottomSheetDialogFragment() {
                 putString("dates", dates)
                 putFloat("totalPrice", totalPrice)
                 putInt("roomId", roomId)
+                putString("status",status)
             }
         }
     }

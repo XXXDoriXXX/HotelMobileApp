@@ -76,7 +76,8 @@ class ItemHistoryAdapter(
                         roomType = order.roomType,
                         dates = "${order.checkInDate} - ${order.checkOutDate}",
                         totalPrice = order.totalPrice,
-                        roomId = order.room_id
+                        roomId = order.room_id,
+                        status = order.status
                     )
 
                     bottomSheet.show((context as androidx.fragment.app.FragmentActivity).supportFragmentManager, bottomSheet.tag)

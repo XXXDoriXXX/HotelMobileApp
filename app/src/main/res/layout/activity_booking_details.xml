@@ -80,22 +80,14 @@
             </LinearLayout>
             <FrameLayout
                 android:id="@+id/status_background"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/gradient_status_pending"
                 android:padding="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_gravity="center_horizontal">
+                android:layout_marginTop="0dp"
+                android:layout_gravity="center_horizontal"
+                >
 
-                <TextView
-                    android:id="@+id/booking_status"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Pending"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:gravity="center"/>
             </FrameLayout>
         </androidx.cardview.widget.CardView>
 
