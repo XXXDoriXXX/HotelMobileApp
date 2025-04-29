@@ -95,7 +95,8 @@ class HistoryFragment : Fragment() {
     private fun mapStatus(status: String): String {
         return when (status.lowercase()) {
             "confirmed" -> "Confirmed"
-            "pending" -> "Pending"
+            "pending_payment" -> "Pending"
+            "awaiting_confirmation" -> "Pending"
             "cancelled" -> "Cancelled"
             else -> "Unknown"
         }

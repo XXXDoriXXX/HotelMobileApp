@@ -102,5 +102,10 @@ interface HotelService {
         @Path("booking_id") bookingId: Int,
         @Header("Authorization") token: String
     ): Call<RefundResponse>
+    @POST("bookings/checkout")
+    fun createBookingCheckoutRaw(
+        @Body request: BookingRequest,
+        @Header("Authorization") token: String
+    ): Call<JsonObject>
 
 }

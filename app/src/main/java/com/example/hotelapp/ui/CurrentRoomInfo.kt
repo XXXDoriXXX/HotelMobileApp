@@ -1,6 +1,7 @@
 package com.example.hotelapp.ui
 
 import android.app.ProgressDialog
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.MotionEvent
@@ -70,7 +71,7 @@ class CurrentRoomInfo : AppCompatActivity() {
                 val selectedMethod = paymentSpinner.selectedItem.toString()
                 when (selectedMethod) {
                     "Card" -> startCheckoutFlow()
-                    "Cash" -> Toast.makeText(this, "Оплата готівкою при заселенні", Toast.LENGTH_SHORT).show()
+                    "Cash" -> startCashBooking()
                     "Google Pay" -> Toast.makeText(this, "Google Pay ще не реалізовано", Toast.LENGTH_SHORT).show()
                 }
             } else {
@@ -186,5 +187,37 @@ class CurrentRoomInfo : AppCompatActivity() {
             Toast.makeText(this, "Помилка: ${error.message}", Toast.LENGTH_LONG).show()
         })
     }
+    private fun startCashBooking() {
+        val roomId = HotelHolder.currentRoom?.id ?: return
+        val inputFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dateStart = checkInDateFormatted?.let { outputFormat.format(inputFormat.parse(it)!!) } ?: return
+        val dateEnd = checkOutDateFormatted?.let { outputFormat.format(inputFormat.parse(it)!!) } ?: return
+
+        val progress = ProgressDialog(this).apply {
+            setMessage("Створюємо бронювання...")
+            setCancelable(false)
+            show()
+        }
+
+        val apiService = RetrofitClient.retrofit.create(HotelService::class.java)
+        val repository = BookingRepository(apiService, sessionManager)
+
+        repository.createCheckout(roomId, dateStart, dateEnd, "cash", { urlOrMessage ->
+            progress.dismiss()
+
+            val intent = Intent(this, BookingSuccessActivity::class.java).apply {
+                putExtra("totalPrice", totalNights * pricePerNight)
+                putExtra("bookingDate", dateStart)
+            }
+            startActivity(intent)
+            finish()
+
+        }, { error ->
+            progress.dismiss()
+            Toast.makeText(this, "Помилка: ${error.message}", Toast.LENGTH_LONG).show()
+        })
+    }
+
 
 }

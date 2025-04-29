@@ -6,6 +6,7 @@ import com.example.hotelapp.models.BookingResponse
 import com.example.hotelapp.models.RefundResponse
 import com.example.hotelapp.models.StripePaymentResponse
 import com.example.hotelapp.utils.SessionManager
+import com.google.gson.JsonObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -70,19 +71,37 @@ class BookingRepository(private val api: HotelService, private val session: Sess
             payment_method = paymentMethod
         )
 
-        api.createBookingCheckout(request, "Bearer $token")
-            .enqueue(object : Callback<StripePaymentResponse> {
-                override fun onResponse(call: Call<StripePaymentResponse>, response: Response<StripePaymentResponse>) {
+        api.createBookingCheckoutRaw(request, "Bearer $token")
+            .enqueue(object : Callback<JsonObject> {
+                override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                     if (response.isSuccessful) {
-                        response.body()?.checkoutUrl?.let(onSuccess)
+                        val body = response.body()
+                        if (body != null) {
+                            when {
+                                body.has("checkoutUrl") -> {
+                                    val checkoutUrl = body.get("checkoutUrl").asString
+                                    onSuccess(checkoutUrl)
+                                }
+                                body.has("message") -> {
+                                    val message = body.get("message").asString
+                                    onSuccess(message)
+                                }
+                                else -> {
+                                    onFailure(Throwable("Unknown response structure"))
+                                }
+                            }
+                        } else {
+                            onFailure(Throwable("Empty response body"))
+                        }
                     } else {
-                        onFailure(Throwable("Не вдалося отримати checkout URL"))
+                        onFailure(Throwable("Не вдалося створити бронювання"))
                     }
                 }
 
-                override fun onFailure(call: Call<StripePaymentResponse>, t: Throwable) {
+                override fun onFailure(call: Call<JsonObject>, t: Throwable) {
                     onFailure(t)
                 }
             })
     }
+
 }

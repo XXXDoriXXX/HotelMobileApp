@@ -63,6 +63,9 @@ class SessionManager(context: Context) {
     fun getUserAvatar(): String? {
         return prefs.getString("cached_avatar_path", null)
     }
+    fun getUserFirstName(): String? {
+        return prefs.getString(KEY_FIRST_NAME, null)
+    }
 
 
     fun isLoggedIn(): Boolean {
