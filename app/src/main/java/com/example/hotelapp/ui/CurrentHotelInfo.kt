@@ -20,17 +20,25 @@ import com.example.hotelapp.classes.AmenityDisplay
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class CurrentHotelInfo : AppCompatActivity() {
-
+    private lateinit var shimmerLayout: com.facebook.shimmer.ShimmerFrameLayout
     private val hotelRepository = UserHolder.getHotelRepository()
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
     private lateinit var viewPager: ViewPager2
     private lateinit var adapter: HotelImagesAdapter
     private lateinit var bottomSheet: View
+    private var isFavorite: Boolean = false
+    private lateinit var favoriteButton: ImageView
+    private lateinit var loadingOverlay: FrameLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_current_hotel_info)
+        loadingOverlay = findViewById(R.id.loading_overlay)
+        loadingOverlay.visibility = View.VISIBLE
+
+        findViewById<View>(R.id.main).visibility = View.GONE
+        findViewById<View>(R.id.hotelDetailsBottomSheet).visibility = View.GONE
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -52,17 +60,39 @@ class CurrentHotelInfo : AppCompatActivity() {
             }
         )
     }
+    fun updateFavoriteIcon() {
+        val drawableId = if (isFavorite) R.drawable.ic_heart_filled else R.drawable.ic_heart_outline
+        favoriteButton.setImageResource(drawableId)
+    }
+    private fun checkIfFavorite(hotelId: Int): Boolean {
+        // TODO: реалізуй перевірку з SharedPreferences або API
+        return false
+    }
 
+    private fun addToFavorites(hotel: HotelItem) {
+        // TODO: реалізуй збереження в local DB або через API
+    }
+
+    private fun removeFromFavorites(hotelId: Int) {
+        // TODO: реалізуй видалення з local DB або через API
+    }
     private fun initUI(hotel: HotelItem) {
+        loadingOverlay.visibility = View.GONE
+
+        findViewById<View>(R.id.main).visibility = View.VISIBLE
+        bottomSheet = findViewById(R.id.hotelDetailsBottomSheet)
+        bottomSheet.visibility = View.VISIBLE
+
         val hotelName: TextView = findViewById(R.id.hotel_name)
         val ratingBar: RatingBar = findViewById(R.id.rating_bar)
         val bookNowButton: Button = findViewById(R.id.book_now_button)
         val viewsText: TextView = findViewById(R.id.review_count)
         val descriptionText: TextView = findViewById(R.id.hotel_description)
         val backButton: ImageView = findViewById(R.id.back_button)
-        bottomSheet = findViewById(R.id.hotelDetailsBottomSheet)
+
         viewPager = findViewById(R.id.hotelImagesViewPager)
         val amenitiesView = findViewById<RecyclerView>(R.id.amenitiesRecyclerView)
+        favoriteButton = findViewById(R.id.favorite_button)
         val amenities = hotel.amenities.map {
             when (it.amenity_id) {
                 1 -> AmenityDisplay(R.drawable.wifi, "Wi-Fi")
@@ -73,12 +103,23 @@ class CurrentHotelInfo : AppCompatActivity() {
                 else -> AmenityDisplay(R.drawable.ic_other, "Other")
             }
         }
-
+        isFavorite = checkIfFavorite(hotel.id)
+        updateFavoriteIcon()
         val amenitiesAdapter = AmenitiesAdapter(amenities)
         amenitiesView.adapter = amenitiesAdapter
-        amenitiesView.layoutManager =
-            androidx.recyclerview.widget.LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
+        amenitiesView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
+        favoriteButton.setOnClickListener {
+            isFavorite = !isFavorite
+            updateFavoriteIcon()
 
+            if (isFavorite) {
+                addToFavorites(hotel)
+                Toast.makeText(this, "Added to favorites", Toast.LENGTH_SHORT).show()
+            } else {
+                removeFromFavorites(hotel.id)
+                Toast.makeText(this, "Removed from favorites", Toast.LENGTH_SHORT).show()
+            }
+        }
         hotelName.text = hotel.name
         descriptionText.text = hotel.description
         ratingBar.rating = hotel.rating
