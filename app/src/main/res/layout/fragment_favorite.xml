@@ -7,7 +7,6 @@
     android:padding="16dp"
     android:background="?android:attr/windowBackground">
 
-    <!-- Заголовок -->
     <TextView
         android:id="@+id/favorites_title"
         android:layout_width="wrap_content"
@@ -18,8 +17,6 @@
         android:fontFamily="@font/roboto_medium"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <!-- Підзаголовок -->
     <TextView
         android:id="@+id/favorites_subtitle"
         android:layout_width="wrap_content"
@@ -66,17 +63,10 @@
             android:textColorHint="?attr/colorOnSecondary"
             android:textSize="14sp" />
 
-        <ImageView
-            android:id="@+id/filter_button"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:src="@drawable/ic_filter"
-            android:padding="6dp"
-            app:tint="?attr/colorOnSecondary" />
+
     </LinearLayout>
 
-    <!-- Shimmer -->
-    <!-- Шимер-ефект з 3 placeholder-елементами -->
+
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmer_layout"
         android:layout_width="0dp"
@@ -95,9 +85,9 @@
             android:orientation="vertical"
             android:padding="8dp">
 
-            <include layout="@layout/hotel_item_shimmer"/>
-            <include layout="@layout/hotel_item_shimmer"/>
-            <include layout="@layout/hotel_item_shimmer"/>
+            <include layout="@layout/hotel_item_2_shimmer"/>
+            <include layout="@layout/hotel_item_2_shimmer"/>
+            <include layout="@layout/hotel_item_2_shimmer"/>
         </LinearLayout>
     </com.facebook.shimmer.ShimmerFrameLayout>
 

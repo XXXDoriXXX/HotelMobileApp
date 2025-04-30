@@ -75,6 +75,7 @@ class HomeFragment : Fragment() {
         shimmerLayoutHome.startShimmer()
         shimmerLayoutHome.visibility = View.VISIBLE
         itemsList.visibility = View.GONE
+
         filtersRecycler = view.findViewById(R.id.filters_recycler)
         filtersAdapter = FiltersAdapter(filterList) { removedKey ->
             activeFilters.remove(removedKey)
@@ -141,14 +142,28 @@ class HomeFragment : Fragment() {
         }
 
         itemsList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if (isSearching) return
-                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                val totalItemCount = layoutManager.itemCount
-                val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
-                if (!isLoading && canLoadMore && lastVisibleItem >= totalItemCount - 5) {
-                    loadMoreHotels()
+
+                val centerX = recyclerView.width / 2
+                for (i in 0 until recyclerView.childCount) {
+                    val child = recyclerView.getChildAt(i)
+                    val childCenter = (child.left + child.right) / 2
+                    val d = Math.min(Math.abs(centerX - childCenter).toFloat(), centerX.toFloat())
+                    val scale = 1f - 0.05f * (d / centerX)
+                    child.scaleX = scale
+                    child.scaleY = scale
+                    child.alpha = 0.5f + 0.5f * scale
+                }
+
+                if (!isSearching) {
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    val totalItemCount = layoutManager.itemCount
+                    val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
+                    if (!isLoading && canLoadMore && lastVisibleItem >= totalItemCount - 5) {
+                        loadMoreHotels()
+                    }
                 }
             }
         })

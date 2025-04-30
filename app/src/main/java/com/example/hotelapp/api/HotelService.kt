@@ -7,6 +7,7 @@ import RatingResponse
 import ViewResponse
 import com.example.hotelapp.models.BookingRequest
 import com.example.hotelapp.models.BookingResponse
+import com.example.hotelapp.models.FavoriteHotelWrapper
 import com.example.hotelapp.models.HotelSearchParams
 import com.example.hotelapp.models.HotelWithStatsResponse
 import com.example.hotelapp.models.PaymentRequest
@@ -104,8 +105,7 @@ interface HotelService {
         @Header("Authorization") token: String
     ): Call<JsonObject>
     @GET("favorites/")
-    fun getFavorites(@Header("Authorization") token: String): Call<List<HotelItem>>
-
+    fun getFavorites(@Header("Authorization") token: String): Call<List<FavoriteHotelWrapper>>
     @POST("favorites/{hotel_id}")
     fun addFavorite(
         @Path("hotel_id") hotelId: Int,

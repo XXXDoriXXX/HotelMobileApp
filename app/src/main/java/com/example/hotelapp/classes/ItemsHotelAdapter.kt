@@ -41,7 +41,7 @@ class ItemsHotelAdapter(
     override fun onBindViewHolder(holder: MyViewHoldert, position: Int) {
         val currentItem = items[position]
         holder.hotelName.text = currentItem.name
-        holder.description.text = currentItem.description + "\n"+ currentItem.address.country+" "+currentItem.address.city
+        holder.description.text = currentItem.address.country+" "+currentItem.address.city+ "\n"+currentItem.description
         holder.rating.rating = currentItem.rating
 
         val imageUrl = currentItem.images?.firstOrNull()?.image_url

@@ -1,4 +1,5 @@
 import com.example.hotelapp.api.HotelService
+import com.example.hotelapp.models.FavoriteHotelWrapper
 import com.example.hotelapp.models.HotelSearchParams
 import com.example.hotelapp.models.HotelWithStatsResponse
 import com.example.hotelapp.utils.SessionManager
@@ -185,20 +186,33 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
             onError(Exception("No access token"))
             return
         }
-        apiService.getFavorites("Bearer $token").enqueue(object : Callback<List<HotelItem>> {
-            override fun onResponse(call: Call<List<HotelItem>>, response: Response<List<HotelItem>>) {
+
+        apiService.getFavorites("Bearer $token").enqueue(object : Callback<List<FavoriteHotelWrapper>> {
+            override fun onResponse(
+                call: Call<List<FavoriteHotelWrapper>>,
+                response: Response<List<FavoriteHotelWrapper>>
+            ) {
                 if (response.isSuccessful) {
-                    onResult(response.body() ?: emptyList())
+                    val hotels = response.body()?.map {
+                        it.hotel.apply {
+                            rating = it.rating
+                            views = it.views
+                        }
+                    } ?: emptyList()
+                    onResult(hotels)
                 } else {
                     onError(Exception("Failed to get favorites"))
                 }
             }
 
-            override fun onFailure(call: Call<List<HotelItem>>, t: Throwable) {
+            override fun onFailure(call: Call<List<FavoriteHotelWrapper>>, t: Throwable) {
                 onError(t)
             }
         })
     }
+
+
+
 
     fun addFavorite(
         hotelId: Int,
