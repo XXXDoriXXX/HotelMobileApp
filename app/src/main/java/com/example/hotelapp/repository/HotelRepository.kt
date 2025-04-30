@@ -176,6 +176,69 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
                 }
             })
     }
+    fun getFavorites(
+        onResult: (List<HotelItem>) -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        val token = sessionManager.getAccessToken()
+        if (token.isNullOrEmpty()) {
+            onError(Exception("No access token"))
+            return
+        }
+        apiService.getFavorites("Bearer $token").enqueue(object : Callback<List<HotelItem>> {
+            override fun onResponse(call: Call<List<HotelItem>>, response: Response<List<HotelItem>>) {
+                if (response.isSuccessful) {
+                    onResult(response.body() ?: emptyList())
+                } else {
+                    onError(Exception("Failed to get favorites"))
+                }
+            }
+
+            override fun onFailure(call: Call<List<HotelItem>>, t: Throwable) {
+                onError(t)
+            }
+        })
+    }
+
+    fun addFavorite(
+        hotelId: Int,
+        onResult: () -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        val token = sessionManager.getAccessToken()
+        if (token.isNullOrEmpty()) {
+            onError(Exception("No access token"))
+            return
+        }
+        apiService.addFavorite(hotelId, "Bearer $token").enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) onResult()
+                else onError(Exception("Failed to add favorite"))
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) = onError(t)
+        })
+    }
+
+    fun removeFavorite(
+        hotelId: Int,
+        onResult: () -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        val token = sessionManager.getAccessToken()
+        if (token.isNullOrEmpty()) {
+            onError(Exception("No access token"))
+            return
+        }
+        apiService.removeFavorite(hotelId, "Bearer $token").enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) onResult()
+                else onError(Exception("Failed to remove favorite"))
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) = onError(t)
+        })
+    }
 
     fun searchHotels(
         name: String,

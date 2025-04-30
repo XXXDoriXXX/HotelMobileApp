@@ -19,6 +19,8 @@ class SessionManager(context: Context) {
         private const val KEY_PHONE = "phone"
         private const val KEY_BIRTH_DATE = "birth_date"
         private const val KEY_AVATAR_URL = "avatar_url"
+        private const val KEY_FAVORITE_HOTEL_IDS = "favorite_hotel_ids"
+
 
     }
     fun getAccessToken(): String? {
@@ -67,6 +69,14 @@ class SessionManager(context: Context) {
         return prefs.getString(KEY_FIRST_NAME, null)
     }
 
+    fun saveFavoriteHotelIds(ids: List<Int>) {
+        val idString = ids.joinToString(",")
+        prefs.edit().putString(KEY_FAVORITE_HOTEL_IDS, idString).apply()
+    }
+    fun getFavoriteHotelIds(): List<Int> {
+        val idString = prefs.getString(KEY_FAVORITE_HOTEL_IDS, "") ?: return emptyList()
+        return idString.split(",").filter { it.isNotBlank() }.map { it.toInt() }
+    }
 
     fun isLoggedIn(): Boolean {
         val loggedIn = prefs.getBoolean(KEY_IS_LOGGED_IN, false)

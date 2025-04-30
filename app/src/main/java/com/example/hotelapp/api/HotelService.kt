@@ -19,6 +19,7 @@ import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
@@ -102,5 +103,19 @@ interface HotelService {
         @Body request: BookingRequest,
         @Header("Authorization") token: String
     ): Call<JsonObject>
+    @GET("favorites/")
+    fun getFavorites(@Header("Authorization") token: String): Call<List<HotelItem>>
+
+    @POST("favorites/{hotel_id}")
+    fun addFavorite(
+        @Path("hotel_id") hotelId: Int,
+        @Header("Authorization") token: String
+    ): Call<Void>
+
+    @DELETE("favorites/{hotel_id}")
+    fun removeFavorite(
+        @Path("hotel_id") hotelId: Int,
+        @Header("Authorization") token: String
+    ): Call<Void>
 
 }

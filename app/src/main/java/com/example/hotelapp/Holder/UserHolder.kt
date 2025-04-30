@@ -20,6 +20,7 @@ object UserHolder {
 
     fun getSessionManager(): SessionManager {
         return sessionManager ?: throw IllegalStateException("SessionManager must be initialized before accessing it")
+
     }
 
     fun getHotelRepository(): HotelRepository {

@@ -65,18 +65,54 @@ class CurrentHotelInfo : AppCompatActivity() {
         favoriteButton.setImageResource(drawableId)
     }
     private fun checkIfFavorite(hotelId: Int): Boolean {
-        // TODO: реалізуй перевірку з SharedPreferences або API
-        return false
+        val favorites = UserHolder.getSessionManager().getFavoriteHotelIds()
+        return favorites.contains(hotelId)
     }
+
 
     private fun addToFavorites(hotel: HotelItem) {
-        // TODO: реалізуй збереження в local DB або через API
+        val session = UserHolder.getSessionManager()
+        val repo = UserHolder.getHotelRepository()
+
+        repo.addFavorite(
+            hotelId = hotel.id,
+            onResult = {
+                val ids = session.getFavoriteHotelIds().toMutableList()
+                if (!ids.contains(hotel.id)) {
+                    ids.add(hotel.id)
+                    session.saveFavoriteHotelIds(ids)
+                }
+            },
+            onError = {
+                Toast.makeText(this, "Failed to add to favorites", Toast.LENGTH_SHORT).show()
+            }
+        )
     }
 
+
     private fun removeFromFavorites(hotelId: Int) {
-        // TODO: реалізуй видалення з local DB або через API
+        val session = UserHolder.getSessionManager()
+        val repo = UserHolder.getHotelRepository()
+
+        repo.removeFavorite(
+            hotelId = hotelId,
+            onResult = {
+                val ids = session.getFavoriteHotelIds().toMutableList()
+                if (ids.contains(hotelId)) {
+                    ids.remove(hotelId)
+                    session.saveFavoriteHotelIds(ids)
+                }
+            },
+            onError = {
+                Toast.makeText(this, "Failed to remove from favorites", Toast.LENGTH_SHORT).show()
+            }
+        )
     }
+
+
     private fun initUI(hotel: HotelItem) {
+
+
         loadingOverlay.visibility = View.GONE
 
         findViewById<View>(R.id.main).visibility = View.VISIBLE
@@ -93,6 +129,11 @@ class CurrentHotelInfo : AppCompatActivity() {
         viewPager = findViewById(R.id.hotelImagesViewPager)
         val amenitiesView = findViewById<RecyclerView>(R.id.amenitiesRecyclerView)
         favoriteButton = findViewById(R.id.favorite_button)
+        val favoriteIds = UserHolder.getSessionManager().getFavoriteHotelIds()
+        isFavorite = favoriteIds.contains(hotel.id)
+        updateFavoriteIcon()
+
+
         val amenities = hotel.amenities.map {
             when (it.amenity_id) {
                 1 -> AmenityDisplay(R.drawable.wifi, "Wi-Fi")
