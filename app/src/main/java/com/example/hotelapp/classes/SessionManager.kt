@@ -57,6 +57,9 @@ class SessionManager(context: Context) {
         }
     }
 
+    fun getUserBirthDate(): String? {
+        return prefs.getString(KEY_BIRTH_DATE, null)
+    }
 
     fun saveUserAvatar(avatarPath: String) {
         prefs.edit().putString("cached_avatar_path", avatarPath).apply()

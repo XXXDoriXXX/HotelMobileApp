@@ -20,6 +20,7 @@
         <item name="colorSurface">@color/colorSurface</item>
         <item name="colorError">#B00020</item>
         <item name="colorOnError">#FFFFFF</item>
+        <item name="materialAlertDialogTheme">@style/MyDialogTheme</item>
 
         <!-- Акценти -->
 
