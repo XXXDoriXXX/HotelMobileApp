@@ -32,10 +32,11 @@
             android:exported="false" />
         <activity
             android:name=".ui.EditProfileActivity"
-            android:exported="false" /> <!-- SplashActivity як стартова активність -->
+            android:exported="false" />
         <activity
             android:name=".ui.SplashActivity"
-            android:exported="true">
+            android:exported="true"
+            android:noHistory="true">>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

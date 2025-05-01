@@ -4,7 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.hotelapp.R
 
 
 class SplashActivity : AppCompatActivity() {
@@ -13,22 +15,32 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_splash)
         UserHolder.initialize(this)
-        val sessionManager=UserHolder.getSessionManager();
-        Handler(Looper.getMainLooper()).postDelayed({
-            if (sessionManager.isLoggedIn()) {
-                navigateToMainActivity()
-            } else {
-                navigateToLogin()
-            }
-        }, 2000)
-        if (sessionManager.isLoggedIn()) {
-            navigateToMainActivity()
-        } else {
-            navigateToLogin()
-        }
 
+        val logo = findViewById<ImageView>(R.id.splash_logo)
+        val sessionManager = UserHolder.getSessionManager()
+
+        logo.alpha = 0f
+        logo.scaleX = 0.8f
+        logo.scaleY = 0.8f
+
+        logo.animate()
+            .alpha(1f)
+            .scaleX(1.1f)
+            .scaleY(1.1f)
+            .setDuration(1500)
+            .withEndAction {
+                val intent = if (sessionManager.isLoggedIn())
+                    Intent(this, MainActivity::class.java)
+                else
+                    Intent(this, LoginActivity::class.java)
+
+                startActivity(intent)
+                finish()
+            }
     }
+
 
     private fun navigateToMainActivity() {
         val intent = Intent(this, MainActivity::class.java)

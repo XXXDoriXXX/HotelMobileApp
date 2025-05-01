@@ -25,7 +25,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         UserHolder.initialize(this)
-        ImageCacheProxy.initialize(this)
         super.onCreate(savedInstanceState)
         ThemeManager.applyTheme(this)
 

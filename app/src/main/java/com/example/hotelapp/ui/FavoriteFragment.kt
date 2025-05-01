@@ -1,4 +1,4 @@
-package com.example.hotelapp
+package com.example.hotelapp.ui
 
 import HotelItem
 import android.os.Bundle
@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.hotelapp.R
 import com.example.hotelapp.classes.ItemsHotelAdapter
 import com.facebook.shimmer.ShimmerFrameLayout
 
@@ -41,6 +42,13 @@ class FavoriteFragment : Fragment() {
         adapter = ItemsHotelAdapter(favoriteHotels, requireContext(), isVerticalLayout = true)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
+        shimmerLayout.visibility = View.VISIBLE
+        shimmerLayout.startShimmer()
+
+        recyclerView.visibility = View.GONE
+        emptyState.visibility = View.GONE
+        favoriteHotels.clear()
+        adapter.notifyDataSetChanged()
 
         searchInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -49,8 +57,17 @@ class FavoriteFragment : Fragment() {
             }
             override fun afterTextChanged(s: Editable?) {}
         })
+        shimmerLayout.visibility = View.VISIBLE
+        shimmerLayout.startShimmer()
+
+        recyclerView.visibility = View.GONE
+        emptyState.visibility = View.GONE
+
+        favoriteHotels.clear()
+        adapter.notifyDataSetChanged()
 
         loadFavorites()
+
         return view
     }
 
@@ -67,35 +84,41 @@ class FavoriteFragment : Fragment() {
         favoriteHotels.addAll(filtered)
         adapter.notifyDataSetChanged()
 
-        recyclerView.visibility = if (filtered.isEmpty()) View.GONE else View.VISIBLE
+        recyclerView.visibility = if (filtered.isNotEmpty()) View.VISIBLE else View.GONE
         emptyState.visibility = if (filtered.isEmpty()) View.VISIBLE else View.GONE
     }
 
     private fun loadFavorites() {
+        shimmerLayout.visibility = View.VISIBLE
+        shimmerLayout.startShimmer()
+
+        recyclerView.visibility = View.GONE
+        emptyState.visibility = View.GONE
 
         hotelRepository.getFavorites(
             onResult = { hotels ->
+                shimmerLayout.stopShimmer()
+                shimmerLayout.visibility = View.GONE
+
                 allFavorites.clear()
                 allFavorites.addAll(hotels)
-                if (hotels.isEmpty()) {
-                    recyclerView.visibility = View.GONE
-                    emptyState.visibility = View.VISIBLE
-                } else {
-                    recyclerView.visibility = View.VISIBLE
-                    emptyState.visibility = View.GONE
-                    filterFavorites(searchInput.text.toString())
-                }
 
-                shimmerLayout.stopShimmer()
-                shimmerLayout.visibility = View.GONE
+                filterFavorites(searchInput.text.toString())
             },
             onError = { error ->
-                Toast.makeText(requireContext(), "Failed to load favorites", Toast.LENGTH_SHORT).show()
-                error.printStackTrace()
                 shimmerLayout.stopShimmer()
                 shimmerLayout.visibility = View.GONE
+
+                allFavorites.clear()
+                filterFavorites("")
+
+                Toast.makeText(requireContext(), "Failed to load favorites", Toast.LENGTH_SHORT).show()
+                error.printStackTrace()
             }
         )
+
     }
+
+
 
 }
