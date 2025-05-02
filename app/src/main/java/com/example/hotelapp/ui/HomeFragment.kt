@@ -28,6 +28,7 @@ class HomeFragment : Fragment() {
     private val hotelRepository = UserHolder.getHotelRepository()
     private var currentCategory = "trending"
     private var currentPage = 0
+    private var isDataLoaded = false
     private val pageSize = 25
     private val allHotels = mutableListOf<HotelItem>()
     private var isLoading = false
@@ -72,9 +73,16 @@ class HomeFragment : Fragment() {
         view.findViewById<TextView>(R.id.location_text)?.text = address
         shimmerLayoutHome = view.findViewById(R.id.shimmerLayoutHome)
         itemsList = view.findViewById(R.id.itemsHotelList)
-        shimmerLayoutHome.startShimmer()
-        shimmerLayoutHome.visibility = View.VISIBLE
-        itemsList.visibility = View.GONE
+
+        if (!isDataLoaded) {
+            shimmerLayoutHome.startShimmer()
+            shimmerLayoutHome.visibility = View.VISIBLE
+            itemsList.visibility = View.GONE
+        } else {
+            shimmerLayoutHome.visibility = View.GONE
+            itemsList.visibility = View.VISIBLE
+        }
+
 
         filtersRecycler = view.findViewById(R.id.filters_recycler)
         filtersAdapter = FiltersAdapter(filterList) { removedKey ->
@@ -93,6 +101,11 @@ class HomeFragment : Fragment() {
         layoutToggleButton = view.findViewById(R.id.layoutToggleButton)
         searchInputField = view.findViewById(R.id.search_input_field)
         itemsList = view.findViewById(R.id.itemsHotelList)
+        if (this::hotelAdapter.isInitialized) {
+            itemsList.adapter = hotelAdapter
+            updateLayoutManager()
+        }
+
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
         itemsList.layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
 
@@ -171,7 +184,11 @@ class HomeFragment : Fragment() {
         tabTrending.isSelected = true
         currentCategory = "trending"
         currentPage = 0
-        if (!isSearching) loadHotels()
+        if (!isSearching && !isDataLoaded) {
+            loadHotels()
+            isDataLoaded = true
+        }
+
 
         tabs.forEach { tab ->
             tab.setOnClickListener {
@@ -265,9 +282,11 @@ class HomeFragment : Fragment() {
             swipeRefreshLayout.isRefreshing = false
             return
         }
+        isDataLoaded = false
         loadHotels()
         swipeRefreshLayout.isRefreshing = true
     }
+
 
     private fun loadHotels() {
         if (isSearching) return

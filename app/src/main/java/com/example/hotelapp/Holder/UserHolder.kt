@@ -6,7 +6,7 @@ import com.example.hotelapp.utils.SessionManager
 
 object UserHolder {
     var currentUser: User? = null
-
+    var favoriteHotels: MutableList<HotelItem> = mutableListOf()
     private val apiService = RetrofitClient.retrofit.create(HotelService::class.java)
     private var sessionManager: SessionManager? = null
     private var hotelRepositoryInstance: HotelRepository? = null
