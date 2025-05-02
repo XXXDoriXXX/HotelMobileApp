@@ -13,10 +13,14 @@ import retrofit2.Response
 
 class BookingRepository(private val api: HotelService, private val session: SessionManager) {
 
-    fun getMyBookings(onResult: (List<BookingResponse>) -> Unit, onError: (Throwable) -> Unit) {
+    fun getMyBookingsSorted(
+        sortBy: String,
+        order: String,
+        onResult: (List<BookingResponse>) -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
         val token = session.getAccessToken() ?: return onError(Throwable("No token"))
-
-        api.getMyBookings("Bearer $token").enqueue(object : Callback<List<BookingResponse>> {
+        api.getMyBookingsSorted("Bearer $token", sortBy, order).enqueue(object : Callback<List<BookingResponse>> {
             override fun onResponse(
                 call: Call<List<BookingResponse>>,
                 response: Response<List<BookingResponse>>
@@ -24,7 +28,7 @@ class BookingRepository(private val api: HotelService, private val session: Sess
                 if (response.isSuccessful) {
                     onResult(response.body() ?: emptyList())
                 } else {
-                    onError(Throwable("Failed to fetch booking history"))
+                    onError(Throwable("Failed to fetch sorted bookings"))
                 }
             }
 
@@ -33,6 +37,7 @@ class BookingRepository(private val api: HotelService, private val session: Sess
             }
         })
     }
+
     fun requestRefund(
         bookingId: Int,
         onSuccess: (Float) -> Unit,

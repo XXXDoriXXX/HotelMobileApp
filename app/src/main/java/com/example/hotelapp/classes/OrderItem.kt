@@ -9,5 +9,6 @@ data class OrderItem(
     val checkOutDate: String,
     val totalPrice: Float,
     var status: String,
-    val hotel_image_url: String?
+    val hotel_image_url: String?,
+    val createdAt: String
 )

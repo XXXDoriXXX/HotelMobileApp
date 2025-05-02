@@ -92,8 +92,13 @@ interface HotelService {
         @Header("Authorization") token: String
     ): Call<StripePaymentResponse>
 
-    @GET("/bookings/my")
-    fun getMyBookings(@Header("Authorization") token: String): Call<List<BookingResponse>>
+    @GET("bookings/my")
+    fun getMyBookingsSorted(
+        @Header("Authorization") token: String,
+        @Query("sort_by") sortBy: String,
+        @Query("order") order: String
+    ): Call<List<BookingResponse>>
+
     @POST("/bookings/{booking_id}/refund-request")
     fun requestRefund(
         @Path("booking_id") bookingId: Int,

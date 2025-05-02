@@ -9,7 +9,9 @@ data class BookingResponse(
     val total_price: Float,
     val status: String,
     val hotel_images: List<HotelImage>?,
-    val room_id:Int
+    val room_id:Int,
+    val created_at: String
+
 )
 data class HotelImage(
     val id: Int,

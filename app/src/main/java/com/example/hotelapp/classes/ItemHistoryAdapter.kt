@@ -12,9 +12,9 @@ import com.bumptech.glide.Glide
 import com.example.hotelapp.ui.BookingDetailsActivity
 import com.example.hotelapp.R
 class ItemHistoryAdapter(
-    private var items: MutableList<OrderItem>,
+    private var items: MutableList<Any>,
     private val context: Context
-) : RecyclerView.Adapter<ItemHistoryAdapter.MyViewHolder>() {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val hotelName: TextView = itemView.findViewById(R.id.order_hotel_name)
@@ -48,10 +48,16 @@ class ItemHistoryAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_order, parent, false)
-        return MyViewHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return if (viewType == 0) {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_date_header, parent, false)
+            DateViewHolder(view)
+        } else {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_order, parent, false)
+            MyViewHolder(view)
+        }
     }
+
 
     override fun getItemCount(): Int {
         return items.size
@@ -61,31 +67,44 @@ class ItemHistoryAdapter(
         items.add(order)
         notifyItemInserted(items.size - 1)
     }
-
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        try {
-            holder.bind(items[position])
-
-            holder.itemView.setOnClickListener {
-                val order = items[position]
-
-                if (context is androidx.fragment.app.FragmentActivity) {
-                    val bottomSheet = com.example.hotelapp.ui.BookingDetailsBottomSheet.newInstance(
-                        bookingId = order.bookingId,
-                        hotelName = order.hotelName,
-                        roomType = order.roomType,
-                        dates = "${order.checkInDate} - ${order.checkOutDate}",
-                        totalPrice = order.totalPrice,
-                        roomId = order.room_id,
-                        status = order.status
-                    )
-
-                    bottomSheet.show((context as androidx.fragment.app.FragmentActivity).supportFragmentManager, bottomSheet.tag)
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
+    override fun getItemViewType(position: Int): Int {
+        return if (items[position] is String) 0 else 1
+    }
+    class DateViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        private val dateText: TextView = view.findViewById(R.id.date_text)
+        fun bind(date: String) {
+            dateText.text = date
         }
     }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (holder) {
+            is MyViewHolder -> {
+                val order = items[position] as OrderItem
+                holder.bind(order)
+
+                holder.itemView.setOnClickListener {
+                    if (context is androidx.fragment.app.FragmentActivity) {
+                        val bottomSheet = com.example.hotelapp.ui.BookingDetailsBottomSheet.newInstance(
+                            bookingId = order.bookingId,
+                            hotelName = order.hotelName,
+                            roomType = order.roomType,
+                            dates = "${order.checkInDate} - ${order.checkOutDate}",
+                            totalPrice = order.totalPrice,
+                            roomId = order.room_id,
+                            status = order.status
+                        )
+                        bottomSheet.show((context as androidx.fragment.app.FragmentActivity).supportFragmentManager, bottomSheet.tag)
+                    }
+                }
+            }
+
+            is DateViewHolder -> {
+                val date = items[position] as String
+                holder.bind(date)
+            }
+        }
+    }
+
 
 }
