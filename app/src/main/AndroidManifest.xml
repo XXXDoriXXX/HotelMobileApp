@@ -20,6 +20,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.HelpActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.BookingDetailsActivity"
             android:exported="false" />
 
@@ -36,7 +39,8 @@
         <activity
             android:name=".ui.SplashActivity"
             android:exported="true"
-            android:noHistory="true">>
+            android:noHistory="true">
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -40,6 +40,7 @@ class ProfileFragment : Fragment() {
         val editProfileBtn: Button = view.findViewById(R.id.edit_profile_button)
         val settingsButton: LinearLayout = view.findViewById(R.id.settings_btn)
         val logoutButton: LinearLayout = view.findViewById(R.id.logout_btn)
+        val support_btn: LinearLayout=view.findViewById(R.id.help_page_btn)
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
         avatarImageView = view.findViewById(R.id.profile_avatar)
         profileEmail = view.findViewById(R.id.profile_email)
@@ -55,6 +56,10 @@ class ProfileFragment : Fragment() {
 
         settingsButton.setOnClickListener {
             startActivity(Intent(requireContext(), SettingsActivity::class.java))
+        }
+        support_btn.setOnClickListener {
+            val intent = Intent(requireContext(), HelpActivity::class.java)
+            startActivity(intent)
         }
 
         logoutButton.setOnClickListener {
