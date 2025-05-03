@@ -204,6 +204,24 @@ class HistoryFragment : Fragment() {
         return view
     }
 
+    fun showBookingDetailsBottomSheet(bookingId: Int) {
+        val booking = (adapter.getItems().filterIsInstance<OrderItem>()).find { it.bookingId == bookingId }
+        if (booking != null) {
+            val bottomSheet = BookingDetailsBottomSheet.newInstance(
+                bookingId = booking.bookingId,
+                hotelName = booking.hotelName,
+                roomType = booking.roomType,
+                dates = "${booking.checkInDate} - ${booking.checkOutDate}",
+                totalPrice = booking.totalPrice,
+                roomId = booking.room_id,
+                status = booking.status
+            )
+            bottomSheet.show(parentFragmentManager, bottomSheet.tag)
+        } else {
+            Toast.makeText(requireContext(), "Бронювання не знайдено", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun loadBookings(sortBy: String, order: String) {
         shimmerLayout.startShimmer()
         shimmerLayout.visibility = View.VISIBLE

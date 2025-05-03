@@ -20,10 +20,10 @@ class BookingSuccessActivity : AppCompatActivity() {
         setContentView(R.layout.activity_booking_success)
 
         sessionManager = SessionManager(this)
-
-        val bookingId = intent?.data?.getQueryParameter("booking_id") ?: intent?.getStringExtra("bookingId")
-        val totalPrice = intent?.getFloatExtra("totalPrice", 0f) ?: 0f
-        val bookingDate = intent?.getStringExtra("bookingDate") ?: "Невідомо"
+        val uri = intent?.data
+        val bookingId = uri?.getQueryParameter("booking_id") ?: intent?.getStringExtra("bookingId")
+        val totalPrice = uri?.getQueryParameter("total_price")?.toFloatOrNull() ?: intent?.getFloatExtra("totalPrice", 0f) ?: 0f
+        val bookingDate = uri?.getQueryParameter("booking_date") ?: intent?.getStringExtra("bookingDate") ?: "Невідомо"
 
         val successAnimation = findViewById<LottieAnimationView>(R.id.successAnimation)
         val bookingText = findViewById<TextView>(R.id.bookingSuccessText)
@@ -50,14 +50,17 @@ class BookingSuccessActivity : AppCompatActivity() {
         okButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("startFragment", "home")
+            intent.putExtra("openBookingId", -1)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
             finish()
         }
 
         viewBookingsButton.setOnClickListener {
-            val intent = Intent(this, BookingDetailsActivity::class.java)
-            intent.putExtra("bookingId", bookingId?.toIntOrNull() ?: -1)
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("startFragment", "history")
+            intent.putExtra("openBookingId", bookingId?.toIntOrNull() ?: -1)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
             finish()
         }

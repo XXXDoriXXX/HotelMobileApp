@@ -106,6 +106,7 @@ class ItemHistoryAdapter(
             .setNegativeButton("Ні") { dialog, _ -> dialog.dismiss(); notifyItemChanged(position) }
             .show()
     }
+    fun getItems(): List<Any> = items
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
