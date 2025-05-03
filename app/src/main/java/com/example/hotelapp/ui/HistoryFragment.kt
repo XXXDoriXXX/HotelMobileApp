@@ -248,7 +248,9 @@ class HistoryFragment : Fragment() {
                             bookingId,
                             onSuccess = {
                                 adapter.removeItem(position)
-                                Toast.makeText(requireContext(), "Бронювання видалено", Toast.LENGTH_SHORT).show()
+                                context?.let {
+                                    Toast.makeText(it, "Бронювання видалено", Toast.LENGTH_SHORT).show()
+                                }
                             },
                             onError = {
                                 adapter.notifyItemChanged(position)

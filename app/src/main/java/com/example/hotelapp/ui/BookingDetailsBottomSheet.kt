@@ -19,6 +19,7 @@ import com.example.hotelapp.repository.BookingRepository
 import com.example.hotelapp.repository.RoomRepository
 import com.example.hotelapp.utils.SessionManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlin.math.log
 
 class BookingDetailsBottomSheet : BottomSheetDialogFragment() {
@@ -55,13 +56,12 @@ class BookingDetailsBottomSheet : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val cancelButton = view?.findViewById<Button>(R.id.cancel_booking_button)
-
-        if (status == "Cancelled") {
-            cancelButton?.visibility = View.GONE
-        }
 
         val view = inflater.inflate(R.layout.activity_booking_details, container, false)
+        val cancelButton = view.findViewById<Button>(R.id.cancel_booking_button)
+        if (status == "Cancelled") {
+            cancelButton.visibility = View.GONE
+        }
         val status_background = view.findViewById<FrameLayout>(R.id.status_background)
         Log.d("DEBUG", "status: $status")
         when (status) {
@@ -120,17 +120,30 @@ class BookingDetailsBottomSheet : BottomSheetDialogFragment() {
             return
         }
 
-        repository.requestRefund(
-            bookingId,
-            onSuccess = { refundAmount ->
-                Toast.makeText(requireContext(), "Ви отримаєте повернення $${"%.2f".format(refundAmount)}.", Toast.LENGTH_SHORT).show()
-                dismiss()
-            },
-            onError = {
-                Toast.makeText(requireContext(), "Не вдалося отримати інформацію про повернення", Toast.LENGTH_SHORT).show()
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Скасувати бронювання?")
+            .setMessage("Ви точно хочете скасувати це бронювання? Може бути застосовано повернення коштів.")
+            .setPositiveButton("Так") { _, _ ->
+                repository.requestRefund(
+                    bookingId,
+                    onSuccess = { refundAmount ->
+                        Toast.makeText(requireContext(), "Ви отримаєте повернення $${"%.2f".format(refundAmount)}.", Toast.LENGTH_SHORT).show()
+                        dismiss()
+                    },
+                    onError = { error ->
+                        val message = error.message ?: ""
+                        if ("Cannot refund within 24 hours of check-in" in message) {
+                            Toast.makeText(requireContext(), "Неможливо скасувати бронювання менш ніж за 24 години до заселення.", Toast.LENGTH_LONG).show()
+                        } else {
+                            Toast.makeText(requireContext(), "Не вдалося отримати інформацію про повернення", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                )
             }
-        )
+            .setNegativeButton("Ні") { dialog, _ -> dialog.dismiss() }
+            .show()
     }
+
 
     companion object {
         fun newInstance(
