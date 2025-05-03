@@ -1,6 +1,7 @@
 package com.example.hotelapp.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hotelapp.Holder.HotelHolder
@@ -20,6 +22,11 @@ import com.example.hotelapp.network.RetrofitClient
 import com.example.hotelapp.repository.BookingRepository
 import com.example.hotelapp.utils.SessionManager
 import com.facebook.shimmer.ShimmerFrameLayout
+import android.graphics.*
+import android.graphics.drawable.Drawable
+import androidx.core.content.ContextCompat
+import kotlin.math.abs
+
 
 class HistoryFragment : Fragment() {
 
@@ -53,12 +60,130 @@ class HistoryFragment : Fragment() {
 
 
         sortSpinner.adapter = adapterspiner
+        sortSpinner.setSelection(1)
 
         orderHistoryRecyclerView = view.findViewById(R.id.order_history_recycler_view)
         shimmerLayout = view.findViewById(R.id.shimmerLayout)
         sortSpinner = view.findViewById(R.id.sort_spinner)
+        adapter = ItemHistoryAdapter(
+            mutableListOf(),
+            requireContext(),
+            onDeleteBooking = { _, _ -> },
+            onArchiveBooking = { _, _ -> }
+        )
+        val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(rv: RecyclerView, vh: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean = false
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                val position = viewHolder.bindingAdapterPosition
+                if (position == RecyclerView.NO_POSITION) {
+                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                    return
+                }
 
-        adapter = ItemHistoryAdapter(mutableListOf(), requireContext())
+                val itemView = viewHolder.itemView
+                val context = recyclerView.context
+                val status = (adapter.getItem(viewHolder.bindingAdapterPosition) as? OrderItem)?.status
+
+                val paint = Paint()
+                val icon: Drawable?
+                val backgroundColor: Int
+
+                when (status) {
+                    "Cancelled" -> {
+                        backgroundColor = Color.parseColor("#f44336")
+                        icon = ContextCompat.getDrawable(context, R.drawable.ic_delete)
+                        icon?.mutate()?.setTint(Color.parseColor("#f44336"))
+
+
+                    }
+                    "Completed" -> {
+                        backgroundColor = Color.parseColor("#607d8b")
+                        icon = ContextCompat.getDrawable(context, R.drawable.ic_archive)
+                        icon?.mutate()?.setTint(Color.parseColor("#607d8b"))
+
+                    }
+                    else -> {
+                        backgroundColor = Color.LTGRAY
+                        icon = null
+                    }
+                }
+
+                val alpha = minOf(1f, abs(dX) / itemView.width.toFloat())
+                paint.color = backgroundColor
+                paint.alpha = (alpha * 255).toInt()
+
+                val background = when (status) {
+                    "Cancelled" -> ContextCompat.getDrawable(context, R.drawable.swipe_background_cancelled)
+                    "Completed" -> ContextCompat.getDrawable(context, R.drawable.swipe_background_completed)
+                    else -> null
+                }
+
+                background?.let {
+                    val bounds = Rect(
+                        itemView.right + dX.toInt(),
+                        itemView.top,
+                        itemView.right,
+                        itemView.bottom
+                    )
+                    it.bounds = bounds
+                    it.draw(c)
+                }
+
+                icon?.let {
+                    val iconMargin = (itemView.height - it.intrinsicHeight) / 2
+                    val iconTop = itemView.top + iconMargin
+                    val iconLeft = itemView.right - iconMargin - it.intrinsicWidth
+                    val iconRight = itemView.right - iconMargin
+                    val iconBottom = iconTop + it.intrinsicHeight
+
+                    val scale = alpha.coerceAtLeast(0.5f)
+                    val centerX = (iconLeft + iconRight) / 2
+                    val centerY = (iconTop + iconBottom) / 2
+                    val halfWidth = (it.intrinsicWidth * scale / 2).toInt()
+                    val halfHeight = (it.intrinsicHeight * scale / 2).toInt()
+
+                    it.setBounds(
+                        centerX - halfWidth,
+                        centerY - halfHeight,
+                        centerX + halfWidth,
+                        centerY + halfHeight
+                    )
+                    it.alpha = (alpha * 255).toInt()
+                    it.draw(c)
+                }
+
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+            }
+
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.bindingAdapterPosition
+                val item = adapter.getItem(position)
+                if (item is OrderItem) {
+                    when (item.status) {
+                        "Cancelled" -> adapter.showDeleteConfirmation(item.bookingId, position)
+                        "Completed" -> adapter.showArchiveConfirmation(item.bookingId, position)
+                        "Pending", "Confirmed" -> {
+                            adapter.notifyItemChanged(position)
+                            Toast.makeText(requireContext(), "Бронювання ще активне — спочатку скасуйте", Toast.LENGTH_SHORT).show()
+                        }
+                        else -> adapter.notifyItemChanged(position)
+                    }
+                } else {
+                    adapter.notifyItemChanged(position)
+                }
+            }
+        }
+        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(orderHistoryRecyclerView)
+
         orderHistoryRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         orderHistoryRecyclerView.adapter = adapter
 
@@ -88,6 +213,8 @@ class HistoryFragment : Fragment() {
             sortBy = sortBy,
             order = order,
             onResult = { bookings ->
+                Log.d("DEBUG", "Bookings loaded: ${bookings.size}")
+
                 shimmerLayout.stopShimmer()
                 shimmerLayout.visibility = View.GONE
                 orderHistoryRecyclerView.visibility = View.VISIBLE
@@ -113,7 +240,41 @@ class HistoryFragment : Fragment() {
                     grouped.addAll(list)
                 }
 
-                adapter = ItemHistoryAdapter(grouped.toMutableList(), requireContext())
+                adapter = ItemHistoryAdapter(
+                    grouped.toMutableList(),
+                    requireContext(),
+                    onDeleteBooking = { bookingId, position ->
+                        repository.deleteBooking(
+                            bookingId,
+                            onSuccess = {
+                                adapter.removeItem(position)
+                                Toast.makeText(requireContext(), "Бронювання видалено", Toast.LENGTH_SHORT).show()
+                            },
+                            onError = {
+                                adapter.notifyItemChanged(position)
+                                Toast.makeText(requireContext(), "Помилка при видаленні", Toast.LENGTH_SHORT).show()
+                            }
+                        )
+                    },
+                    onArchiveBooking = { bookingId, position ->
+                        repository.archiveBooking(
+                            bookingId,
+                            onSuccess = {
+                                val item = adapter.getItem(position)
+                                if (item is OrderItem) {
+                                    item.status = "Archived"
+                                    adapter.notifyItemChanged(position)
+                                }
+                                Toast.makeText(requireContext(), "Архівовано", Toast.LENGTH_SHORT).show()
+                            },
+                            onError = {
+                                adapter.notifyItemChanged(position)
+                                Toast.makeText(requireContext(), "Помилка при архівації", Toast.LENGTH_SHORT).show()
+                            }
+                        )
+                    }
+                )
+
                 orderHistoryRecyclerView.adapter = adapter
             },
             onError = {
@@ -140,6 +301,7 @@ class HistoryFragment : Fragment() {
             "confirmed" -> "Confirmed"
             "pending_payment", "awaiting_confirmation" -> "Pending"
             "cancelled" -> "Cancelled"
+            "completed" -> "Completed"
             else -> "Unknown"
         }
     }

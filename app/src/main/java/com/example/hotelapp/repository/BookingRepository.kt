@@ -7,6 +7,7 @@ import com.example.hotelapp.models.RefundResponse
 import com.example.hotelapp.models.StripePaymentResponse
 import com.example.hotelapp.utils.SessionManager
 import com.google.gson.JsonObject
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -108,5 +109,49 @@ class BookingRepository(private val api: HotelService, private val session: Sess
                 }
             })
     }
+    fun deleteBooking(
+        bookingId: Int,
+        onSuccess: () -> Unit,
+        onError: (Throwable) -> Unit
+    )
+    {
+        val token = session.getAccessToken() ?: return onError(Throwable("No token"))
+        api.deleteBooking("Bearer $token", bookingId).enqueue(object : Callback<okhttp3.ResponseBody> {
+            override fun onResponse(call: Call<okhttp3.ResponseBody>, response: Response<okhttp3.ResponseBody>) {
+                if (response.isSuccessful) {
+                    onSuccess()
+                } else {
+                    onError(Throwable("Failed to delete booking"))
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                onError(t)
+            }
+        })
+    }
+
+    fun archiveBooking(
+        bookingId: Int,
+        onSuccess: () -> Unit,
+        onError: (Throwable) -> Unit
+    )
+    {
+        val token = session.getAccessToken() ?: return onError(Throwable("No token"))
+        api.archiveBooking("Bearer $token", bookingId).enqueue(object : Callback<okhttp3.ResponseBody> {
+            override fun onResponse(call: Call<okhttp3.ResponseBody>, response: Response<okhttp3.ResponseBody>) {
+                if (response.isSuccessful) {
+                    onSuccess()
+                } else {
+                    onError(Throwable("Failed to archive booking"))
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                onError(t)
+            }
+        })
+    }
+
 
 }

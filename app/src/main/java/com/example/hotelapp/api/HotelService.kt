@@ -122,5 +122,10 @@ interface HotelService {
         @Path("hotel_id") hotelId: Int,
         @Header("Authorization") token: String
     ): Call<Void>
+    @DELETE("bookings/{id}")
+    fun deleteBooking(@Header("Authorization") token: String, @Path("id") id: Int): Call<ResponseBody>
+
+    @POST("bookings/{id}/archive")
+    fun archiveBooking(@Header("Authorization") token: String, @Path("id") id: Int): Call<ResponseBody>
 
 }

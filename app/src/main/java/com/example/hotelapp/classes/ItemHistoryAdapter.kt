@@ -11,10 +11,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.hotelapp.ui.BookingDetailsActivity
 import com.example.hotelapp.R
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+
 class ItemHistoryAdapter(
     private var items: MutableList<Any>,
-    private val context: Context
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private val context: Context,
+    private val onDeleteBooking: (bookingId: Int, position: Int) -> Unit,
+    private val onArchiveBooking: (bookingId: Int, position: Int) -> Unit
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>()
+{
 
     class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val hotelName: TextView = itemView.findViewById(R.id.order_hotel_name)
@@ -34,7 +39,8 @@ class ItemHistoryAdapter(
             when (order.status) {
                 "Pending" -> statusText.setBackgroundResource(R.drawable.status_label_background_yellow)
                 "Cancelled" -> statusText.setBackgroundResource(R.drawable.status_label_background_red)
-                "Confirmed" -> statusText.setBackgroundResource(R.drawable.status_label_background_green)
+                    "Confirmed" -> statusText.setBackgroundResource(R.drawable.status_label_background_green)
+                "Completed" -> statusText.setBackgroundResource(R.drawable.status_label_background_gray)
                 else -> statusText.setBackgroundResource(R.drawable.status_label_background)
             }
 
@@ -75,6 +81,30 @@ class ItemHistoryAdapter(
         fun bind(date: String) {
             dateText.text = date
         }
+    }
+    fun getItem(position: Int): Any = items[position]
+
+    fun removeItem(position: Int) {
+        items.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
+    fun showDeleteConfirmation(bookingId: Int, position: Int) {
+        MaterialAlertDialogBuilder(context)
+            .setTitle("Видалити бронювання?")
+            .setMessage("Це дія є незворотною. Ви впевнені?")
+            .setPositiveButton("Так") { _, _ -> onDeleteBooking(bookingId, position) }
+            .setNegativeButton("Ні") { dialog, _ -> dialog.dismiss(); notifyItemChanged(position) }
+            .show()
+    }
+
+    fun showArchiveConfirmation(bookingId: Int, position: Int) {
+        MaterialAlertDialogBuilder(context)
+            .setTitle("Архівувати бронювання?")
+            .setMessage("Бронювання буде переміщене в архів.")
+            .setPositiveButton("Так") { _, _ -> onArchiveBooking(bookingId, position) }
+            .setNegativeButton("Ні") { dialog, _ -> dialog.dismiss(); notifyItemChanged(position) }
+            .show()
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
