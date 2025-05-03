@@ -1,6 +1,7 @@
 package com.example.hotelapp.ui
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Patterns
 import android.view.View
@@ -117,7 +118,16 @@ class LoginActivity : AppCompatActivity() {
                                 phone = UserHolder.currentUser!!.phone,
                                 birthDate = UserHolder.currentUser!!.birth_date
                             )
-                            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                            val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+                            val pendingLink = prefs.getString("pending_deeplink", null)
+
+                            if (pendingLink != null) {
+                                prefs.edit().remove("pending_deeplink").apply()
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(pendingLink))
+                                startActivity(intent)
+                            } else {
+                                startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                            }
                             finish()
                         } else {
                             Toast.makeText(

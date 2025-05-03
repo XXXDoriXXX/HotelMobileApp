@@ -21,6 +21,13 @@ class SplashActivity : AppCompatActivity() {
         val logo = findViewById<ImageView>(R.id.splash_logo)
         val sessionManager = UserHolder.getSessionManager()
 
+        intent?.data?.let { deepLinkUri ->
+            if (!sessionManager.isLoggedIn()) {
+                val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+                prefs.edit().putString("pending_deeplink", deepLinkUri.toString()).apply()
+            }
+        }
+
         logo.alpha = 0f
         logo.scaleX = 0.8f
         logo.scaleY = 0.8f

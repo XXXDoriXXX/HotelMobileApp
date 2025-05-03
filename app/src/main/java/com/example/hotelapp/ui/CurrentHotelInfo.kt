@@ -1,6 +1,7 @@
 package com.example.hotelapp.ui
 
 import HotelItem
+import HotelRepository
 import android.content.Intent
 import android.os.Bundle
 import android.view.MotionEvent
@@ -21,7 +22,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class CurrentHotelInfo : AppCompatActivity() {
     private lateinit var shimmerLayout: com.facebook.shimmer.ShimmerFrameLayout
-    private val hotelRepository = UserHolder.getHotelRepository()
+    private lateinit var hotelRepository: HotelRepository
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
     private lateinit var viewPager: ViewPager2
     private lateinit var adapter: HotelImagesAdapter
@@ -33,6 +34,9 @@ class CurrentHotelInfo : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        UserHolder.initialize(applicationContext)
+        hotelRepository = UserHolder.getHotelRepository()
+
         setContentView(R.layout.activity_current_hotel_info)
         loadingOverlay = findViewById(R.id.loading_overlay)
         loadingOverlay.visibility = View.VISIBLE
@@ -45,6 +49,32 @@ class CurrentHotelInfo : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        val hotelIdFromLink = intent?.data?.getQueryParameter("id")?.toIntOrNull()
+
+        if (hotelIdFromLink != null) {
+            if (!UserHolder.getSessionManager().isLoggedIn()) {
+                val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+                prefs.edit().putString("pending_deeplink", intent?.data.toString()).apply()
+                val loginIntent = Intent(this, LoginActivity::class.java)
+                startActivity(loginIntent)
+                finish()
+                return
+            }
+
+            hotelRepository.getHotelById(
+                hotelIdFromLink,
+                onResult = { hotel ->
+                    HotelHolder.currentHotel = hotel
+                    initUI(hotel)
+                },
+                onError = {
+                    Toast.makeText(this, "Hotel not found", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+            )
+            return
+        }
+
 
         val hotelId = HotelHolder.currentHotel?.id ?: return finish()
 
@@ -132,6 +162,47 @@ class CurrentHotelInfo : AppCompatActivity() {
         val favoriteIds = UserHolder.getSessionManager().getFavoriteHotelIds()
         isFavorite = favoriteIds.contains(hotel.id)
         updateFavoriteIcon()
+
+        val shareButton: ImageView = findViewById(R.id.share_button)
+        shareButton.setOnClickListener {
+            // Формуємо красиву адресу
+            val prettyAddress = listOfNotNull(
+                hotel.address.street,
+                hotel.address.city,
+                hotel.address.state,
+                hotel.address.country,
+                hotel.address.postal_code
+            ).joinToString(", ")
+
+            // Клікабельне посилання через GitHub Pages
+            val webShareLink = "https://xxxdorixxx.github.io/hotelapp-links/hotel.html?id=${hotel.id}"
+
+            // Лінк на Google Maps
+            val mapsLink = "https://www.google.com/maps?q=${hotel.address.latitude},${hotel.address.longitude}"
+
+            // Текст для поширення
+            val shareText = """
+        🏨 ${hotel.name}
+        📍 $prettyAddress
+        ⭐ Rating: ${hotel.rating}
+        👁️ ${hotel.views} views
+
+        📌 View on map:
+        $mapsLink
+
+        🔗 View or book:
+        $webShareLink
+    """.trimIndent()
+
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_SUBJECT, "Check out this hotel on HotelApp")
+                putExtra(Intent.EXTRA_TEXT, shareText)
+            }
+
+            startActivity(Intent.createChooser(shareIntent, "Share hotel via"))
+        }
+
 
 
         val amenities = hotel.amenities.map {
