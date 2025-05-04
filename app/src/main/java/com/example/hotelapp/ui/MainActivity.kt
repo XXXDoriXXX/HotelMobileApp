@@ -4,14 +4,18 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Geocoder
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
@@ -28,13 +32,32 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
+    private val handler = Handler(Looper.getMainLooper())
+    private lateinit var permissionCheckRunnable: Runnable
 
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        Log.d("Permissions", "Result: $permissions")
+
+        val locationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
+        val galleryGranted = permissions[Manifest.permission.READ_MEDIA_IMAGES] == true
+
+        if (locationGranted && galleryGranted) {
+            handler.removeCallbacks(permissionCheckRunnable)
+            updateLocationOnce()
+        } else {
+            // повтор через 3 сек
+            handler.postDelayed(permissionCheckRunnable, 3000)
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         UserHolder.initialize(this)
         super.onCreate(savedInstanceState)
         ThemeManager.applyTheme(this)
         setContentView(R.layout.activity_main)
-        updateLocationOnce()
+
+        startPermissionCycle()
 
         setupSystemUI()
         setupInsets()
@@ -44,6 +67,65 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView.setupWithNavController(navController)
 
         handleStartFragment(intent)
+    }
+
+    private fun startPermissionCycle() {
+        permissionCheckRunnable = object : Runnable {
+            override fun run() {
+                if (hasAllPermissions()) {
+                    updateLocationOnce()
+                } else {
+                    permissionLauncher.launch(
+                        arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.READ_MEDIA_IMAGES
+                        )
+                    )
+                }
+            }
+        }
+
+        handler.post(permissionCheckRunnable)
+    }
+    private fun hasAllPermissions(): Boolean {
+        return listOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.READ_MEDIA_IMAGES
+        ).all {
+            ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
+        }
+    }
+
+    private fun checkAndRequestPermissions() {
+        val permissionsToRequest = mutableListOf<String>()
+
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+            checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        ) {
+            permissionsToRequest.add(Manifest.permission.ACCESS_FINE_LOCATION)
+            permissionsToRequest.add(Manifest.permission.ACCESS_COARSE_LOCATION)
+        }
+
+        if (checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add(Manifest.permission.READ_MEDIA_IMAGES)
+        }
+
+        if (permissionsToRequest.isNotEmpty()) {
+            requestPermissionsLauncher.launch(permissionsToRequest.toTypedArray())
+        } else {
+            updateLocationOnce()
+        }
+    }
+
+    private val requestPermissionsLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val locationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
+        val galleryGranted = permissions[Manifest.permission.READ_MEDIA_IMAGES] == true
+
+        if (locationGranted) updateLocationOnce()
+        if (galleryGranted) Log.d("GalleryAccess", "Доступ до фото надано")
     }
 
     private fun setupSystemUI() {
@@ -67,36 +149,25 @@ class MainActivity : AppCompatActivity() {
     private fun updateLocationOnce() {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        val locationPermissionLauncher = registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
-        ) { permissions ->
-            if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
-                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    if (location != null) {
-                        val geocoder = Geocoder(this, Locale.getDefault())
-                        val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-                        val city = addresses?.getOrNull(0)?.locality ?: "Unknown City"
-                        val country = addresses?.getOrNull(0)?.countryName ?: "Unknown Country"
-                        val fullAddress = "$city, $country"
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                val geocoder = Geocoder(this, Locale.getDefault())
+                val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                val city = addresses?.getOrNull(0)?.locality ?: "Unknown City"
+                val country = addresses?.getOrNull(0)?.countryName ?: "Unknown Country"
+                val fullAddress = "$city, $country"
 
-                        getSharedPreferences("prefs", Context.MODE_PRIVATE)
-                            .edit()
-                            .putString("last_location", fullAddress)
-                            .apply()
+                getSharedPreferences("prefs", Context.MODE_PRIVATE)
+                    .edit()
+                    .putString("last_location", fullAddress)
+                    .apply()
 
-                        Log.d("GeoUpdate", "Location updated: $fullAddress")
-                    } else {
-                        Log.w("GeoUpdate", "Location is null")
-                    }
-                }
+                Log.d("GeoUpdate", "Location updated: $fullAddress")
             } else {
-                Log.w("GeoUpdate", "Location permission denied")
+                Log.w("GeoUpdate", "Location is null")
             }
         }
 
-        locationPermissionLauncher.launch(
-            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
-        )
     }
 
     private fun handleStartFragment(intent: Intent?) {
