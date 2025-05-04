@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         ThemeManager.applyTheme(this)
         setContentView(R.layout.activity_main)
+        updateLocationOnce()
 
         setupSystemUI()
         setupInsets()
@@ -61,6 +62,41 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+    }
+    @SuppressLint("MissingPermission")
+    private fun updateLocationOnce() {
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        val locationPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
+                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                    if (location != null) {
+                        val geocoder = Geocoder(this, Locale.getDefault())
+                        val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                        val city = addresses?.getOrNull(0)?.locality ?: "Unknown City"
+                        val country = addresses?.getOrNull(0)?.countryName ?: "Unknown Country"
+                        val fullAddress = "$city, $country"
+
+                        getSharedPreferences("prefs", Context.MODE_PRIVATE)
+                            .edit()
+                            .putString("last_location", fullAddress)
+                            .apply()
+
+                        Log.d("GeoUpdate", "Location updated: $fullAddress")
+                    } else {
+                        Log.w("GeoUpdate", "Location is null")
+                    }
+                }
+            } else {
+                Log.w("GeoUpdate", "Location permission denied")
+            }
+        }
+
+        locationPermissionLauncher.launch(
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+        )
     }
 
     private fun handleStartFragment(intent: Intent?) {
