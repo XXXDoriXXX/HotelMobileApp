@@ -1,12 +1,10 @@
-import com.example.hotelapp.classes.RoomItem
-
 data class HotelItem(
     val id: Int,
     val name: String,
     val description: String,
     val images: List<HotelImage>,
     val address: Address,
-    val amenities: List<Amenity>,
+    val amenities: List<HotelAmenity>,
     var rating: Float = 0f,
     var is_favorite: Boolean = false,
     var is_card_available: Boolean,
@@ -29,7 +27,7 @@ data class Address(
     val longitude: Double
 )
 
-data class Amenity(
+data class HotelAmenity(
     val id: Int,
     val hotel_id: Int,
     val amenity_id: Int

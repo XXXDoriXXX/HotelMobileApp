@@ -5,6 +5,7 @@ import HotelResponseWrapper
 import RatingRequest
 import RatingResponse
 import ViewResponse
+import com.example.hotelapp.classes.Amenity
 import com.example.hotelapp.models.BookingRequest
 import com.example.hotelapp.models.BookingResponse
 import com.example.hotelapp.models.FavoriteHotelWrapper
@@ -44,6 +45,11 @@ interface HotelService {
         @Body rating: Float,
         @Header("Authorization") token: String
     ): Call<Void>
+    @GET("amenities/hotel")
+    fun getHotelAmenities(): Call<List<Amenity>>
+
+    @GET("amenities/room")
+    fun getRoomAmenities(): Call<List<Amenity>>
 
     @GET("hotels/search")
     fun searchHotels(@Query("name") name: String): Call<List<HotelItem>>

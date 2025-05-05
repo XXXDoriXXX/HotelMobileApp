@@ -1,4 +1,5 @@
 import com.example.hotelapp.api.HotelService
+import com.example.hotelapp.classes.Amenity
 import com.example.hotelapp.classes.ErrorUtils
 import com.example.hotelapp.models.FavoriteHotelWrapper
 import com.example.hotelapp.models.HotelSearchParams
@@ -257,6 +258,24 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) = onError(t)
+        })
+    }
+    fun getHotelAmenities(
+        onResult: (List<Amenity>) -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        apiService.getHotelAmenities().enqueue(object : Callback<List<Amenity>> {
+            override fun onResponse(call: Call<List<Amenity>>, response: Response<List<Amenity>>) {
+                if (response.isSuccessful) {
+                    onResult(response.body() ?: emptyList())
+                } else {
+                    onError(Exception("Failed to fetch amenities"))
+                }
+            }
+
+            override fun onFailure(call: Call<List<Amenity>>, t: Throwable) {
+                onError(t)
+            }
         })
     }
 

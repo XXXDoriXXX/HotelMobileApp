@@ -1,8 +1,11 @@
 package com.example.hotelapp.ui
 
 import HotelItem
+import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
+import android.text.InputType
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +20,16 @@ import com.google.android.material.textfield.TextInputEditText
 import com.example.hotelapp.classes.FiltersAdapter
 import com.example.hotelapp.models.HotelSearchParams
 import com.facebook.shimmer.ShimmerFrameLayout
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.CompositeDateValidator
+import com.google.android.material.datepicker.DateValidatorPointForward
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.gson.Gson
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class HomeFragment : Fragment() {
     private lateinit var searchInputField: TextInputEditText
@@ -51,9 +64,25 @@ class HomeFragment : Fragment() {
         "Min_Rating",
         "Room_Type",
         "Amenity_Ids",
-        "Check_In",
-        "Check_Out"
+        "Check_Date"
     )
+
+    val filterDisplayNames = mapOf(
+        "Name" to "Hotel Name",
+        "Description" to "Description",
+        "City" to "City",
+        "Country" to "Country",
+        "State" to "State/Province",
+        "Postal_Code" to "Postal Code",
+        "Min_Price" to "Min Price",
+        "Max_Price" to "Max Price",
+        "Min_Rating" to "Min Rating",
+        "Room_Type" to "Room Type",
+        "Amenity_Ids" to "Amenities",
+        "Check_Date" to "Check-in/out"
+    )
+
+    private val amenityNameToId = mutableMapOf<String, Int>()
     private lateinit var shimmerLayoutHome: ShimmerFrameLayout
     private var isSearching = false
 
@@ -70,6 +99,15 @@ class HomeFragment : Fragment() {
         val tabBest = view.findViewById<TextView>(R.id.tab_best)
         val tabPopular = view.findViewById<TextView>(R.id.tab_popular)
         val tabs = listOf(tabTrending, tabBest, tabPopular)
+        hotelRepository.getHotelAmenities(
+            onResult = { amenities ->
+                amenityNameToId.clear()
+                amenityNameToId.putAll(amenities.associate { it.name to it.id })
+            },
+            onError = { err ->
+                Toast.makeText(requireContext(), "Failed to load amenities", Toast.LENGTH_SHORT).show()
+            }
+        )
         view.findViewById<TextView>(R.id.location_text)?.text = address
         shimmerLayoutHome = view.findViewById(R.id.shimmerLayoutHome)
         itemsList = view.findViewById(R.id.itemsHotelList)
@@ -85,13 +123,36 @@ class HomeFragment : Fragment() {
 
 
         filtersRecycler = view.findViewById(R.id.filters_recycler)
-        filtersAdapter = FiltersAdapter(filterList) { removedKey ->
-            activeFilters.remove(removedKey)
-            allFilterTypes.add(removedKey.replaceFirstChar { it.uppercase() })
-            isSearching = true
-            applyFilters()
-            if (filterList.isEmpty()) filtersRecycler.visibility = View.GONE
-        }
+        filtersAdapter = FiltersAdapter(filterList,
+            onRemove = { removedKey ->
+                if (removedKey.lowercase() == "check_date") {
+                    activeFilters.remove("check_in")
+                    activeFilters.remove("check_out")
+                } else {
+                    activeFilters.remove(removedKey.lowercase())
+                }
+
+                filterList.removeAll { it.first.lowercase() == removedKey.lowercase() }
+
+                filtersAdapter.notifyDataSetChanged()
+
+                if (filterList.isEmpty()) {
+                    filtersRecycler.visibility = View.GONE
+                    isSearching = false
+                    loadHotels()
+                } else {
+                    isSearching = true
+                    applyFilters()
+                }
+            }
+            ,
+                    onUpdate = { key, newValue ->
+                activeFilters[key.lowercase()] = newValue
+                isSearching = true
+                applyFilters()
+            }
+        )
+
         filtersRecycler.adapter = filtersAdapter
         filtersRecycler.layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
 
@@ -204,32 +265,157 @@ class HomeFragment : Fragment() {
             }
         }
     }
+    private fun applySelectedFilter(filterName: String, value: String) {
+        val lowercaseKey = filterName.lowercase()
+
+        val uniqueKeys = setOf("amenity_ids", "check_in", "check_out")
+
+        if (lowercaseKey in uniqueKeys) {
+            val existingIndex = filterList.indexOfFirst { it.first.lowercase() == lowercaseKey }
+            if (existingIndex >= 0) {
+                filterList[existingIndex] = Pair(filterName, value)
+                activeFilters[lowercaseKey] = value
+                filtersAdapter.notifyItemChanged(existingIndex)
+            } else {
+                activeFilters[lowercaseKey] = value
+                filterList.add(Pair(filterName, value))
+                filtersAdapter.notifyItemInserted(filterList.size - 1)
+                filtersRecycler.visibility = View.VISIBLE
+                filtersRecycler.smoothScrollToPosition(filterList.size - 1)
+            }
+        } else {
+            val alreadyExists = filterList.any { it.first == filterName && it.second == value }
+            if (!alreadyExists) {
+                activeFilters[lowercaseKey] = value
+                filterList.add(Pair(filterName, value))
+                filtersAdapter.notifyItemInserted(filterList.size - 1)
+                filtersRecycler.visibility = View.VISIBLE
+                filtersRecycler.smoothScrollToPosition(filterList.size - 1)
+            }
+        }
+
+        searchInputField.text = null
+        pendingFilterType = null
+        searchInputField.hint = "Search..."
+
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE)
+                as android.view.inputmethod.InputMethodManager
+        imm.hideSoftInputFromWindow(searchInputField.windowToken, 0)
+
+        isSearching = true
+        applyFilters()
+    }
+
+
 
     private fun showFilterPopupWindow(anchor: View) {
-        val popupView = layoutInflater.inflate(R.layout.layout_filter_popup, null) as LinearLayout
-        popupView.removeAllViews()
+        val popupView = layoutInflater.inflate(R.layout.layout_filter_popup, null)
+        val filterContainer = popupView.findViewById<LinearLayout>(R.id.filter_list_container)
+        filterContainer.removeAllViews()
+
         val popupWindow = PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true)
+
         for (filter in allFilterTypes) {
             val item = TextView(requireContext()).apply {
-                text = filter
+                text = filterDisplayNames[filter] ?: filter
                 setPadding(32, 24, 32, 24)
                 textSize = 16f
                 setTextColor(resources.getColor(R.color.colorOnPrimary, null))
                 background = resources.getDrawable(R.drawable.filter_popup_background, null)
+
                 setOnClickListener {
-                    pendingFilterType = filter
-                    searchInputField.hint = "Enter $filter..."
-                    searchInputField.requestFocus()
+                    when (filter.lowercase()) {
+                        "check_date" -> {
+                            val validator = CompositeDateValidator.allOf(listOf(DateValidatorPointForward.now()))
+                            val constraints = CalendarConstraints.Builder().setValidator(validator).build()
+
+                            val dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
+                                .setTitleText("Select Check-in and Check-out")
+                                .setCalendarConstraints(constraints)
+                                .build()
+
+                            dateRangePicker.show(parentFragmentManager, "date_range_picker")
+
+                            dateRangePicker.addOnPositiveButtonClickListener { selection ->
+                                val startDate = selection.first
+                                val endDate = selection.second
+
+                                if (startDate != null && endDate != null) {
+                                    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                                    val checkIn = formatter.format(Date(startDate))
+                                    val checkOut = formatter.format(Date(endDate))
+
+                                    activeFilters["check_in"] = checkIn
+                                    activeFilters["check_out"] = checkOut
+
+                                    val displayLabel = "$checkIn → $checkOut"
+                                    val existingIndex = filterList.indexOfFirst { it.first == "Check_Date" }
+
+                                    if (existingIndex >= 0) {
+                                        filterList[existingIndex] = Pair("Check_Date", displayLabel)
+                                        filtersAdapter.notifyItemChanged(existingIndex)
+                                    } else {
+                                        filterList.add(Pair("Check_Date", displayLabel))
+                                        filtersAdapter.notifyItemInserted(filterList.size - 1)
+                                        filtersRecycler.visibility = View.VISIBLE
+                                        filtersRecycler.smoothScrollToPosition(filterList.size - 1)
+                                    }
+
+                                    isSearching = true
+                                    applyFilters()
+                                }
+                            }
+                        }
+
+
+                        "min_price", "max_price", "min_rating", "postal_code" -> {
+                            searchInputField.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+                            searchInputField.hint = "Enter ${filterDisplayNames[filter] ?: filter}"
+                            pendingFilterType = filter
+                            searchInputField.requestFocus()
+                        }
+
+                        "amenity_ids" -> {
+                            val amenityNames = amenityNameToId.keys.toList()
+                            val selected = BooleanArray(amenityNames.size) { index ->
+                                val current = activeFilters["amenity_ids"]?.split(",")?.map { it.trim() } ?: emptyList()
+                                amenityNames[index] in current
+                            }
+
+                            MaterialAlertDialogBuilder(requireContext())
+                                .setTitle("Select Amenities")
+                                .setMultiChoiceItems(amenityNames.toTypedArray(), selected) { _, which, isChecked ->
+                                    selected[which] = isChecked
+                                }
+                                .setPositiveButton("Apply") { _, _ ->
+                                    val selectedAmenities = amenityNames.filterIndexed { index, _ -> selected[index] }
+                                    applySelectedFilter("Amenity_Ids", selectedAmenities.joinToString(", "))
+                                }
+                                .setNegativeButton("Cancel", null)
+                                .show()
+                        }
+
+                        else -> {
+                            searchInputField.inputType = InputType.TYPE_CLASS_TEXT
+                            searchInputField.hint = "Enter ${filterDisplayNames[filter] ?: filter}"
+                            pendingFilterType = filter
+                            searchInputField.requestFocus()
+                        }
+                    }
                     popupWindow.dismiss()
                 }
             }
-            popupView.addView(item)
+            filterContainer.addView(item)
+
         }
+
         popupWindow.elevation = 12f
         popupWindow.isOutsideTouchable = true
         popupWindow.setBackgroundDrawable(null)
         popupWindow.showAsDropDown(anchor, -8, 16)
     }
+
+
 
     private fun applyFilters() {
         if (activeFilters.isEmpty()) {
@@ -240,8 +426,7 @@ class HomeFragment : Fragment() {
 
         val amenityIds = activeFilters["amenity_ids"]
             ?.split(",")
-            ?.mapNotNull { it.trim().toIntOrNull() }
-
+            ?.mapNotNull { amenityNameToId[it.trim()] }
         val searchParams = HotelSearchParams(
             name = activeFilters["name"],
             description = activeFilters["description"],
@@ -261,7 +446,8 @@ class HomeFragment : Fragment() {
             skip = 0,
             limit = 25
         )
-
+        val gson = Gson()
+        Log.d("FILTER_BODY", gson.toJson(searchParams))
         hotelRepository.searchHotelsByFilters(
             filters = searchParams,
             onResult = { hotels ->
