@@ -58,10 +58,15 @@ class ItemsHotelAdapter(
         }
 
         holder.image.setOnClickListener {
-            HotelHolder.currentHotel = currentItem
+            val updatedItem = currentItem.copy(
+                is_favorite = UserHolder.getSessionManager().getFavoriteHotelIds().contains(currentItem.id)
+            )
+            HotelHolder.currentHotel = updatedItem
+
             val intent = Intent(context, CurrentHotelInfo::class.java).apply {
                 putStringArrayListExtra("HOTEL_IMAGES", ArrayList(currentItem.images?.map { it.image_url } ?: listOf()))
             }
+
             context.startActivity(intent)
         }
     }

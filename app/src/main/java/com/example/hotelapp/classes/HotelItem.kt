@@ -8,6 +8,7 @@ data class HotelItem(
     val address: Address,
     val amenities: List<Amenity>,
     var rating: Float = 0f,
+    var is_favorite: Boolean = false,
     var is_card_available: Boolean,
     var views: Int = 0
 )

@@ -2,6 +2,7 @@ package com.example.hotelapp.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import com.example.hotelapp.classes.User
 
 
@@ -57,6 +58,7 @@ class SessionManager(context: Context) {
         }
     }
 
+
     fun getUserBirthDate(): String? {
         return prefs.getString(KEY_BIRTH_DATE, null)
     }
@@ -74,8 +76,12 @@ class SessionManager(context: Context) {
 
     fun saveFavoriteHotelIds(ids: List<Int>) {
         val idString = ids.joinToString(",")
+        Log.d("FAV_DEBUG", "Зберігаємо ID улюблених: $ids")
+
+
         prefs.edit().putString(KEY_FAVORITE_HOTEL_IDS, idString).apply()
     }
+
     fun getFavoriteHotelIds(): List<Int> {
         val idString = prefs.getString(KEY_FAVORITE_HOTEL_IDS, "") ?: return emptyList()
         return idString.split(",").filter { it.isNotBlank() }.map { it.toInt() }

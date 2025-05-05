@@ -5,6 +5,7 @@ import HotelRepository
 import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.*
@@ -86,6 +87,9 @@ class CurrentHotelInfo : AppCompatActivity() {
         hotelRepository.getHotelById(
             hotelId,
             onResult = { hotel ->
+                val favorites = UserHolder.getSessionManager().getFavoriteHotelIds()
+                hotel.is_favorite = favorites.contains(hotel.id)
+
                 HotelHolder.currentHotel = hotel
                 initUI(hotel)
             },
@@ -96,9 +100,11 @@ class CurrentHotelInfo : AppCompatActivity() {
         )
     }
     fun updateFavoriteIcon() {
+        if (!::favoriteButton.isInitialized) return
         val drawableId = if (isFavorite) R.drawable.ic_heart_filled else R.drawable.ic_heart_outline
         favoriteButton.setImageResource(drawableId)
     }
+
     private fun checkIfFavorite(hotelId: Int): Boolean {
         val favorites = UserHolder.getSessionManager().getFavoriteHotelIds()
         return favorites.contains(hotelId)
@@ -117,6 +123,8 @@ class CurrentHotelInfo : AppCompatActivity() {
                     ids.add(hotel.id)
                     session.saveFavoriteHotelIds(ids)
                 }
+                HotelHolder.currentHotel?.is_favorite = true
+                updateFavoriteIcon()
 
                 SnackBarUtils.showShort(rootView, "Added to favorites")
             },
@@ -126,7 +134,24 @@ class CurrentHotelInfo : AppCompatActivity() {
         )
     }
 
+    override fun onResume() {
+        super.onResume()
+        updateFavoriteStatus()
+    }
 
+
+
+    private fun updateFavoriteStatus() {
+        val hotel = HotelHolder.currentHotel
+        val session = UserHolder.getSessionManager()
+        val favoriteIds = session.getFavoriteHotelIds()
+
+        Log.d("FAV_DEBUG", "Hotel ID: ${hotel?.id}")
+        Log.d("FAV_DEBUG", "Favorite IDs: $favoriteIds")
+
+        isFavorite = hotel?.id?.let { favoriteIds.contains(it) } ?: false
+        updateFavoriteIcon()
+    }
 
     private fun removeFromFavorites(hotelId: Int) {
         val session = UserHolder.getSessionManager()
@@ -140,13 +165,18 @@ class CurrentHotelInfo : AppCompatActivity() {
                     ids.remove(hotelId)
                     session.saveFavoriteHotelIds(ids)
                 }
+
+                HotelHolder.currentHotel?.is_favorite = false
+                updateFavoriteIcon()
+
+                SnackBarUtils.showShort(rootView, "Removed from favorites")
             },
             onError = { error ->
                 SnackBarUtils.showLong(rootView, error.message ?: "Failed to remove from favorites")
             }
-
         )
     }
+
     fun getScreenHeight(): Int {
         return Resources.getSystem().displayMetrics.heightPixels
     }
@@ -171,9 +201,8 @@ class CurrentHotelInfo : AppCompatActivity() {
         viewPager = findViewById(R.id.hotelImagesViewPager)
         val amenitiesView = findViewById<RecyclerView>(R.id.amenitiesRecyclerView)
         favoriteButton = findViewById(R.id.favorite_button)
-        val favoriteIds = UserHolder.getSessionManager().getFavoriteHotelIds()
-        isFavorite = favoriteIds.contains(hotel.id)
         updateFavoriteIcon()
+
 
         val shareButton: ImageView = findViewById(R.id.share_button)
         shareButton.setOnClickListener {
@@ -223,8 +252,6 @@ class CurrentHotelInfo : AppCompatActivity() {
                 else -> AmenityDisplay(R.drawable.ic_other, "Other")
             }
         }
-        isFavorite = checkIfFavorite(hotel.id)
-        updateFavoriteIcon()
         val amenitiesAdapter = AmenitiesAdapter(amenities)
         amenitiesView.adapter = amenitiesAdapter
         amenitiesView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
