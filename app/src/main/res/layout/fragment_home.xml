@@ -11,15 +11,6 @@
         android:background="?android:attr/windowBackground"
         android:padding="16dp">
 
-        <ImageView
-            android:id="@+id/menu_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/menu_lines"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:tint="?attr/colorOnPrimary"
-            android:layout_marginTop="15dp" />
 
         <ImageView
             android:id="@+id/notification_icon"
@@ -31,7 +22,6 @@
             app:tint="?attr/colorOnPrimary"
             android:layout_marginTop="15dp" />
 
-        <!-- Заголовок -->
         <TextView
             android:id="@+id/title_text"
             android:layout_width="wrap_content"
@@ -42,9 +32,8 @@
             android:textSize="26sp"
             android:layout_marginTop="25dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/menu_icon" />
+             />
 
-        <!-- Підзаголовок -->
         <TextView
             android:id="@+id/subtitle_text"
             android:layout_width="wrap_content"
@@ -55,7 +44,6 @@
             android:textSize="16sp"
             app:layout_constraintTop_toBottomOf="@+id/title_text" />
 
-        <!-- Поле пошуку -->
         <LinearLayout
             android:id="@+id/search_bar"
             android:layout_width="0dp"

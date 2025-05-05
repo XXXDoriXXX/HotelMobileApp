@@ -1,12 +1,14 @@
 package com.example.hotelapp.ui
 
 import android.os.Bundle
+import android.widget.Button
 import android.widget.RadioButton
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.hotelapp.R
+import com.example.hotelapp.classes.LanguageController
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,6 +19,17 @@ class SettingsActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+        val langController = LanguageController(this)
+
+        findViewById<Button>(R.id.btn_english).setOnClickListener {
+            langController.switchLanguage("en")
+            recreate()
+        }
+
+        findViewById<Button>(R.id.btn_ukrainian).setOnClickListener {
+            langController.switchLanguage("uk")
+            recreate()
         }
         val systemTheme: RadioButton = findViewById(R.id.radio_system)
         val lightTheme: RadioButton = findViewById(R.id.radio_light)

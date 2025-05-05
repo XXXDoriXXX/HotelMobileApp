@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">HotelApp</string>
+    <string name="prompt_email">Пошта</string>
+    <string name="prompt_password">Пароль</string>
+    <string name="action_sign_in">Увійдіть або зареєструйтесь</string>
+    <string name="action_sign_in_short">Увійти</string>
+    <string name="welcome">Вітаємо!</string>
+    <string name="invalid_username">Невірна назва користувача</string>
+    <string name="invalid_password">Пароль повинен складатись мінімум з 6 символів</string>
+    <string name="login_failed">Помилка входу</string>
+    <string name="choose_theme">Оберіть тему</string>
+    <string name="system_default">Системна тема</string>
+    <string name="light_theme">Світла тема</string>
+    <string name="dark_theme">Темна тема</string>
+    <string name="choose_language">Оберіть мову</string>
+    <string name="english">Англійська</string>
+    <string name="ukrainian">Українська</string>
+</resources>

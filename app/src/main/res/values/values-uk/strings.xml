@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">HotelApp</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
-    <string name="title_activity_edit_profile" translatable="false">EditProfileActivity</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_edit_profile">EditProfileActivity</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in or register</string>
@@ -11,14 +11,11 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
-    <string name="hotel_image_desc" translatable="false">Hotel image</string>
-    <string name="choose_theme">Choose Theme</string>
-    <string name="system_default">System Default</string>
-    <string name="light_theme">Light Theme</string>
-    <string name="dark_theme">Dark Theme</string>
+    <string name="hotel_image_desc">Hotel image</string>
     <string name="choose_language">Choose Language</string>
     <string name="english">English</string>
-    <string name="ukrainian">Ukrainian</string>
+    <string name="ukrainian">Українська</string>
+
     <string-array name="sort_options">
         <item>Date ↑</item>
         <item>Date ↓</item>
