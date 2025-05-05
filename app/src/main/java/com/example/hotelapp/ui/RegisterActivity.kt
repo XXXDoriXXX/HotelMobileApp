@@ -68,7 +68,7 @@ class RegisterActivity : AppCompatActivity() {
         val passwordLayout = findViewById<TextInputLayout>(R.id.password_input)
         val birthLayout = findViewById<TextInputLayout>(R.id.date_of_birth_input)
 
-        val haveaccount: TextView = findViewById(R.id.have_account_text)
+        val haveaccount: LinearLayout = findViewById(R.id.have_account_text)
         haveaccount.setOnClickListener {
             startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
         }

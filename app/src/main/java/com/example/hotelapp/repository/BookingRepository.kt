@@ -51,7 +51,15 @@ class BookingRepository(private val api: HotelService, private val session: Sess
                     val refund = response.body()?.refunded ?: 0f
                     onSuccess(refund)
                 } else {
-                    onError(Throwable("Не вдалося отримати суму повернення"))
+                    val errorMessage = try {
+                        response.errorBody()?.string()
+                            ?.let { com.google.gson.JsonParser.parseString(it).asJsonObject["detail"]?.asString }
+                            ?: "Failed to fetch refund amount"
+                    } catch (e: Exception) {
+                        "Failed to fetch refund amount"
+                    }
+                    onError(Throwable(errorMessage))
+
                 }
             }
 
@@ -100,8 +108,17 @@ class BookingRepository(private val api: HotelService, private val session: Sess
                             onFailure(Throwable("Empty response body"))
                         }
                     } else {
-                        onFailure(Throwable("Не вдалося створити бронювання"))
+                        val errorMessage = try {
+                            response.errorBody()?.string()
+                                ?.let { com.google.gson.JsonParser.parseString(it).asJsonObject["detail"]?.asString }
+                                ?: "Booking creation failed"
+                        } catch (e: Exception) {
+                            "Booking creation failed"
+                        }
+
+                        onFailure(Throwable(errorMessage))
                     }
+
                 }
 
                 override fun onFailure(call: Call<JsonObject>, t: Throwable) {

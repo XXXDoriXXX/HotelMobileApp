@@ -60,7 +60,7 @@ class LoginActivity : AppCompatActivity() {
         val passwordField = findViewById<TextInputEditText>(R.id.password_input_field)
         val emailLayout = findViewById<TextInputLayout>(R.id.email_input)
         val passwordLayout = findViewById<TextInputLayout>(R.id.password_input)
-        val haveAccount = findViewById<TextView>(R.id.have_account_text)
+        val haveAccount = findViewById<LinearLayout>(R.id.have_account_text)
         val loginButton = findViewById<MaterialButton>(R.id.login_button)
 
         haveAccount.setOnClickListener {

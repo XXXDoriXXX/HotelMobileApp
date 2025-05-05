@@ -1,14 +1,19 @@
 package com.example.hotelapp.ui
 
+import androidx.appcompat.app.AlertDialog
 import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.example.hotelapp.Holder.HotelHolder
 import com.example.hotelapp.R
@@ -24,6 +29,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -45,6 +52,7 @@ class CurrentRoomInfo : AppCompatActivity() {
     private lateinit var sessionManager: SessionManager
     private var busyDates: List<Pair<Long, Long>> = listOf()
     private lateinit var roomRepository: RoomRepository
+    private lateinit var loadingDialog: AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,10 +80,9 @@ class CurrentRoomInfo : AppCompatActivity() {
                 when (selectedMethod) {
                     "Card" -> startCheckoutFlow()
                     "Cash" -> startCashBooking()
-                    "Google Pay" -> Toast.makeText(this, "Google Pay ще не реалізовано", Toast.LENGTH_SHORT).show()
                 }
             } else {
-                Toast.makeText(this, "Виберіть дати проживання", Toast.LENGTH_SHORT).show()
+                showFancyError("Please, select a bookings dates")
             }
         }
 
@@ -97,6 +104,12 @@ class CurrentRoomInfo : AppCompatActivity() {
             }
             false
         }
+    }
+    fun showFancyError(message: String) {
+        Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
+            .setBackgroundTint(Color.parseColor("#FCE8E6"))
+            .setTextColor(Color.parseColor("#B3261E"))
+            .show()
     }
 
     private fun showDatePicker() {
@@ -123,6 +136,16 @@ class CurrentRoomInfo : AppCompatActivity() {
             val endDate = selection.second
 
             if (startDate != null && endDate != null) {
+                val hasOverlap = busyDates.any { (busyStart, busyEnd) ->
+                    startDate <= busyEnd && endDate >= busyStart
+                }
+
+                if (hasOverlap) {
+                    showFancyError("This dates has already booked");
+
+                    return@addOnPositiveButtonClickListener
+                }
+
                 val dateFormatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
                 checkInDateFormatted = dateFormatter.format(Date(startDate))
                 checkOutDateFormatted = dateFormatter.format(Date(endDate))
@@ -131,6 +154,7 @@ class CurrentRoomInfo : AppCompatActivity() {
                 calculateTotalPrice(startDate, endDate)
             }
         }
+
     }
 
 
@@ -145,7 +169,7 @@ class CurrentRoomInfo : AppCompatActivity() {
 
         roomRepository.getBookedDates(roomId) { bookedDates, error ->
             if (error != null) {
-                Toast.makeText(this, "Не вдалося завантажити заброньовані дати", Toast.LENGTH_SHORT).show()
+                showFancyError("Failed to load booking dates, please check your internet connection")
                 return@getBookedDates
             }
 
@@ -170,23 +194,35 @@ class CurrentRoomInfo : AppCompatActivity() {
 
         val selectedPaymentMethod = paymentSpinner.selectedItem.toString().lowercase()
 
-        val progress = ProgressDialog(this).apply {
-            setMessage("Створюємо бронювання...")
-            setCancelable(false)
-            show()
-        }
+        showLoadingDialog(this)
+
 
         val apiService = RetrofitClient.retrofit.create(HotelService::class.java)
         val repository = BookingRepository(apiService, sessionManager)
 
         repository.createCheckout(roomId, dateStart, dateEnd, selectedPaymentMethod, { url ->
-            progress.dismiss()
+            hideLoadingDialog()
+
             val intent = CustomTabsIntent.Builder().build()
             intent.launchUrl(this, Uri.parse(url))
         }, { error ->
-            progress.dismiss()
-            Toast.makeText(this, "Помилка: ${error.message}", Toast.LENGTH_LONG).show()
+            hideLoadingDialog()
+            showFancyError("Error: ${error.message}")
         })
+    }
+    fun showLoadingDialog(context: Context) {
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_loading, null)
+        loadingDialog = MaterialAlertDialogBuilder(context)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+        loadingDialog.show()
+    }
+
+    fun hideLoadingDialog() {
+        if (::loadingDialog.isInitialized && loadingDialog.isShowing) {
+            loadingDialog.dismiss()
+        }
     }
     private fun startCashBooking() {
         val roomId = HotelHolder.currentRoom?.id ?: return
@@ -195,17 +231,15 @@ class CurrentRoomInfo : AppCompatActivity() {
         val dateStart = checkInDateFormatted?.let { outputFormat.format(inputFormat.parse(it)!!) } ?: return
         val dateEnd = checkOutDateFormatted?.let { outputFormat.format(inputFormat.parse(it)!!) } ?: return
 
-        val progress = ProgressDialog(this).apply {
-            setMessage("Створюємо бронювання...")
-            setCancelable(false)
-            show()
-        }
+        showLoadingDialog(this)
+
 
         val apiService = RetrofitClient.retrofit.create(HotelService::class.java)
         val repository = BookingRepository(apiService, sessionManager)
 
         repository.createCheckout(roomId, dateStart, dateEnd, "cash", { urlOrMessage ->
-            progress.dismiss()
+            hideLoadingDialog()
+
 
             val intent = Intent(this, BookingSuccessActivity::class.java).apply {
                 putExtra("totalPrice", totalNights * pricePerNight)
@@ -215,8 +249,8 @@ class CurrentRoomInfo : AppCompatActivity() {
             finish()
 
         }, { error ->
-            progress.dismiss()
-            Toast.makeText(this, "Помилка: ${error.message}", Toast.LENGTH_LONG).show()
+            hideLoadingDialog()
+            showFancyError("Error: ${error.message}")
         })
     }
 

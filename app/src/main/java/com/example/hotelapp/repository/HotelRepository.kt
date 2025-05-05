@@ -1,4 +1,5 @@
 import com.example.hotelapp.api.HotelService
+import com.example.hotelapp.classes.ErrorUtils
 import com.example.hotelapp.models.FavoriteHotelWrapper
 import com.example.hotelapp.models.HotelSearchParams
 import com.example.hotelapp.models.HotelWithStatsResponse
@@ -14,7 +15,7 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
                 if (response.isSuccessful) {
                     onResult(response.body() ?: emptyList())
                 } else {
-                    onError(Exception("Failed to fetch hotels: ${response.message()}"))
+                    onError(Exception(ErrorUtils.parseErrorMessage(response)))
                 }
             }
 
@@ -74,7 +75,7 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
                     } ?: emptyList()
                     onResult(hotels)
                 } else {
-                    onError(Exception("Failed to fetch hotels: ${response.message()}"))
+                    onError(Exception(ErrorUtils.parseErrorMessage(response)))
                 }
             }
 
@@ -109,7 +110,8 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
                             onResult(body.hotel)
                         } else onError(Exception("Empty response"))
                     } else {
-                        onError(Exception("Failed to fetch hotel: ${response.message()}"))
+                        onError(Exception(ErrorUtils.parseErrorMessage(response)))
+
                     }
                 }
 
@@ -138,7 +140,7 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
                     } ?: emptyList()
                     onResult(hotels)
                 } else {
-                    onError(Exception("Search failed: ${response.message()}"))
+                    onError(Exception(ErrorUtils.parseErrorMessage(response)))
                 }
             }
 
@@ -168,7 +170,8 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
                         onResult()
                     } else {
                         val error = response.errorBody()?.string()
-                        onError(Exception("Failed to rate hotel: $error"))
+                        onError(Exception(ErrorUtils.parseErrorMessage(response)))
+
                     }
                 }
 
@@ -201,7 +204,8 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
                     } ?: emptyList()
                     onResult(hotels)
                 } else {
-                    onError(Exception("Failed to get favorites"))
+                    onError(Exception(ErrorUtils.parseErrorMessage(response)))
+
                 }
             }
 
@@ -227,7 +231,8 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
         apiService.addFavorite(hotelId, "Bearer $token").enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) onResult()
-                else onError(Exception("Failed to add favorite"))
+                else onError(Exception(ErrorUtils.parseErrorMessage(response)))
+
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) = onError(t)
@@ -247,7 +252,8 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
         apiService.removeFavorite(hotelId, "Bearer $token").enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) onResult()
-                else onError(Exception("Failed to remove favorite"))
+                else onError(Exception(ErrorUtils.parseErrorMessage(response)))
+
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) = onError(t)
@@ -264,7 +270,7 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
                 if (response.isSuccessful) {
                     onResult(response.body() ?: emptyList())
                 } else {
-                    onError(Exception("Failed to search hotels"))
+                    onError(Exception(ErrorUtils.parseErrorMessage(response)))
                 }
             }
 

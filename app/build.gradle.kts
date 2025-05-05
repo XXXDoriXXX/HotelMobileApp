@@ -54,6 +54,7 @@ dependencies {
     implementation ("com.google.android.flexbox:flexbox:3.0.0")
     implementation("com.airbnb.android:lottie:6.3.0")
     implementation ("com.facebook.shimmer:shimmer:0.5.0")
+    implementation ("com.google.code.gson:gson:2.10.1")
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
