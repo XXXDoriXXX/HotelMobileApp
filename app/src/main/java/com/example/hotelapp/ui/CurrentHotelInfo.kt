@@ -3,6 +3,7 @@ package com.example.hotelapp.ui
 import HotelItem
 import HotelRepository
 import android.content.Intent
+import android.content.res.Resources
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
@@ -18,7 +19,9 @@ import com.example.hotelapp.R
 import com.example.hotelapp.adapters.HotelImagesAdapter
 import com.example.hotelapp.classes.AmenitiesAdapter
 import com.example.hotelapp.classes.AmenityDisplay
+import com.example.hotelapp.classes.SnackBarUtils
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlin.math.ln
 
 class CurrentHotelInfo : AppCompatActivity() {
     private lateinit var shimmerLayout: com.facebook.shimmer.ShimmerFrameLayout
@@ -30,14 +33,16 @@ class CurrentHotelInfo : AppCompatActivity() {
     private var isFavorite: Boolean = false
     private lateinit var favoriteButton: ImageView
     private lateinit var loadingOverlay: FrameLayout
-
+    private lateinit var rootView: View
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         UserHolder.initialize(applicationContext)
         hotelRepository = UserHolder.getHotelRepository()
 
         setContentView(R.layout.activity_current_hotel_info)
+        rootView = findViewById(R.id.main)
         loadingOverlay = findViewById(R.id.loading_overlay)
         loadingOverlay.visibility = View.VISIBLE
 
@@ -68,7 +73,7 @@ class CurrentHotelInfo : AppCompatActivity() {
                     initUI(hotel)
                 },
                 onError = {
-                    Toast.makeText(this, "Hotel not found", Toast.LENGTH_SHORT).show()
+                    SnackBarUtils.showShort(rootView, "Hotel not found")
                     finish()
                 }
             )
@@ -85,7 +90,7 @@ class CurrentHotelInfo : AppCompatActivity() {
                 initUI(hotel)
             },
             onError = { error ->
-                Toast.makeText(this, "Error: ${error.message}", Toast.LENGTH_LONG).show()
+                SnackBarUtils.showLong(rootView, "Error: ${error.message}")
                 finish()
             }
         )
@@ -112,12 +117,15 @@ class CurrentHotelInfo : AppCompatActivity() {
                     ids.add(hotel.id)
                     session.saveFavoriteHotelIds(ids)
                 }
+
+                SnackBarUtils.showShort(rootView, "Added to favorites")
             },
-            onError = {
-                Toast.makeText(this, "Failed to add to favorites", Toast.LENGTH_SHORT).show()
+            onError = { error ->
+                SnackBarUtils.showLong(rootView, error.message ?: "Something went wrong")
             }
         )
     }
+
 
 
     private fun removeFromFavorites(hotelId: Int) {
@@ -133,10 +141,14 @@ class CurrentHotelInfo : AppCompatActivity() {
                     session.saveFavoriteHotelIds(ids)
                 }
             },
-            onError = {
-                Toast.makeText(this, "Failed to remove from favorites", Toast.LENGTH_SHORT).show()
+            onError = { error ->
+                SnackBarUtils.showLong(rootView, error.message ?: "Failed to remove from favorites")
             }
+
         )
+    }
+    fun getScreenHeight(): Int {
+        return Resources.getSystem().displayMetrics.heightPixels
     }
 
 
@@ -165,7 +177,6 @@ class CurrentHotelInfo : AppCompatActivity() {
 
         val shareButton: ImageView = findViewById(R.id.share_button)
         shareButton.setOnClickListener {
-            // Формуємо красиву адресу
             val prettyAddress = listOfNotNull(
                 hotel.address.street,
                 hotel.address.city,
@@ -174,13 +185,10 @@ class CurrentHotelInfo : AppCompatActivity() {
                 hotel.address.postal_code
             ).joinToString(", ")
 
-            // Клікабельне посилання через GitHub Pages
             val webShareLink = "https://xxxdorixxx.github.io/hotelapp-links/hotel.html?id=${hotel.id}"
 
-            // Лінк на Google Maps
             val mapsLink = "https://www.google.com/maps?q=${hotel.address.latitude},${hotel.address.longitude}"
 
-            // Текст для поширення
             val shareText = """
         🏨 ${hotel.name}
         📍 $prettyAddress
@@ -226,11 +234,12 @@ class CurrentHotelInfo : AppCompatActivity() {
 
             if (isFavorite) {
                 addToFavorites(hotel)
-                Toast.makeText(this, "Added to favorites", Toast.LENGTH_SHORT).show()
+                SnackBarUtils.showLong(rootView, "Added to favorites")
             } else {
                 removeFromFavorites(hotel.id)
-                Toast.makeText(this, "Removed from favorites", Toast.LENGTH_SHORT).show()
+                SnackBarUtils.showShort(rootView, "Removed from favorites")
             }
+
         }
         hotelName.text = hotel.name
         descriptionText.text = hotel.description
@@ -242,13 +251,14 @@ class CurrentHotelInfo : AppCompatActivity() {
                 hotel.id,
                 rating,
                 onResult = {
-                    Toast.makeText(this, "Rating submitted", Toast.LENGTH_SHORT).show()
+                    SnackBarUtils.showShort(rootView, "Rating submitted")
                 },
                 onError = { error ->
-                    Toast.makeText(this, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                    SnackBarUtils.showLong(rootView, error.message ?: "Failed to submit rating")
                 }
             )
         }
+
 
         bookNowButton.setOnClickListener {
             startActivity(Intent(this, RoomsListActivity::class.java))
@@ -265,20 +275,27 @@ class CurrentHotelInfo : AppCompatActivity() {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet).apply {
             state = BottomSheetBehavior.STATE_EXPANDED
             isHideable = false
-            peekHeight = 600
+            peekHeight = 400
         }
+
+        val screenHeight = getScreenHeight()
+        val minHeight = (screenHeight * 0.40f).toInt()
+        val maxHeight = (screenHeight * 0.50f).toInt()
+        val baseHeight = (screenHeight * 0.2f).toInt()
 
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {}
+
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                val minHeight = 550
-                val maxHeight = 750
                 val adjustedOffset = 1 - slideOffset
-                val newHeight = (minHeight + 1050 + (adjustedOffset * maxHeight)).toInt()
+                val scale = ln(1 + adjustedOffset * 0.5) / ln(3.0)
+                val newHeight = (minHeight + baseHeight + maxHeight * scale).toInt()
+
                 viewPager.layoutParams.height = newHeight
                 viewPager.requestLayout()
             }
         })
+
 
         viewPager.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {

@@ -1,5 +1,5 @@
 package com.example.hotelapp.adapters
-
+import com.bumptech.glide.request.target.Target
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +26,9 @@ class HotelImagesAdapter(private val images: List<String>) :
         Glide.with(holder.imageView.context)
             .load(images[position])
             .placeholder(R.drawable.default_image)
+            .override(Target.SIZE_ORIGINAL)
             .into(holder.imageView)
+
     }
 
     override fun getItemCount(): Int = images.size

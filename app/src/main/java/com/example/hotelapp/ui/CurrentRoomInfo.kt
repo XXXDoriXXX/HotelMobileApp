@@ -1,9 +1,11 @@
 package com.example.hotelapp.ui
 
+import HotelRepository
 import androidx.appcompat.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -21,6 +23,7 @@ import com.example.hotelapp.api.HotelService
 import com.example.hotelapp.classes.BusyDatesValidator
 import com.example.hotelapp.classes.CompositeValidator
 import com.example.hotelapp.classes.RoomImagesAdapter
+import com.example.hotelapp.classes.SnackBarUtils
 import com.example.hotelapp.network.RetrofitClient
 import com.example.hotelapp.repository.BookingRepository
 import com.example.hotelapp.repository.RoomRepository
@@ -34,6 +37,7 @@ import com.google.android.material.snackbar.Snackbar
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.math.ln
 
 class CurrentRoomInfo : AppCompatActivity() {
 
@@ -53,20 +57,28 @@ class CurrentRoomInfo : AppCompatActivity() {
     private var busyDates: List<Pair<Long, Long>> = listOf()
     private lateinit var roomRepository: RoomRepository
     private lateinit var loadingDialog: AlertDialog
-
+    private lateinit var room_price:TextView
+    private lateinit var rootView: View
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_current_room_info)
         roomRepository = RoomRepository()
-
+        rootView = findViewById(R.id.main)
         sessionManager = SessionManager(this)
-
+        room_price = findViewById(R.id.room_price)
+        room_price.text = "$${pricePerNight} / night"
         selectDatesButton = findViewById(R.id.select_dates_button)
         totalPriceText = findViewById(R.id.total_price)
         payButton = findViewById(R.id.pay_button)
         paymentSpinner = findViewById(R.id.payment_method_spinner)
+        val paymentMethods = if (HotelHolder.currentHotel?.is_card_available == true) {
+            listOf("Card", "Cash")
+        } else {
+            listOf("Cash")
+        }
 
-        val paymentMethods = listOf("Card", "Cash", "Google Pay")
+
+
         val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, paymentMethods)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         paymentSpinner.adapter = spinnerAdapter
@@ -82,7 +94,7 @@ class CurrentRoomInfo : AppCompatActivity() {
                     "Cash" -> startCashBooking()
                 }
             } else {
-                showFancyError("Please, select a bookings dates")
+                SnackBarUtils.showShort(rootView, "Error: Please, select a bookings dates")
             }
         }
 
@@ -95,8 +107,26 @@ class CurrentRoomInfo : AppCompatActivity() {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet).apply {
             state = BottomSheetBehavior.STATE_EXPANDED
             isHideable = false
-            peekHeight = 700
+            peekHeight = (getScreenHeight() * 0.3f).toInt()
         }
+
+        val screenHeight = getScreenHeight()
+        val minHeight = (screenHeight * 0.40f).toInt()
+        val maxHeight = (screenHeight * 0.50f).toInt()
+        val baseHeight = (screenHeight * 0.2f).toInt()
+
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {}
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                val adjustedOffset = 1 - slideOffset
+                val scale = ln(1 + adjustedOffset * 0.5) / ln(3.0)
+                val newHeight = (minHeight + baseHeight + maxHeight * scale).toInt()
+                viewPager.layoutParams.height = newHeight
+                viewPager.requestLayout()
+            }
+        })
+
 
         viewPager.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
@@ -104,12 +134,6 @@ class CurrentRoomInfo : AppCompatActivity() {
             }
             false
         }
-    }
-    fun showFancyError(message: String) {
-        Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
-            .setBackgroundTint(Color.parseColor("#FCE8E6"))
-            .setTextColor(Color.parseColor("#B3261E"))
-            .show()
     }
 
     private fun showDatePicker() {
@@ -141,7 +165,7 @@ class CurrentRoomInfo : AppCompatActivity() {
                 }
 
                 if (hasOverlap) {
-                    showFancyError("This dates has already booked");
+                    SnackBarUtils.showShort(rootView, "Error: This dates has already booked");
 
                     return@addOnPositiveButtonClickListener
                 }
@@ -157,6 +181,9 @@ class CurrentRoomInfo : AppCompatActivity() {
 
     }
 
+    private fun getScreenHeight(): Int {
+        return Resources.getSystem().displayMetrics.heightPixels
+    }
 
     private fun calculateTotalPrice(startDateMillis: Long, endDateMillis: Long) {
         val diffInMillis = endDateMillis - startDateMillis
@@ -169,7 +196,8 @@ class CurrentRoomInfo : AppCompatActivity() {
 
         roomRepository.getBookedDates(roomId) { bookedDates, error ->
             if (error != null) {
-                showFancyError("Failed to load booking dates, please check your internet connection")
+                SnackBarUtils.showShort(rootView, "Hotel not found")
+                SnackBarUtils.showShort(rootView, "Failed to load booking dates, please check your internet connection")
                 return@getBookedDates
             }
 
@@ -193,6 +221,10 @@ class CurrentRoomInfo : AppCompatActivity() {
         val dateEnd = checkOutDateFormatted?.let { outputFormat.format(inputFormat.parse(it)!!) } ?: return
 
         val selectedPaymentMethod = paymentSpinner.selectedItem.toString().lowercase()
+        if (selectedPaymentMethod == "card" && HotelHolder.currentHotel?.is_card_available == false) {
+            SnackBarUtils.showShort(rootView, "Card payment is not available for this hotel")
+            return
+        }
 
         showLoadingDialog(this)
 
@@ -207,7 +239,7 @@ class CurrentRoomInfo : AppCompatActivity() {
             intent.launchUrl(this, Uri.parse(url))
         }, { error ->
             hideLoadingDialog()
-            showFancyError("Error: ${error.message}")
+            SnackBarUtils.showShort(rootView, "Error: ${error.message}")
         })
     }
     fun showLoadingDialog(context: Context) {
@@ -250,7 +282,7 @@ class CurrentRoomInfo : AppCompatActivity() {
 
         }, { error ->
             hideLoadingDialog()
-            showFancyError("Error: ${error.message}")
+            SnackBarUtils.showShort(rootView, "Error: ${error.message}")
         })
     }
 
