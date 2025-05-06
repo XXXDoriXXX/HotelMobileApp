@@ -1,9 +1,8 @@
 package com.example.hotelapp.ui
 
+import HotelRepository
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
@@ -49,7 +48,6 @@ class SplashActivity : AppCompatActivity() {
     private fun preloadUserDataAndNavigate() {
         val userRepository = com.example.hotelapp.repository.UserRepository()
         val avatarStub = ImageView(this)
-
         userRepository.loadProfileDetails(
             context = this,
             avatarImageView = avatarStub,

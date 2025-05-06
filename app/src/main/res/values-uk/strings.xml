@@ -16,4 +16,124 @@
     <string name="choose_language">Оберіть мову</string>
     <string name="english">Англійська</string>
     <string name="ukrainian">Українська</string>
+    <string name="user_name">Ім’я користувача</string>
+    <string name="user_email_example">example@gmail.com</string>
+    <string name="edit_profile">Редагувати профіль</string>
+    <string name="settings">Налаштування</string>
+    <string name="help_support">Допомога / Підтримка</string>
+    <string name="logout">Вийти</string>
+    <string name="first_name">Ім’я</string>
+    <string name="last_name">Прізвище</string>
+    <string name="email">Електронна пошта</string>
+    <string name="phone_number">Номер телефону</string>
+    <string name="current_password">Поточний пароль</string>
+    <string name="new_password">Новий пароль</string>
+    <string name="confirm_password">Підтвердити пароль</string>
+    <string name="save">З Б Е Р Е Г Т И</string>
+    <string name="dialog_title_exit">Зберегти зміни?</string>
+    <string name="dialog_message_exit">Ти впевнений, що хочеш покинути без збереження?</string>
+    <string name="dialog_positive">Зберегти</string>
+    <string name="dialog_negative">Не зберігати</string>
+    <string name="dialog_neutral">Скасувати</string>
+
+    <string name="error_enter_first_name">Введіть ім’я</string>
+    <string name="error_enter_last_name">Введіть прізвище</string>
+    <string name="error_enter_phone">Введіть телефон</string>
+    <string name="error_enter_email">Введіть пошту</string>
+    <string name="error_invalid_email">Невірна пошта</string>
+    <string name="error_required">Обов’язкове поле</string>
+    <string name="error_password_mismatch">Паролі не співпадають</string>
+
+    <string name="toast_avatar_error">Не вдалося оновити аватар: %1$s</string>
+    <string name="toast_profile_error">Помилка завантаження профілю: %1$s</string>
+
+    <string name="hotel_search_title">Пошук готелю</string>
+    <string name="hotel_search_subtitle">Знайдіть ідеальне житло</string>
+    <string name="search_hint">Пошук...</string>
+    <string name="location_placeholder">Лос-Анджелес, Каліфорнія, США</string>
+    <string name="tab_trending">Популярне</string>
+    <string name="tab_best_deals">Найвигідніше</string>
+    <string name="tab_popular">Найкращі</string>
+    <string name="search_failed">Помилка пошуку: %1$s</string>
+    <string name="load_error">Не вдалося завантажити зручності</string>
+    <string name="loading_error">Помилка підвантаження</string>
+    <string name="filter_enter_value">Введіть %1$s</string>
+    <string name="filter_select_date">Оберіть дати заїзду та виїзду</string>
+    <string name="filter_select_amenities">Оберіть зручності</string>
+    <string name="filter_apply">Застосувати</string>
+    <string name="filter_cancel">Скасувати</string>
+
+    <string name="filter_name">Назва готелю</string>
+    <string name="filter_description">Опис</string>
+    <string name="filter_city">Місто</string>
+    <string name="filter_country">Країна</string>
+    <string name="filter_state">Область / Регіон</string>
+    <string name="filter_postal_code">Поштовий індекс</string>
+    <string name="filter_min_price">Мін. ціна</string>
+    <string name="filter_max_price">Макс. ціна</string>
+    <string name="filter_min_rating">Мін. рейтинг</string>
+    <string name="filter_room_type">Тип кімнати</string>
+    <string name="filter_amenities">Зручності</string>
+    <string name="filter_check_date">Дати заїзду/виїзду</string>
+
+    <string name="update_check_date">Оновити дати заїзду та виїзду</string>
+    <string name="filter_dialog_title">Фільтр %1$s</string>
+    <string name="filter_dialog_message">Поточне значення: "%1$s"</string>
+    <string name="filter_dialog_hint">Введіть нове значення для %1$s</string>
+    <string name="filter_dialog_update">Оновити</string>
+    <string name="filter_dialog_delete">Видалити</string>
+    <string name="filter_dialog_cancel">Скасувати</string>
+
+    <string name="hotel_category_trending">Популярне</string>
+    <string name="hotel_description_example">Ваш ідеальний вибір для романтичного відпочинку з комфортом.</string>
+    <string name="reviews_count">%1$d переглядів</string>
+    <string name="book_now">З А Б Р О Н Ю В А Т И</string>
+
+    <string name="share_subject">Оціни цей готель у HotelApp</string>
+    <string name="share_chooser_title">Поділитись готелем через</string>
+    <string name="amenity_wifi">Wi-Fi</string>
+    <string name="amenity_tv">Телевізор</string>
+    <string name="amenity_ac">Кондиціонер</string>
+    <string name="amenity_gym">Тренажерний зал</string>
+    <string name="amenity_parking">Паркінг</string>
+    <string name="amenity_other">Інше</string>
+
+    <string name="added_to_favorites">Додано до обраного</string>
+    <string name="removed_from_favorites">Видалено з обраного</string>
+    <string name="rating_submitted">Рейтинг збережено</string>
+    <string name="rating_failed">Не вдалося зберегти рейтинг</string>
+    <string name="hotel_not_found">Готель не знайдено</string>
+    <string name="toast_error_with_reason">Помилка: %1$s</string>
+    <string name="rating">Рейтинг</string>
+    <string name="view_on_map">Переглянути на мапі</string>
+    <string name="view_or_book">Переглянути або забронювати</string>
+
+
+    <string name="room_number">Кімната 101</string>
+    <string name="room_price_format">%1$s $ / ніч</string>
+    <string name="room_description">Розкішна кімната зі зручностями для комфортного проживання.</string>
+    <string name="select_dates">Оберіть дати</string>
+    <string name="total_price_format">Разом: %1$s $</string>
+    <string name="pay_now">Оплатити</string>
+    <string name="dialog_title_select_dates">Оберіть дати</string>
+    <string name="error_already_booked">Помилка: ці дати вже заброньовані</string>
+    <string name="error_select_dates">Помилка: будь ласка, виберіть дати бронювання</string>
+    <string name="booking_load_error">Не вдалося завантажити дати бронювання. Перевірте зʼєднання з інтернетом</string>
+    <string name="card_not_available">Оплата карткою недоступна для цього готелю</string>
+    <string name="booking_error_with_reason">Помилка: %1$s</string>
+    <string name="payment_card">Карта</string>
+    <string name="payment_cash">Готівка</string>
+
+    <string name="hotel_name_example">Готель Блю Стар</string>
+    <string name="search_enter_prefix">Введіть %1$s...</string>
+    <string name="unknown_filter">поле</string>
+    <string name="unknown_value">Невідомо</string>
+
+    <string name="low_cost">Недорогі</string>
+    <string name="average">Середні</string>
+    <string name="luxury">Люксові</string>
+    <string name="back_button">Назад</string>
+    <string name="no_rooms_icon">Немає доступних номерів</string>
+
+
 </resources>

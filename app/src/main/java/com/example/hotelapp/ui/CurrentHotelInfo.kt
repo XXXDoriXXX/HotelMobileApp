@@ -17,9 +17,10 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.hotelapp.Holder.HotelHolder
 import com.example.hotelapp.R
-import com.example.hotelapp.adapters.HotelImagesAdapter
-import com.example.hotelapp.classes.AmenitiesAdapter
-import com.example.hotelapp.classes.AmenityDisplay
+import com.example.hotelapp.classes.Adapters.HotelImagesAdapter
+import com.example.hotelapp.classes.Adapters.AmenitiesAdapter
+import com.example.hotelapp.classes.Adapters.AmenityDisplay
+import com.example.hotelapp.classes.AmenityMapper
 import com.example.hotelapp.classes.SnackBarUtils
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlin.math.ln
@@ -74,7 +75,7 @@ class CurrentHotelInfo : AppCompatActivity() {
                     initUI(hotel)
                 },
                 onError = {
-                    SnackBarUtils.showShort(rootView, "Hotel not found")
+                    SnackBarUtils.showShort(this, rootView, R.string.hotel_not_found)
                     finish()
                 }
             )
@@ -94,7 +95,8 @@ class CurrentHotelInfo : AppCompatActivity() {
                 initUI(hotel)
             },
             onError = { error ->
-                SnackBarUtils.showLong(rootView, "Error: ${error.message}")
+                SnackBarUtils.showLong(this, rootView, R.string.toast_error_with_reason, error.message ?: "")
+
                 finish()
             }
         )
@@ -126,11 +128,12 @@ class CurrentHotelInfo : AppCompatActivity() {
                 HotelHolder.currentHotel?.is_favorite = true
                 updateFavoriteIcon()
 
-                SnackBarUtils.showShort(rootView, "Added to favorites")
+                SnackBarUtils.showShort(this, rootView, R.string.added_to_favorites)
             },
             onError = { error ->
-                SnackBarUtils.showLong(rootView, error.message ?: "Something went wrong")
+                SnackBarUtils.showLong(this, rootView, R.string.toast_error_with_reason, error.message ?: "")
             }
+
         )
     }
 
@@ -169,11 +172,12 @@ class CurrentHotelInfo : AppCompatActivity() {
                 HotelHolder.currentHotel?.is_favorite = false
                 updateFavoriteIcon()
 
-                SnackBarUtils.showShort(rootView, "Removed from favorites")
+                SnackBarUtils.showShort(this, rootView, R.string.removed_from_favorites)
             },
             onError = { error ->
-                SnackBarUtils.showLong(rootView, error.message ?: "Failed to remove from favorites")
+                SnackBarUtils.showLong(this, rootView, R.string.toast_error_with_reason, error.message ?: "")
             }
+
         )
     }
 
@@ -205,7 +209,9 @@ class CurrentHotelInfo : AppCompatActivity() {
 
 
         val shareButton: ImageView = findViewById(R.id.share_button)
+        Log.d("SHARE_DEBUG", "Share button: $shareButton")
         shareButton.setOnClickListener {
+
             val prettyAddress = listOfNotNull(
                 hotel.address.street,
                 hotel.address.city,
@@ -221,37 +227,32 @@ class CurrentHotelInfo : AppCompatActivity() {
             val shareText = """
         🏨 ${hotel.name}
         📍 $prettyAddress
-        ⭐ Rating: ${hotel.rating}
+        ⭐ ${getString(R.string.rating)}: ${hotel.rating}
         👁️ ${hotel.views} views
 
-        📌 View on map:
+        📌 ${getString(R.string.view_on_map)}:
         $mapsLink
 
-        🔗 View or book:
+        🔗 ${getString(R.string.view_or_book)}:
         $webShareLink
     """.trimIndent()
 
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                Log.d("SHARE_DEBUG", "Share intent: $shareText")
                 type = "text/plain"
-                putExtra(Intent.EXTRA_SUBJECT, "Check out this hotel on HotelApp")
+                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_subject))
                 putExtra(Intent.EXTRA_TEXT, shareText)
             }
 
-            startActivity(Intent.createChooser(shareIntent, "Share hotel via"))
+            startActivity(Intent.createChooser(shareIntent, getString(R.string.share_chooser_title)))
         }
 
 
 
         val amenities = hotel.amenities.map {
-            when (it.amenity_id) {
-                1 -> AmenityDisplay(R.drawable.wifi, "Wi-Fi")
-                2 -> AmenityDisplay(R.drawable.tv, "TV")
-                3 -> AmenityDisplay(R.drawable.ac, "AC")
-                4 -> AmenityDisplay(R.drawable.gym, "Gym")
-                5 -> AmenityDisplay(R.drawable.parking, "Parking")
-                else -> AmenityDisplay(R.drawable.ic_other, "Other")
-            }
+            AmenityMapper.mapAmenity(it.amenity_id)
         }
+
         val amenitiesAdapter = AmenitiesAdapter(amenities)
         amenitiesView.adapter = amenitiesAdapter
         amenitiesView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
@@ -261,28 +262,30 @@ class CurrentHotelInfo : AppCompatActivity() {
 
             if (isFavorite) {
                 addToFavorites(hotel)
-                SnackBarUtils.showLong(rootView, "Added to favorites")
+                SnackBarUtils.showLong(this, rootView, R.string.added_to_favorites)
             } else {
                 removeFromFavorites(hotel.id)
-                SnackBarUtils.showShort(rootView, "Removed from favorites")
+                SnackBarUtils.showShort(this, rootView, R.string.removed_from_favorites)
             }
 
         }
         hotelName.text = hotel.name
         descriptionText.text = hotel.description
         ratingBar.rating = hotel.rating
-        viewsText.text = "${hotel.views} views"
+        viewsText.text = getString(R.string.reviews_count, hotel.views)
+
 
         ratingBar.setOnRatingBarChangeListener { _, rating, _ ->
             hotelRepository.rateHotel(
                 hotel.id,
                 rating,
                 onResult = {
-                    SnackBarUtils.showShort(rootView, "Rating submitted")
+                    SnackBarUtils.showShort(this, rootView, R.string.rating_submitted)
                 },
                 onError = { error ->
-                    SnackBarUtils.showLong(rootView, error.message ?: "Failed to submit rating")
+                    SnackBarUtils.showLong(this, rootView, R.string.rating_failed)
                 }
+
             )
         }
 

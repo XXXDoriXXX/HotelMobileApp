@@ -1,4 +1,4 @@
-package com.example.hotelapp.classes
+package com.example.hotelapp.classes.Adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +21,8 @@ import java.util.Locale
 class FiltersAdapter(
     private val filters: MutableList<Pair<String, String>>,
     private val onRemove: (String) -> Unit,
-    private val onUpdate: (String, String) -> Unit
+    private val onUpdate: (String, String) -> Unit,
+    private val displayNames: Map<String, Int>
 ) : RecyclerView.Adapter<FiltersAdapter.FilterViewHolder>() {
 
     inner class FilterViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
@@ -38,7 +39,10 @@ class FiltersAdapter(
         if (position >= filters.size) return
 
         val (key, value) = filters[position]
-        holder.label.text = "$key: $value"
+        val context = holder.view.context
+        val displayKey = context.getString(displayNames[key] ?: R.string.unknown_filter)
+
+        holder.label.text = "$displayKey: $value"
 
         holder.close.setOnClickListener {
             val currentPos = holder.adapterPosition
@@ -46,17 +50,15 @@ class FiltersAdapter(
                 val removedKey = filters[currentPos].first
                 onRemove(removedKey.lowercase())
             }
-
         }
 
         holder.view.setOnClickListener {
-            val context = holder.view.context
             if (key.equals("Check_Date", ignoreCase = true)) {
                 val validator = CompositeDateValidator.allOf(listOf(DateValidatorPointForward.now()))
                 val constraints = CalendarConstraints.Builder().setValidator(validator).build()
 
                 val dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
-                    .setTitleText("Update Check-in and Check-out")
+                    .setTitleText(context.getString(R.string.update_check_date))
                     .setCalendarConstraints(constraints)
                     .build()
 
@@ -81,14 +83,14 @@ class FiltersAdapter(
             } else {
                 val input = EditText(context).apply {
                     setText(value)
-                    hint = "Enter new value for $key"
+                    hint = context.getString(R.string.filter_dialog_hint, displayKey)
                 }
 
                 MaterialAlertDialogBuilder(context)
-                    .setTitle("$key filter")
-                    .setMessage("Current value: \"$value\"")
+                    .setTitle(context.getString(R.string.filter_dialog_title, displayKey))
+                    .setMessage(context.getString(R.string.filter_dialog_message, value))
                     .setView(input)
-                    .setPositiveButton("Update") { _, _ ->
+                    .setPositiveButton(context.getString(R.string.filter_dialog_update)) { _, _ ->
                         val newValue = input.text.toString().trim()
                         if (newValue.isNotEmpty() && newValue != value) {
                             filters[position] = Pair(key, newValue)
@@ -96,10 +98,10 @@ class FiltersAdapter(
                             onUpdate(key.lowercase(), newValue)
                         }
                     }
-                    .setNegativeButton("Delete") { _, _ ->
+                    .setNegativeButton(context.getString(R.string.filter_dialog_delete)) { _, _ ->
                         onRemove(key.lowercase())
                     }
-                    .setNeutralButton("Cancel", null)
+                    .setNeutralButton(context.getString(R.string.filter_dialog_cancel), null)
                     .show()
             }
         }

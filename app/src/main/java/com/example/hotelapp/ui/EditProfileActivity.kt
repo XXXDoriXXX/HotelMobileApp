@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.hotelapp.R
+import com.example.hotelapp.classes.SnackBarUtils
 import com.example.hotelapp.models.ChangeCredentialsRequest
 import com.example.hotelapp.repository.UserRepository
 import com.example.hotelapp.utils.SessionManager
@@ -61,15 +62,15 @@ class EditProfileActivity : AppCompatActivity() {
 
         back_btn.setOnClickListener {
             MaterialAlertDialogBuilder(this)
-                .setTitle("Зберегти зміни?")
-                .setMessage("Ти впевнений, що хочеш покинути без збереження?")
-                .setPositiveButton("Зберегти") { _, _ ->
+                .setTitle(getString(R.string.dialog_title_exit))
+                .setMessage(getString(R.string.dialog_message_exit))
+                .setPositiveButton(getString(R.string.dialog_positive)){ _, _ ->
                     updateProfile()
                 }
-                .setNegativeButton("Не зберігати") { _, _ ->
+                .setNegativeButton(getString(R.string.dialog_negative)) { _, _ ->
                     onBackPressedDispatcher.onBackPressed()
                 }
-                .setNeutralButton("Скасувати", null)
+                .setNeutralButton(getString(R.string.dialog_neutral), null)
                 .show()
         }
 
@@ -121,7 +122,12 @@ class EditProfileActivity : AppCompatActivity() {
                 avatarImageView.tag = user.avatarUrl
             },
             onError = { error ->
-                Toast.makeText(this, "Error loading profile: $error", Toast.LENGTH_SHORT).show()
+                SnackBarUtils.showLong(
+                    context = this,
+                    view = findViewById(R.id.main),
+                    stringRes = R.string.toast_profile_error,
+                    error
+                )
             }
         )
     }
@@ -140,7 +146,7 @@ class EditProfileActivity : AppCompatActivity() {
                 try {
                     val selectionDividerField = NumberPicker::class.java.getDeclaredField("SelectionDivider")
                     selectionDividerField.isAccessible = true
-                    selectionDividerField.set(it, null)  // Тут магія
+                    selectionDividerField.set(it, null)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -177,37 +183,37 @@ class EditProfileActivity : AppCompatActivity() {
 
         // Валідація
         if (firstName.isEmpty()) {
-            firstNameLayout.error = "Enter first name"
+            firstNameLayout.error = getString(R.string.error_enter_first_name)
             hasError = true
         } else firstNameLayout.error = null
 
         if (lastName.isEmpty()) {
-            lastNameLayout.error = "Enter last name"
+            lastNameLayout.error = getString(R.string.error_enter_last_name)
             hasError = true
         } else lastNameLayout.error = null
 
         if (phone.isEmpty()) {
-            phoneLayout.error = "Enter phone"
+            phoneLayout.error = getString(R.string.error_enter_phone)
             hasError = true
         } else phoneLayout.error = null
 
         if (email.isEmpty()) {
-            emailLayout.error = "Enter email"
+            emailLayout.error = getString(R.string.error_enter_email)
             hasError = true
         } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailLayout.error = "Invalid email"
+            emailLayout.error = getString(R.string.error_invalid_email)
             hasError = true
         } else emailLayout.error = null
 
         if (currentPassword.isBlank()) {
-            findViewById<TextInputLayout>(R.id.edit_old_password).error = "Required"
+            findViewById<TextInputLayout>(R.id.edit_old_password).error = getString(R.string.error_required)
             hasError = true
         } else {
             findViewById<TextInputLayout>(R.id.edit_old_password).error = null
         }
 
         if (newPassword.isNotEmpty() && newPassword != confirmPassword) {
-            findViewById<TextInputLayout>(R.id.edit_old_password).error = "Passwords do not match"
+            findViewById<TextInputLayout>(R.id.edit_old_password).error = getString(R.string.error_password_mismatch)
             hasError = true
         } else {
             findViewById<TextInputLayout>(R.id.edit_confirm_password).error = null
@@ -257,7 +263,12 @@ class EditProfileActivity : AppCompatActivity() {
                 loadProfile()
             },
             onError = { error ->
-                Toast.makeText(this, "Failed to update avatar: $error", Toast.LENGTH_LONG).show()
+                SnackBarUtils.showShort(
+                    context = this,
+                    view = findViewById(R.id.main),
+                    stringRes = R.string.toast_avatar_error,
+                    error
+                )
             }
         )
     }

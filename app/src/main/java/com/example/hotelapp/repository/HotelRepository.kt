@@ -260,24 +260,60 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
             override fun onFailure(call: Call<Void>, t: Throwable) = onError(t)
         })
     }
-    fun getHotelAmenities(
+    fun getAllAmenities(
         onResult: (List<Amenity>) -> Unit,
         onError: (Throwable) -> Unit
     ) {
+        var hotelAmenities: List<Amenity>? = null
+        var roomAmenities: List<Amenity>? = null
+        var errorOccurred = false
+
+        val checkAndReturn = {
+            if (hotelAmenities != null && roomAmenities != null) {
+                val combined = (hotelAmenities!! + roomAmenities!!).distinctBy { it.id }
+                onResult(combined)
+            }
+        }
+
         apiService.getHotelAmenities().enqueue(object : Callback<List<Amenity>> {
             override fun onResponse(call: Call<List<Amenity>>, response: Response<List<Amenity>>) {
                 if (response.isSuccessful) {
-                    onResult(response.body() ?: emptyList())
-                } else {
-                    onError(Exception("Failed to fetch amenities"))
+                    hotelAmenities = response.body() ?: emptyList()
+                    checkAndReturn()
+                } else if (!errorOccurred) {
+                    errorOccurred = true
+                    onError(Exception("Failed to fetch hotel amenities"))
                 }
             }
 
             override fun onFailure(call: Call<List<Amenity>>, t: Throwable) {
-                onError(t)
+                if (!errorOccurred) {
+                    errorOccurred = true
+                    onError(t)
+                }
+            }
+        })
+
+        apiService.getRoomAmenities().enqueue(object : Callback<List<Amenity>> {
+            override fun onResponse(call: Call<List<Amenity>>, response: Response<List<Amenity>>) {
+                if (response.isSuccessful) {
+                    roomAmenities = response.body() ?: emptyList()
+                    checkAndReturn()
+                } else if (!errorOccurred) {
+                    errorOccurred = true
+                    onError(Exception("Failed to fetch room amenities"))
+                }
+            }
+
+            override fun onFailure(call: Call<List<Amenity>>, t: Throwable) {
+                if (!errorOccurred) {
+                    errorOccurred = true
+                    onError(t)
+                }
             }
         })
     }
+
 
     fun searchHotels(
         name: String,

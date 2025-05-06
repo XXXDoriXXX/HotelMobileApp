@@ -19,6 +19,125 @@
     <string name="choose_language">Choose Language</string>
     <string name="english">English</string>
     <string name="ukrainian">Ukrainian</string>
+    <string name="user_name">User Name</string>
+    <string name="user_email_example">example@gmail.com</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="settings">Settings</string>
+    <string name="help_support">Help / Support</string>
+    <string name="logout">Logout</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="email">Email</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="current_password">Current password</string>
+    <string name="new_password">New password</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="save">S A V E</string>
+    <string name="dialog_title_exit">Save changes?</string>
+    <string name="dialog_message_exit">Are you sure you want to leave without saving?</string>
+    <string name="dialog_positive">Save</string>
+    <string name="dialog_negative">Don’t save</string>
+    <string name="dialog_neutral">Cancel</string>
+
+    <string name="error_enter_first_name">Enter first name</string>
+    <string name="error_enter_last_name">Enter last name</string>
+    <string name="error_enter_phone">Enter phone</string>
+    <string name="error_enter_email">Enter email</string>
+    <string name="error_invalid_email">Invalid email</string>
+    <string name="error_required">Required</string>
+    <string name="error_password_mismatch">Passwords do not match</string>
+
+    <string name="toast_avatar_error">Failed to update avatar: %1$s</string>
+    <string name="toast_profile_error">Error loading profile: %1$s</string>
+
+    <string name="hotel_search_title">Hotel Search</string>
+    <string name="hotel_search_subtitle">Find your perfect stay</string>
+    <string name="search_hint">Search...</string>
+    <string name="location_placeholder">Los Angeles, California USA</string>
+    <string name="tab_trending">Trending</string>
+    <string name="tab_best_deals">Best Deals</string>
+    <string name="tab_popular">Popular</string>
+    <string name="search_failed">Search failed: %1$s</string>
+    <string name="load_error">Failed to load amenities</string>
+    <string name="loading_error">Loading failed</string>
+    <string name="filter_enter_value">Enter %1$s</string>
+    <string name="filter_select_date">Select Check-in and Check-out</string>
+    <string name="filter_select_amenities">Select Amenities</string>
+    <string name="filter_apply">Apply</string>
+    <string name="filter_cancel">Cancel</string>
+
+    <string name="filter_name">Hotel Name</string>
+    <string name="filter_description">Description</string>
+    <string name="filter_city">City</string>
+    <string name="filter_country">Country</string>
+    <string name="filter_state">State/Province</string>
+    <string name="filter_postal_code">Postal Code</string>
+    <string name="filter_min_price">Min Price</string>
+    <string name="filter_max_price">Max Price</string>
+    <string name="filter_min_rating">Min Rating</string>
+    <string name="filter_room_type">Room Type</string>
+    <string name="filter_amenities">Amenities</string>
+    <string name="filter_check_date">Check-in/out</string>
+
+    <string name="update_check_date">Update Check-in and Check-out</string>
+    <string name="filter_dialog_title">%1$s filter</string>
+    <string name="filter_dialog_message">Current value: "%1$s"</string>
+    <string name="filter_dialog_hint">Enter new value for %1$s</string>
+    <string name="filter_dialog_update">Update</string>
+    <string name="filter_dialog_delete">Delete</string>
+    <string name="filter_dialog_cancel">Cancel</string>
+
+    <string name="hotel_category_trending">Trending</string>
+    <string name="hotel_description_example">Your go-to location for a romantic stay in luxury.</string>
+    <string name="reviews_count">%1$d views</string>
+    <string name="book_now">B O O K   N O W</string>
+
+    <string name="share_subject">Check out this hotel on HotelApp</string>
+    <string name="share_chooser_title">Share hotel via</string>
+    <string name="amenity_wifi">Wi-Fi</string>
+    <string name="amenity_tv">TV</string>
+    <string name="amenity_ac">AC</string>
+    <string name="amenity_gym">Gym</string>
+    <string name="amenity_parking">Parking</string>
+    <string name="amenity_other">Other</string>
+
+    <string name="added_to_favorites">Added to favorites</string>
+    <string name="removed_from_favorites">Removed from favorites</string>
+    <string name="rating_submitted">Rating submitted</string>
+    <string name="rating_failed">Failed to submit rating</string>
+    <string name="hotel_not_found">Hotel not found</string>
+    <string name="toast_error_with_reason">Error: %1$s</string>
+    <string name="rating">Rating</string>
+    <string name="view_on_map">View on map</string>
+    <string name="view_or_book">View or book</string>
+
+    <string name="room_number">Room 101</string>
+    <string name="room_price_format">$%1$s / night</string>
+    <string name="room_description">A luxurious room equipped with all amenities for a comfortable stay.</string>
+    <string name="select_dates">Select Dates</string>
+    <string name="total_price_format">Total: $%1$s</string>
+    <string name="pay_now">Pay Now</string>
+    <string name="dialog_title_select_dates">Select dates</string>
+    <string name="error_already_booked">Error: These dates are already booked</string>
+    <string name="error_select_dates">Error: Please, select booking dates</string>
+    <string name="booking_load_error">Failed to load booking dates, please check your internet connection</string>
+    <string name="card_not_available">Card payment is not available for this hotel</string>
+    <string name="booking_error_with_reason">Error: %1$s</string>
+    <string name="payment_card">Card</string>
+    <string name="payment_cash">Cash</string>
+
+    <string name="hotel_name_example">Blue Star Hotel</string>
+
+    <string name="search_enter_prefix">Enter %1$s...</string>
+    <string name="unknown_filter">field</string>
+    <string name="unknown_value">Unknown</string>
+
+    <string name="low_cost">Low-cost</string>
+    <string name="average">Average</string>
+    <string name="luxury">Luxury</string>
+    <string name="back_button">Back</string>
+    <string name="no_rooms_icon">No rooms available</string>
+
     <string-array name="sort_options">
         <item>Date ↑</item>
         <item>Date ↓</item>

@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scroll_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
@@ -78,7 +84,7 @@
                         android:id="@+id/username_input_field"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="First Name"
+                        android:hint="@string/first_name"
                         android:inputType="textPersonName" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -101,7 +107,7 @@
                         android:id="@+id/usersecondname_input_field"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Last Name"
+                        android:hint="@string/last_name"
                         android:inputType="textPersonName" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
@@ -128,7 +134,7 @@
                     android:id="@+id/email_input_field"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Email"
+                    android:hint="@string/email"
                     android:inputType="textEmailAddress" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -154,7 +160,7 @@
                     android:id="@+id/phone_input_field"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Phone Number"
+                    android:hint="@string/phone_number"
                     android:inputType="phone" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -229,7 +235,7 @@
                     android:id="@+id/edit_old_password_field"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Current password"
+                    android:hint="@string/current_password"
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -255,7 +261,7 @@
                     android:id="@+id/edit_new_password_field"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                        android:hint="New password"
+                    android:hint="@string/new_password"
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -282,7 +288,7 @@
                     android:id="@+id/edit_confirm_password_field"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Confirm password"
+                    android:hint="@string/confirm_password"
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -296,7 +302,7 @@
         android:layout_gravity="center"
         android:backgroundTint="?attr/colorSecondary"
         android:fontFamily="@font/roboto_bold"
-        android:text="S A V E"
+        android:text="@string/save"
         android:textColor="?attr/colorOnPrimary"
         android:textSize="16sp"
         app:cornerRadius="32dp"
@@ -306,3 +312,4 @@
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

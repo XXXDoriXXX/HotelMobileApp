@@ -13,10 +13,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.hotelapp.Holder.HotelHolder
 import com.example.hotelapp.R
 import com.example.hotelapp.api.HotelService
-import com.example.hotelapp.classes.ItemHistoryAdapter
+import com.example.hotelapp.classes.Adapters.ItemHistoryAdapter
 import com.example.hotelapp.classes.OrderItem
 import com.example.hotelapp.network.RetrofitClient
 import com.example.hotelapp.repository.BookingRepository

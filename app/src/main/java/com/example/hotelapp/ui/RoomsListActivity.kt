@@ -1,25 +1,28 @@
 package com.example.hotelapp.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.hotelapp.Holder.AmenityHolder
 import com.example.hotelapp.Holder.HotelHolder
 import com.example.hotelapp.R
-import com.example.hotelapp.classes.ItemsRoomAdapter
+import com.example.hotelapp.classes.Adapters.ItemsRoomAdapter
+import com.example.hotelapp.classes.BaseActivity
 import com.example.hotelapp.classes.RoomItem
 import com.example.hotelapp.repository.RoomRepository
 import com.facebook.shimmer.ShimmerFrameLayout
 
-class RoomsListActivity : AppCompatActivity() {
+class RoomsListActivity : BaseActivity()  {
     private val roomRepository = RoomRepository()
     private lateinit var itemsList: RecyclerView
     private lateinit var searchInputField: EditText
@@ -34,6 +37,7 @@ class RoomsListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_rooms_list)
         shimmerContainer = findViewById(R.id.rooms_shimmer_container)
         emptyRoomsIcon = findViewById(R.id.empty_rooms_icon)
+
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -57,14 +61,24 @@ class RoomsListActivity : AppCompatActivity() {
         }
 
         searchInputField = findViewById(R.id.search_input_field)
+        searchInputField.addTextChangedListener {
+            applyFilters(currentSort)
+        }
+
+
         loadRooms()
     }
     private fun applyFilters(sort: String) {
+        findViewById<TextView>(R.id.low_cost_tab).isSelected = sort == "low"
+        findViewById<TextView>(R.id.average_tab).isSelected = sort == "average"
+        findViewById<TextView>(R.id.luxury_tab).isSelected = sort == "high"
+
         currentSort = sort
         val query = searchInputField.text.toString().trim().lowercase()
 
         val filtered = allRooms.filter { room ->
-            room.room_type.lowercase().contains(query)
+            room.room_type.lowercase().contains(query) ||
+                    room.description.lowercase().contains(query)
         }
 
         val sorted = when (sort) {
@@ -76,6 +90,7 @@ class RoomsListActivity : AppCompatActivity() {
 
         itemsList.adapter = ItemsRoomAdapter(sorted, this)
     }
+
 
     private fun averagePrice(rooms: List<RoomItem>): Double {
         return rooms.map { it.price_per_night }.average()

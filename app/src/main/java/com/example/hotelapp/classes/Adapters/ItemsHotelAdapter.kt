@@ -1,4 +1,4 @@
-package com.example.hotelapp.classes
+package com.example.hotelapp.classes.Adapters
 
 import android.content.Context
 import android.content.Intent

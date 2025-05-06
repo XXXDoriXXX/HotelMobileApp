@@ -1,7 +1,6 @@
 package com.example.hotelapp.ui
 
 import HotelItem
-import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
 import android.text.InputType
@@ -14,10 +13,12 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.hotelapp.Holder.AmenityHolder
 import com.example.hotelapp.R
-import com.example.hotelapp.classes.ItemsHotelAdapter
+import com.example.hotelapp.classes.Adapters.ItemsHotelAdapter
 import com.google.android.material.textfield.TextInputEditText
-import com.example.hotelapp.classes.FiltersAdapter
+import com.example.hotelapp.classes.Adapters.FiltersAdapter
+import com.example.hotelapp.classes.SnackBarUtils
 import com.example.hotelapp.models.HotelSearchParams
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.datepicker.CalendarConstraints
@@ -27,7 +28,6 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -68,19 +68,20 @@ class HomeFragment : Fragment() {
     )
 
     val filterDisplayNames = mapOf(
-        "Name" to "Hotel Name",
-        "Description" to "Description",
-        "City" to "City",
-        "Country" to "Country",
-        "State" to "State/Province",
-        "Postal_Code" to "Postal Code",
-        "Min_Price" to "Min Price",
-        "Max_Price" to "Max Price",
-        "Min_Rating" to "Min Rating",
-        "Room_Type" to "Room Type",
-        "Amenity_Ids" to "Amenities",
-        "Check_Date" to "Check-in/out"
+        "Name" to R.string.filter_name,
+        "Description" to R.string.filter_description,
+        "City" to R.string.filter_city,
+        "Country" to R.string.filter_country,
+        "State" to R.string.filter_state,
+        "Postal_Code" to R.string.filter_postal_code,
+        "Min_Price" to R.string.filter_min_price,
+        "Max_Price" to R.string.filter_max_price,
+        "Min_Rating" to R.string.filter_min_rating,
+        "Room_Type" to R.string.filter_room_type,
+        "Amenity_Ids" to R.string.filter_amenities,
+        "Check_Date" to R.string.filter_check_date
     )
+
 
     private val amenityNameToId = mutableMapOf<String, Int>()
     private lateinit var shimmerLayoutHome: ShimmerFrameLayout
@@ -99,13 +100,13 @@ class HomeFragment : Fragment() {
         val tabBest = view.findViewById<TextView>(R.id.tab_best)
         val tabPopular = view.findViewById<TextView>(R.id.tab_popular)
         val tabs = listOf(tabTrending, tabBest, tabPopular)
-        hotelRepository.getHotelAmenities(
+        hotelRepository.getAllAmenities(
             onResult = { amenities ->
                 amenityNameToId.clear()
                 amenityNameToId.putAll(amenities.associate { it.name to it.id })
             },
             onError = { err ->
-                Toast.makeText(requireContext(), "Failed to load amenities", Toast.LENGTH_SHORT).show()
+                SnackBarUtils.showLong(requireContext(), requireView(), R.string.load_error)
             }
         )
         view.findViewById<TextView>(R.id.location_text)?.text = address
@@ -121,9 +122,14 @@ class HomeFragment : Fragment() {
             itemsList.visibility = View.VISIBLE
         }
 
+        hotelRepository.getAllAmenities(
+            onResult = { list -> AmenityHolder.allAmenities = list },
+            onError = { error -> Log.e("INIT", "amenities fetch failed", error) }
+        )
 
         filtersRecycler = view.findViewById(R.id.filters_recycler)
-        filtersAdapter = FiltersAdapter(filterList,
+        filtersAdapter = FiltersAdapter(
+            filters = filterList,
             onRemove = { removedKey ->
                 if (removedKey.lowercase() == "check_date") {
                     activeFilters.remove("check_in")
@@ -144,13 +150,13 @@ class HomeFragment : Fragment() {
                     isSearching = true
                     applyFilters()
                 }
-            }
-            ,
-                    onUpdate = { key, newValue ->
+            },
+            onUpdate = { key, newValue ->
                 activeFilters[key.lowercase()] = newValue
                 isSearching = true
                 applyFilters()
-            }
+            },
+            displayNames = filterDisplayNames
         )
 
         filtersRecycler.adapter = filtersAdapter
@@ -171,7 +177,8 @@ class HomeFragment : Fragment() {
         itemsList.layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
 
         pendingFilterType = "Name"
-        searchInputField.hint = "Enter Name..."
+        searchInputField.hint = getString(R.string.search_enter_prefix, getString(R.string.filter_name))
+
 
         layoutToggleButton.setOnClickListener { toggleLayout() }
 
@@ -198,7 +205,7 @@ class HomeFragment : Fragment() {
                         }
                         searchInputField.text = null
                         pendingFilterType = null
-                        searchInputField.hint = "Search..."
+                        searchInputField.hint =  getString(R.string.search_hint)
                         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE)
                                 as android.view.inputmethod.InputMethodManager
                         imm.hideSoftInputFromWindow(searchInputField.windowToken, 0)
@@ -296,7 +303,8 @@ class HomeFragment : Fragment() {
 
         searchInputField.text = null
         pendingFilterType = null
-        searchInputField.hint = "Search..."
+        searchInputField.hint = getString(R.string.search_hint)
+
 
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE)
                 as android.view.inputmethod.InputMethodManager
@@ -317,7 +325,8 @@ class HomeFragment : Fragment() {
 
         for (filter in allFilterTypes) {
             val item = TextView(requireContext()).apply {
-                text = filterDisplayNames[filter] ?: filter
+                text = getString(filterDisplayNames[filter] ?: R.string.unknown_filter)
+
                 setPadding(32, 24, 32, 24)
                 textSize = 16f
                 setTextColor(resources.getColor(R.color.colorOnPrimary, null))
@@ -330,7 +339,7 @@ class HomeFragment : Fragment() {
                             val constraints = CalendarConstraints.Builder().setValidator(validator).build()
 
                             val dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
-                                .setTitleText("Select Check-in and Check-out")
+                                .setTitleText(getString(R.string.filter_select_date))
                                 .setCalendarConstraints(constraints)
                                 .build()
 
@@ -369,8 +378,9 @@ class HomeFragment : Fragment() {
 
 
                         "min_price", "max_price", "min_rating", "postal_code" -> {
+                            val hintKey = filterDisplayNames[filter]
                             searchInputField.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
-                            searchInputField.hint = "Enter ${filterDisplayNames[filter] ?: filter}"
+                            searchInputField.hint = getString(R.string.search_enter_prefix, getString(hintKey ?: R.string.unknown_filter))
                             pendingFilterType = filter
                             searchInputField.requestFocus()
                         }
@@ -383,21 +393,22 @@ class HomeFragment : Fragment() {
                             }
 
                             MaterialAlertDialogBuilder(requireContext())
-                                .setTitle("Select Amenities")
+                                .setTitle(getString(R.string.filter_select_amenities))
                                 .setMultiChoiceItems(amenityNames.toTypedArray(), selected) { _, which, isChecked ->
                                     selected[which] = isChecked
                                 }
-                                .setPositiveButton("Apply") { _, _ ->
+                                .setPositiveButton(getString(R.string.filter_apply)) { _, _ ->
                                     val selectedAmenities = amenityNames.filterIndexed { index, _ -> selected[index] }
                                     applySelectedFilter("Amenity_Ids", selectedAmenities.joinToString(", "))
                                 }
-                                .setNegativeButton("Cancel", null)
+                                .setNegativeButton(getString(R.string.filter_cancel), null)
                                 .show()
                         }
 
                         else -> {
+                            val hintKey = filterDisplayNames[filter]
                             searchInputField.inputType = InputType.TYPE_CLASS_TEXT
-                            searchInputField.hint = "Enter ${filterDisplayNames[filter] ?: filter}"
+                            searchInputField.hint = getString(R.string.search_enter_prefix, getString(hintKey ?: R.string.unknown_filter))
                             pendingFilterType = filter
                             searchInputField.requestFocus()
                         }
@@ -457,7 +468,7 @@ class HomeFragment : Fragment() {
                 itemsList.adapter = hotelAdapter
             },
             onError = { err ->
-                Toast.makeText(requireContext(), "Search failed: ${err.message}", Toast.LENGTH_SHORT).show()
+                SnackBarUtils.showLong(requireContext(), requireView(), R.string.search_failed, err.message ?: "")
                 isSearching = false
             }
         )
@@ -495,12 +506,12 @@ class HomeFragment : Fragment() {
             shimmerLayoutHome.visibility = View.VISIBLE
             itemsList.visibility = View.GONE
         }
-
+        val unknown = getString(R.string.unknown_value)
         val address = requireContext().getSharedPreferences("prefs", Context.MODE_PRIVATE)
             .getString("last_location", "Unknown City, Unknown Country") ?: "Unknown City, Unknown Country"
         val parts = address.split(",").map { it.trim() }
-        val city = parts.getOrNull(0) ?: "Unknown"
-        val country = parts.getOrNull(1) ?: "Unknown"
+        val city = parts.getOrNull(0) ?: unknown
+        val country = parts.getOrNull(1) ?: unknown
 
         hotelRepository.getHotelsByCategory(
             category = currentCategory,
@@ -536,7 +547,8 @@ class HomeFragment : Fragment() {
                 shimmerLayoutHome.visibility = View.GONE
                 itemsList.visibility = View.VISIBLE
 
-                Toast.makeText(requireContext(), "Помилка підвантаження", Toast.LENGTH_SHORT).show()
+                SnackBarUtils.showLong(requireContext(), requireView(), R.string.loading_error)
+
             }
         )
     }

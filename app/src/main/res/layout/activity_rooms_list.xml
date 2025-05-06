@@ -19,7 +19,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="?attr/colorOnPrimary" />
 
-    <!-- Назва готелю -->
     <TextView
         android:id="@+id/hotel_name"
         android:layout_width="wrap_content"
@@ -33,7 +32,6 @@
         app:layout_constraintStart_toEndOf="@id/back_button"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Розділювач -->
     <View
         android:id="@+id/enter_line"
         android:layout_width="match_parent"
@@ -68,7 +66,7 @@
             android:layout_weight="1"
             android:background="@null"
             android:fontFamily="@font/roboto"
-            android:hint="Search..."
+            android:hint="@string/search_hint"
             android:paddingStart="8dp"
             android:textColor="?attr/colorOnPrimary"
             android:textColorHint="?attr/colorOnSecondary"
@@ -89,39 +87,45 @@
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_weight="1"
-            android:background="@drawable/light_rounded_corners"
+            android:background="@drawable/tab_background_selector"
             android:padding="8dp"
             android:gravity="center"
-            android:text="Low-cost"
-            android:textColor="?attr/colorOnPrimary"
+            android:text="@string/low_cost"
+            android:textColor="@color/tab_text_selector"
             android:fontFamily="@font/roboto_medium"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:clickable="true"
+            android:focusable="true"/>
 
         <TextView
             android:id="@+id/average_tab"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/rounded_corners"
+            android:background="@drawable/tab_background_selector"
             android:padding="8dp"
             android:gravity="center"
-            android:text="Average"
-            android:textColor="?attr/colorOnSecondary"
+            android:text="@string/average"
+            android:textColor="@color/tab_text_selector"
             android:fontFamily="@font/roboto_medium"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:clickable="true"
+            android:focusable="true"/>
 
         <TextView
             android:id="@+id/luxury_tab"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/rounded_corners"
+            android:background="@drawable/tab_background_selector"
             android:padding="8dp"
             android:gravity="center"
-            android:text="Luxury"
-            android:textColor="?attr/colorOnSecondary"
+            android:text="@string/luxury"
+            android:textColor="@color/tab_text_selector"
             android:fontFamily="@font/roboto_medium"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:clickable="true"
+            android:focusable="true"/>
     </LinearLayout>
     <ImageView
         android:id="@+id/empty_rooms_icon"
@@ -153,8 +157,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-
-            <!-- Вставляємо shimmer-елементи вручну (3-5 штук для ефекту) -->
             <include layout="@layout/hotel_item_shimmer" />
             <include layout="@layout/hotel_item_shimmer" />
             <include layout="@layout/hotel_item_shimmer" />
@@ -163,6 +165,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rooms_list"
+        android:layout_marginBottom="16dp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"

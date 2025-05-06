@@ -118,7 +118,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/okButton"
-        android:layout_width="400dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/colorSurface"
         android:text="На головну"

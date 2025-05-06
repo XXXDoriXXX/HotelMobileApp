@@ -1,15 +1,20 @@
 package com.example.hotelapp.classes
 
+import android.content.Context
 import android.graphics.Color
 import android.view.View
+import androidx.annotation.StringRes
 import com.google.android.material.snackbar.Snackbar
 
 object SnackBarUtils {
-    fun showShort(view: View, message: String) {
+
+    fun showShort(context: Context, view: View, @StringRes stringRes: Int, vararg formatArgs: Any) {
+        val message = context.getString(stringRes, *formatArgs)
         showInternal(view, message, Snackbar.LENGTH_SHORT)
     }
 
-    fun showLong(view: View, message: String) {
+    fun showLong(context: Context, view: View, @StringRes stringRes: Int, vararg formatArgs: Any) {
+        val message = context.getString(stringRes, *formatArgs)
         showInternal(view, message, Snackbar.LENGTH_LONG)
     }
 

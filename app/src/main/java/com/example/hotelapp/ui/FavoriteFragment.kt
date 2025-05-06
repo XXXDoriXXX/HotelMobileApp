@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.hotelapp.R
-import com.example.hotelapp.classes.ItemsHotelAdapter
+import com.example.hotelapp.classes.Adapters.ItemsHotelAdapter
 import com.facebook.shimmer.ShimmerFrameLayout
 
 class FavoriteFragment : Fragment() {

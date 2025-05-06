@@ -1,28 +1,29 @@
 package com.example.hotelapp.ui
 
-import HotelRepository
 import androidx.appcompat.app.AlertDialog
-import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.hotelapp.Holder.HotelHolder
 import com.example.hotelapp.R
 import com.example.hotelapp.api.HotelService
+import com.example.hotelapp.classes.Adapters.AmenitiesAdapter
 import com.example.hotelapp.classes.BusyDatesValidator
 import com.example.hotelapp.classes.CompositeValidator
-import com.example.hotelapp.classes.RoomImagesAdapter
+import com.example.hotelapp.classes.Adapters.RoomImagesAdapter
+import com.example.hotelapp.classes.AmenityMapper
 import com.example.hotelapp.classes.SnackBarUtils
 import com.example.hotelapp.network.RetrofitClient
 import com.example.hotelapp.repository.BookingRepository
@@ -33,7 +34,6 @@ import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -66,15 +66,15 @@ class CurrentRoomInfo : AppCompatActivity() {
         rootView = findViewById(R.id.main)
         sessionManager = SessionManager(this)
         room_price = findViewById(R.id.room_price)
-        room_price.text = "$${pricePerNight} / night"
+        room_price.text = getString(R.string.room_price_format, pricePerNight.toString())
         selectDatesButton = findViewById(R.id.select_dates_button)
         totalPriceText = findViewById(R.id.total_price)
         payButton = findViewById(R.id.pay_button)
         paymentSpinner = findViewById(R.id.payment_method_spinner)
         val paymentMethods = if (HotelHolder.currentHotel?.is_card_available == true) {
-            listOf("Card", "Cash")
+            listOf(getString(R.string.payment_card), getString(R.string.payment_cash))
         } else {
-            listOf("Cash")
+            listOf(getString(R.string.payment_cash))
         }
 
 
@@ -84,17 +84,26 @@ class CurrentRoomInfo : AppCompatActivity() {
         paymentSpinner.adapter = spinnerAdapter
 
         selectDatesButton.setOnClickListener { loadBookedDatesAndShowPicker() }
+        val amenities = HotelHolder.currentRoom?.amenities?.map {
+            AmenityMapper.mapAmenity(it.amenity_id)
+        } ?: listOf()
 
+        val amenitiesAdapter = AmenitiesAdapter(amenities)
+        findViewById<RecyclerView>(R.id.roomAmenitiesRecyclerView).apply {
+            adapter = amenitiesAdapter
+            layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+        }
 
         payButton.setOnClickListener {
+            Log.d("CHECKOUT_DEBUG", "TotalNight: ${totalNights}")
             if (totalNights > 0) {
                 val selectedMethod = paymentSpinner.selectedItem.toString()
                 when (selectedMethod) {
-                    "Card" -> startCheckoutFlow()
-                    "Cash" -> startCashBooking()
+                    "Card","Карта" -> startCheckoutFlow()
+                    "Cash","Готівка" -> startCashBooking()
                 }
             } else {
-                SnackBarUtils.showShort(rootView, "Error: Please, select a bookings dates")
+                SnackBarUtils.showShort(this, rootView, R.string.error_select_dates)
             }
         }
 
@@ -126,7 +135,9 @@ class CurrentRoomInfo : AppCompatActivity() {
                 viewPager.requestLayout()
             }
         })
-
+        val totalPrice = 0.0
+        val formattedTotal = String.format("%.2f", totalPrice)
+        totalPriceText.text = getString(R.string.total_price_format, formattedTotal)
 
         viewPager.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
@@ -149,7 +160,7 @@ class CurrentRoomInfo : AppCompatActivity() {
             .setValidator(validator)
 
         val dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
-            .setTitleText("Виберіть дати")
+            .setTitleText(getString(R.string.dialog_title_select_dates))
             .setCalendarConstraints(constraintsBuilder.build())
             .build()
 
@@ -165,7 +176,7 @@ class CurrentRoomInfo : AppCompatActivity() {
                 }
 
                 if (hasOverlap) {
-                    SnackBarUtils.showShort(rootView, "Error: This dates has already booked");
+                    SnackBarUtils.showShort(this, rootView, R.string.error_already_booked)
 
                     return@addOnPositiveButtonClickListener
                 }
@@ -188,7 +199,10 @@ class CurrentRoomInfo : AppCompatActivity() {
     private fun calculateTotalPrice(startDateMillis: Long, endDateMillis: Long) {
         val diffInMillis = endDateMillis - startDateMillis
         totalNights = TimeUnit.MILLISECONDS.toDays(diffInMillis).toInt()
-        totalPriceText.text = "Total: $${totalNights * pricePerNight}"
+        val totalPrice = totalNights * pricePerNight
+        val formattedTotal = String.format("%.2f", totalPrice)
+        totalPriceText.text = getString(R.string.total_price_format, formattedTotal)
+
     }
 
     private fun loadBookedDatesAndShowPicker() {
@@ -196,8 +210,8 @@ class CurrentRoomInfo : AppCompatActivity() {
 
         roomRepository.getBookedDates(roomId) { bookedDates, error ->
             if (error != null) {
-                SnackBarUtils.showShort(rootView, "Hotel not found")
-                SnackBarUtils.showShort(rootView, "Failed to load booking dates, please check your internet connection")
+                SnackBarUtils.showShort(this, rootView, R.string.hotel_not_found)
+                SnackBarUtils.showShort(this, rootView, R.string.booking_load_error)
                 return@getBookedDates
             }
 
@@ -214,6 +228,7 @@ class CurrentRoomInfo : AppCompatActivity() {
     }
 
     private fun startCheckoutFlow() {
+        Log.d("CHECKOUT_DEBUG", "Card payment")
         val roomId = HotelHolder.currentRoom?.id ?: return
         val inputFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
         val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -222,7 +237,7 @@ class CurrentRoomInfo : AppCompatActivity() {
 
         val selectedPaymentMethod = paymentSpinner.selectedItem.toString().lowercase()
         if (selectedPaymentMethod == "card" && HotelHolder.currentHotel?.is_card_available == false) {
-            SnackBarUtils.showShort(rootView, "Card payment is not available for this hotel")
+            SnackBarUtils.showShort(this, rootView, R.string.card_not_available)
             return
         }
 
@@ -239,10 +254,11 @@ class CurrentRoomInfo : AppCompatActivity() {
             intent.launchUrl(this, Uri.parse(url))
         }, { error ->
             hideLoadingDialog()
-            SnackBarUtils.showShort(rootView, "Error: ${error.message}")
+            SnackBarUtils.showShort(this, rootView, R.string.booking_error_with_reason, error.message ?: "")
         })
     }
     fun showLoadingDialog(context: Context) {
+
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_loading, null)
         loadingDialog = MaterialAlertDialogBuilder(context)
             .setView(dialogView)
@@ -257,6 +273,7 @@ class CurrentRoomInfo : AppCompatActivity() {
         }
     }
     private fun startCashBooking() {
+        Log.d("CHECKOUT_DEBUG", "Cash payment")
         val roomId = HotelHolder.currentRoom?.id ?: return
         val inputFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
         val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -282,7 +299,7 @@ class CurrentRoomInfo : AppCompatActivity() {
 
         }, { error ->
             hideLoadingDialog()
-            SnackBarUtils.showShort(rootView, "Error: ${error.message}")
+            SnackBarUtils.showShort(this, rootView, R.string.booking_error_with_reason, error.message ?: "")
         })
     }
 

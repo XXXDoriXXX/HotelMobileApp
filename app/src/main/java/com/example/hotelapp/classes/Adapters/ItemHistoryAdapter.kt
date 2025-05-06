@@ -1,7 +1,6 @@
-package com.example.hotelapp.classes
+package com.example.hotelapp.classes.Adapters
 
 import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,8 +8,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.hotelapp.ui.BookingDetailsActivity
 import com.example.hotelapp.R
+import com.example.hotelapp.classes.OrderItem
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class ItemHistoryAdapter(

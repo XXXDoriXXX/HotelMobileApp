@@ -1,4 +1,4 @@
-package com.example.hotelapp.adapters
+package com.example.hotelapp.classes.Adapters
 import com.bumptech.glide.request.target.Target
 import android.view.LayoutInflater
 import android.view.View
@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.hotelapp.Holder.apiHolder
 import com.example.hotelapp.R
 
 class HotelImagesAdapter(private val images: List<String>) :

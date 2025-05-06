@@ -99,7 +99,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/roboto_medium"
-                    android:text="Trending"
+                    android:text="@string/hotel_category_trending"
                     android:textColor="?attr/colorOnSecondary"
                     android:textSize="20sp"
                     app:layout_constraintStart_toStartOf="parent" />
@@ -125,7 +125,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/roboto"
-                android:text="Blue Star Hotel"
+                android:text="@string/hotel_name_example"
                 android:textColor="?attr/colorOnPrimary"
                 android:textSize="32sp" />
 
@@ -135,7 +135,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/roboto_regular"
-                android:text="Your go-to location for a romantic stay in luxury."
+                android:text="@string/hotel_description_example"
                 android:textColor="?attr/colorOnSecondary"
                 android:textSize="16sp" />
 
@@ -217,7 +217,7 @@
                     android:layout_marginTop="16dp"
                     android:backgroundTint="?attr/colorPrimary"
                     android:fontFamily="@font/roboto_bold"
-                    android:text="B O O K   N O W"
+                    android:text="@string/book_now"
                     android:textColor="?attr/colorOnSurface"
                     android:textSize="22sp"
                     app:cornerRadius="22dp" />

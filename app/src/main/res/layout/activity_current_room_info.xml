@@ -61,7 +61,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_bold"
-                android:text="Room 101"
+                android:text="@string/room_number"
                 android:textColor="?attr/colorOnPrimary"
                 android:textSize="20sp" />
 
@@ -71,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/roboto_bold"
-                android:text="$200 / night"
+                android:text="@string/room_price_format"
                 android:textColor="?attr/colorSecondary"
                 android:textSize="18sp" />
 
@@ -81,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/roboto_regular"
-                android:text="A luxurious room equipped with all amenities for a comfortable stay."
+                android:text="@string/room_description"
                 android:textColor="?attr/colorOnSecondary"
                 android:textSize="14sp" />
             <Spinner
@@ -104,7 +104,7 @@
                 android:layout_marginTop="8dp"
                 android:padding="12dp"
                 android:backgroundTint="?attr/colorSecondary"
-                android:text="Select Dates"
+                android:text="@string/select_dates"
                 app:cornerRadius="12dp"
                 android:textColor="?attr/colorOnPrimary"
                 android:textSize="16sp" />
@@ -115,7 +115,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/roboto_bold"
-                android:text="Total: $0"
+                android:text="@string/total_price_format"
                 android:textColor="?attr/colorAccent"
                 android:textSize="16sp" />
             </LinearLayout>
@@ -131,100 +131,52 @@
                 android:padding="16dp">
 
                 <LinearLayout
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="8dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center_horizontal">
-                    <LinearLayout
+                <LinearLayout
+                    android:layout_marginTop="4dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal">
+
+                <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="center"
                         android:orientation="horizontal"
-                        android:gravity="center_horizontal"
-                        android:layout_marginTop="16dp">
+                        android:layout_marginTop="0dp"
+                        android:layout_marginBottom="8dp">
 
-                        <LinearLayout
-                            android:layout_width="0dp"
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/roomAmenitiesRecyclerView"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <ImageView
-                                android:layout_width="25dp"
-                                android:layout_height="25dp"
-                                android:src="@drawable/wifi"
-                                app:tint="?attr/colorPrimary" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:gravity="center"
-                                android:text="Wi-Fi"
-                                android:textColor="?attr/colorPrimary"
-                                android:textSize="12sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <ImageView
-                                android:layout_width="25dp"
-                                android:layout_height="25dp"
-                                android:src="@drawable/tv"
-                                app:tint="?attr/colorPrimary" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:gravity="center"
-                                android:text="TV"
-                                android:textColor="?attr/colorPrimary"
-                                android:textSize="12sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <ImageView
-                                android:layout_width="25dp"
-                                android:layout_height="25dp"
-                                android:src="@drawable/ac"
-                                app:tint="?attr/colorPrimary" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:gravity="center"
-                                android:text="AC"
-                                android:textColor="?attr/colorPrimary"
-                                android:textSize="12sp" />
-                        </LinearLayout>
+                            android:orientation="horizontal"
+                            android:overScrollMode="never"
+                            android:scrollbars="none"
+                            android:clipToPadding="false" />
                     </LinearLayout>
-
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/pay_button"
                         android:layout_width="match_parent"
                         android:layout_height="55dp"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
                         android:layout_marginHorizontal="16dp"
                         android:backgroundTint="?attr/colorPrimary"
                         android:fontFamily="@font/roboto_bold"
-                        android:text="Pay Now"
+                        android:text="@string/pay_now"
                         android:textColor="?attr/colorOnPrimary"
                         android:textSize="16sp"
-                        app:cornerRadius="12dp"
+                        app:cornerRadius="28dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
+                </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
         </LinearLayout>
