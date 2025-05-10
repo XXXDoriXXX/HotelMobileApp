@@ -18,7 +18,7 @@ import com.example.hotelapp.Holder.apiHolder
 import com.example.hotelapp.R
 
 class ItemsHotelAdapter(
-    var items: List<HotelItem>,
+    var items: MutableList<HotelItem> = mutableListOf(),
     var context: Context,
     private var isVerticalLayout: Boolean
 ) : RecyclerView.Adapter<ItemsHotelAdapter.MyViewHoldert>() {

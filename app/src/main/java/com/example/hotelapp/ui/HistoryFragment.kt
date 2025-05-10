@@ -25,24 +25,35 @@ import android.graphics.*
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import kotlin.math.abs
-
+import androidx.fragment.app.viewModels
+import com.example.viewmodels.HistoryViewModel
+import com.example.viewmodels.GenericViewModelFactory
 
 class HistoryFragment : Fragment() {
+    private val viewModel: HistoryViewModel by viewModels {
+        GenericViewModelFactory(HistoryViewModel::class.java) {
+            HistoryViewModel(
+                BookingRepository(
+                    RetrofitClient.retrofit.create(HotelService::class.java),
+                    UserHolder.getSessionManager()
+                )
+            )
+        }
+    }
 
     private lateinit var orderHistoryRecyclerView: RecyclerView
     private lateinit var adapter: ItemHistoryAdapter
     private lateinit var shimmerLayout: ShimmerFrameLayout
     private lateinit var sortSpinner: Spinner
-    private lateinit var repository: BookingRepository
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         val view = inflater.inflate(R.layout.fragment_history, container, false)
 
         val apiService = RetrofitClient.retrofit.create(HotelService::class.java)
-        repository = BookingRepository(apiService, SessionManager(requireContext()))
         sortSpinner = view.findViewById(R.id.sort_spinner)
 
         val items = resources.getStringArray(R.array.sort_options)
@@ -57,6 +68,32 @@ class HistoryFragment : Fragment() {
             }
         }
 
+        viewModel.bookings.observe(viewLifecycleOwner) { bookings ->
+            shimmerLayout.stopShimmer()
+            shimmerLayout.visibility = View.GONE
+            orderHistoryRecyclerView.visibility = View.VISIBLE
+
+            val grouped = mutableListOf<Any>()
+            bookings.groupBy { it.createdAt }.forEach { (date, list) ->
+                grouped.add(date)
+                grouped.addAll(list)
+            }
+
+            adapter = ItemHistoryAdapter(
+                grouped.toMutableList(),
+                requireContext(),
+                onDeleteBooking = { bookingId, position -> deleteBooking(bookingId, position) },
+                onArchiveBooking = { bookingId, position -> archiveBooking(bookingId, position) }
+            )
+            orderHistoryRecyclerView.adapter = adapter
+        }
+        viewModel.loadBookings(sortBy = "created_at", order = "desc")
+        viewModel.error.observe(viewLifecycleOwner) {
+            shimmerLayout.stopShimmer()
+            shimmerLayout.visibility = View.GONE
+            orderHistoryRecyclerView.visibility = View.VISIBLE
+            Toast.makeText(requireContext(), "Не вдалося завантажити бронювання", Toast.LENGTH_SHORT).show()
+        }
 
         sortSpinner.adapter = adapterspiner
         sortSpinner.setSelection(1)
@@ -189,17 +226,16 @@ class HistoryFragment : Fragment() {
         sortSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 when (position) {
-                    0 -> loadBookings("created_at", "asc")
-                    1 -> loadBookings("created_at", "desc")
-                    2 -> loadBookings("status", "asc")
-                    3 -> loadBookings("status", "desc")
+                    0 -> viewModel.loadBookings("created_at", "asc")
+                    1 -> viewModel.loadBookings("created_at", "desc")
+                    2 -> viewModel.loadBookings("status", "asc")
+                    3 -> viewModel.loadBookings("status", "desc")
                 }
+
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
-
-        loadBookings("created_at", "desc")
         return view
     }
 
@@ -220,90 +256,39 @@ class HistoryFragment : Fragment() {
             Toast.makeText(requireContext(), "Бронювання не знайдено", Toast.LENGTH_SHORT).show()
         }
     }
-
-    private fun loadBookings(sortBy: String, order: String) {
-        shimmerLayout.startShimmer()
-        shimmerLayout.visibility = View.VISIBLE
-        orderHistoryRecyclerView.visibility = View.GONE
-
-        repository.getMyBookingsSorted(
-            sortBy = sortBy,
-            order = order,
-            onResult = { bookings ->
-                Log.d("DEBUG", "Bookings loaded: ${bookings.size}")
-
-                shimmerLayout.stopShimmer()
-                shimmerLayout.visibility = View.GONE
-                orderHistoryRecyclerView.visibility = View.VISIBLE
-
-                val orderItems = bookings.map {
-                    OrderItem(
-                        bookingId = it.booking_id,
-                        hotelName = it.hotel_name,
-                        roomType = it.room_type,
-                        checkInDate = it.date_start.substring(0, 10),
-                        checkOutDate = it.date_end.substring(0, 10),
-                        totalPrice = it.total_price,
-                        status = mapStatus(it.status),
-                        hotel_image_url = it.hotel_images?.firstOrNull()?.image_url ?: "",
-                        room_id = it.room_id,
-                        createdAt = it.created_at.substring(0, 10)
-                    )
-                }
-
-                val grouped = mutableListOf<Any>()
-                orderItems.groupBy { it.createdAt }.forEach { (date, list) ->
-                    grouped.add(date)
-                    grouped.addAll(list)
-                }
-
-                adapter = ItemHistoryAdapter(
-                    grouped.toMutableList(),
-                    requireContext(),
-                    onDeleteBooking = { bookingId, position ->
-                        repository.deleteBooking(
-                            bookingId,
-                            onSuccess = {
-                                adapter.removeItem(position)
-                                context?.let {
-                                    Toast.makeText(it, "Бронювання видалено", Toast.LENGTH_SHORT).show()
-                                }
-                            },
-                            onError = {
-                                adapter.notifyItemChanged(position)
-                                Toast.makeText(requireContext(), "Помилка при видаленні", Toast.LENGTH_SHORT).show()
-                            }
-                        )
-                    },
-                    onArchiveBooking = { bookingId, position ->
-                        repository.archiveBooking(
-                            bookingId,
-                            onSuccess = {
-                                val item = adapter.getItem(position)
-                                if (item is OrderItem) {
-                                    item.status = "Archived"
-                                    adapter.notifyItemChanged(position)
-                                }
-                                Toast.makeText(requireContext(), "Архівовано", Toast.LENGTH_SHORT).show()
-                            },
-                            onError = {
-                                adapter.notifyItemChanged(position)
-                                Toast.makeText(requireContext(), "Помилка при архівації", Toast.LENGTH_SHORT).show()
-                            }
-                        )
-                    }
-                )
-
-                orderHistoryRecyclerView.adapter = adapter
+    private fun deleteBooking(bookingId: Int, position: Int) {
+        viewModel.deleteBooking(
+            bookingId,
+            onSuccess = {
+                adapter.removeItem(position)
+                Toast.makeText(requireContext(), "Бронювання видалено", Toast.LENGTH_SHORT).show()
             },
             onError = {
-                shimmerLayout.stopShimmer()
-                shimmerLayout.visibility = View.GONE
-                orderHistoryRecyclerView.visibility = View.VISIBLE
-                Toast.makeText(requireContext(), "Не вдалося завантажити бронювання", Toast.LENGTH_SHORT).show()
+                adapter.notifyItemChanged(position)
+                Toast.makeText(requireContext(), "Помилка при видаленні", Toast.LENGTH_SHORT).show()
             }
         )
     }
+
+    private fun archiveBooking(bookingId: Int, position: Int) {
+        viewModel.archiveBooking(
+            bookingId,
+            onSuccess = {
+                val item = adapter.getItem(position)
+                if (item is OrderItem) {
+                    item.status = "Archived"
+                    adapter.notifyItemChanged(position)
+                }
+                Toast.makeText(requireContext(), "Архівовано", Toast.LENGTH_SHORT).show()
+            },
+            onError = {
+                adapter.notifyItemChanged(position)
+                Toast.makeText(requireContext(), "Помилка при архівації", Toast.LENGTH_SHORT).show()
+            }
+        )
+    }
+
+
 
     override fun onResume() {
         super.onResume()

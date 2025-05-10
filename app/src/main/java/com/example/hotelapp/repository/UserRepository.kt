@@ -63,6 +63,40 @@ class UserRepository {
             }
         })
     }
+    fun loadProfile(context: Context, onSuccess: (User) -> Unit, onError: (Throwable) -> Unit) {
+        val sessionManager = UserHolder.getSessionManager()
+        val token = sessionManager.getAccessToken() ?: return onError(Throwable("No access token available"))
+
+        userService.getProfileDetails("Bearer $token").enqueue(object : Callback<JsonObject> {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                try {
+                    if (response.isSuccessful && response.body() != null) {
+                        val json = response.body()!!
+                        val user = User(
+                            id = json["id"]?.asInt ?: 0,
+                            first_name = json["first_name"]?.asString ?: "",
+                            last_name = json["last_name"]?.asString ?: "",
+                            email = json["email"]?.asString ?: "",
+                            phone = json["phone"]?.asString ?: "",
+                            birth_date = json["birth_date"]?.asString ?: "",
+                            avatarUrl = json["avatar_url"]?.asString ?: ""
+                        )
+                        UserHolder.currentUser = user
+                        sessionManager.saveUserData(user)
+                        onSuccess(user)
+                    } else {
+                        onError(Throwable("Failed to parse profile response"))
+                    }
+                } catch (e: Exception) {
+                    onError(Throwable("Parsing error: ${e.message}"))
+                }
+            }
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                onError(t)
+            }
+        })
+    }
 
     fun loadProfileDetails(
         context: Context,

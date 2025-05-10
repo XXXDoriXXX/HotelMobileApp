@@ -16,8 +16,17 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.hotelapp.R
 import com.example.hotelapp.classes.Adapters.ItemsHotelAdapter
 import com.facebook.shimmer.ShimmerFrameLayout
+import androidx.fragment.app.viewModels
+import com.example.viewmodels.FavoriteViewModel
+import com.example.viewmodels.GenericViewModelFactory
+
 
 class FavoriteFragment : Fragment() {
+    private val viewModel: FavoriteViewModel by viewModels {
+        GenericViewModelFactory(FavoriteViewModel::class.java) {
+            FavoriteViewModel(UserHolder.getHotelRepository())
+        }
+    }
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var emptyState: View
@@ -59,7 +68,7 @@ class FavoriteFragment : Fragment() {
         swipeRefreshLayout.setOnRefreshListener {
             isLoading = true
             isDataLoaded = false
-            loadFavorites()
+            viewModel.loadFavorites()
         }
 
         if (!isDataLoaded) {
@@ -68,8 +77,9 @@ class FavoriteFragment : Fragment() {
             adapter.notifyDataSetChanged()
             shimmerLayout.visibility = View.VISIBLE
             shimmerLayout.startShimmer()
-            loadFavorites()
-        } else {
+            viewModel.loadFavorites()
+        }
+        else {
             shimmerLayout.visibility = View.GONE
             recyclerView.visibility = View.VISIBLE
             isLoading = false
@@ -80,6 +90,28 @@ class FavoriteFragment : Fragment() {
             filterFavorites(searchInput.text.toString())
         }
 
+        viewModel.favorites.observe(viewLifecycleOwner) { hotels ->
+            isLoading = false
+            shimmerLayout.stopShimmer()
+            shimmerLayout.visibility = View.GONE
+            swipeRefreshLayout.isRefreshing = false
+
+            UserHolder.favoriteHotels = hotels.toMutableList()
+            allFavorites.clear()
+            allFavorites.addAll(hotels)
+            filterFavorites(searchInput.text.toString())
+            isDataLoaded = true
+        }
+
+        viewModel.error.observe(viewLifecycleOwner) {
+            isLoading = false
+            shimmerLayout.stopShimmer()
+            shimmerLayout.visibility = View.GONE
+            swipeRefreshLayout.isRefreshing = false
+            allFavorites.clear()
+            filterFavorites("")
+            Toast.makeText(requireContext(), "Failed to load favorites", Toast.LENGTH_SHORT).show()
+        }
 
 
 
@@ -104,44 +136,6 @@ class FavoriteFragment : Fragment() {
         emptyState.visibility = if (!isLoading && filtered.isEmpty()) View.VISIBLE else View.GONE
     }
 
-    private fun loadFavorites() {
-        shimmerLayout.visibility = View.VISIBLE
-        shimmerLayout.startShimmer()
-
-        recyclerView.visibility = View.GONE
-        emptyState.visibility = View.GONE
-
-        hotelRepository.getFavorites(
-            onResult = { hotels ->
-                isLoading = false
-                shimmerLayout.stopShimmer()
-                shimmerLayout.visibility = View.GONE
-
-                UserHolder.favoriteHotels = hotels.toMutableList()
-
-                allFavorites.clear()
-                allFavorites.addAll(hotels)
-
-                filterFavorites(searchInput.text.toString())
-                swipeRefreshLayout.isRefreshing = false
-                isDataLoaded = true
-            },
-            onError = { error ->
-                isLoading = false
-                shimmerLayout.stopShimmer()
-                shimmerLayout.visibility = View.GONE
-
-                allFavorites.clear()
-                filterFavorites("")
-
-                Toast.makeText(requireContext(), "Failed to load favorites", Toast.LENGTH_SHORT).show()
-                error.printStackTrace()
-
-                swipeRefreshLayout.isRefreshing = false
-                isDataLoaded = true
-            }
-        )
-    }
 
 
 }

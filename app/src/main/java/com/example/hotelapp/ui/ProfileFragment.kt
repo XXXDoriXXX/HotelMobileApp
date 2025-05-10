@@ -18,13 +18,21 @@ import com.bumptech.glide.Glide
 import com.example.hotelapp.R
 import com.example.hotelapp.repository.UserRepository
 import com.example.hotelapp.utils.SessionManager
+import androidx.fragment.app.viewModels
+import com.example.viewmodels.ProfileViewModel
+import com.example.viewmodels.GenericViewModelFactory
+
 class ProfileFragment : Fragment() {
+    private val viewModel: ProfileViewModel by viewModels {
+        GenericViewModelFactory(ProfileViewModel::class.java) {
+            ProfileViewModel(UserRepository())
+        }
+    }
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var sessionManager: SessionManager
     private lateinit var avatarImageView: ImageView
     private lateinit var profileEmail: TextView
     private lateinit var profileName: TextView
-    private val userRepository = UserRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +44,30 @@ class ProfileFragment : Fragment() {
     ): View {
         sessionManager = SessionManager(requireContext())
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
+        viewModel.user.observe(viewLifecycleOwner) { user ->
+            if (user != null) {
+                profileName.text = "${user.last_name} ${user.first_name}"
+                profileEmail.text = user.email
 
+                avatarImageView.tag = user.avatarUrl
+                Glide.with(requireContext())
+                    .load(user.avatarUrl)
+                    .placeholder(R.drawable.default_avatar)
+                    .into(avatarImageView)
+                swipeRefreshLayout.isRefreshing = false
+
+            }
+        }
+        viewModel.loading.observe(viewLifecycleOwner) {
+            swipeRefreshLayout.isRefreshing = it
+        }
+
+        viewModel.error.observe(viewLifecycleOwner) {
+            Toast.makeText(requireContext(), "Error loading profile: $it", Toast.LENGTH_SHORT).show()
+            swipeRefreshLayout.isRefreshing = false
+
+        }
+        viewModel.loadProfile(requireContext())
         val editProfileBtn: Button = view.findViewById(R.id.edit_profile_button)
         val settingsButton: LinearLayout = view.findViewById(R.id.settings_btn)
         val logoutButton: LinearLayout = view.findViewById(R.id.logout_btn)
@@ -45,11 +76,10 @@ class ProfileFragment : Fragment() {
         avatarImageView = view.findViewById(R.id.profile_avatar)
         profileEmail = view.findViewById(R.id.profile_email)
         profileName = view.findViewById(R.id.profile_name)
-
-        loadProfileFromLocal()
         swipeRefreshLayout.setOnRefreshListener {
-            loadProfileFromServer()
+            viewModel.loadProfile(requireContext())
         }
+
         editProfileBtn.setOnClickListener {
             startActivity(Intent(requireContext(), EditProfileActivity::class.java))
         }
@@ -69,7 +99,7 @@ class ProfileFragment : Fragment() {
             startActivity(intent)
             requireActivity().finish()
         }
-
+        if (::avatarImageView.isInitialized) {
         avatarImageView.setOnClickListener {
             val currentImagePath = avatarImageView.tag as? String
             if (!currentImagePath.isNullOrEmpty()) {
@@ -78,41 +108,11 @@ class ProfileFragment : Fragment() {
                 startActivity(intent)
             }
         }
+        }
 
         return view
     }
 
-    private fun loadProfileFromLocal() {
-        val user = UserHolder.currentUser ?: return
-
-        profileName.text = "${user.last_name} ${user.first_name}"
-        profileEmail.text = user.email
-        Log.v("ProfileFragment", "Avatar updated: ${user.avatarUrl}")
-        user.avatarUrl.let { avatarUrl ->
-            avatarImageView.tag = avatarUrl
-            Glide.with(requireContext())
-                .load(avatarUrl)
-                .placeholder(R.drawable.default_avatar)
-                .into(avatarImageView)
-        }
-    }
-    private fun loadProfileFromServer() {
-        swipeRefreshLayout.isRefreshing = true
-        userRepository.loadProfileDetails(
-            context = requireContext(),
-            avatarImageView = avatarImageView,
-            onSuccess = { user ->
-                sessionManager.saveUserData(user)
-                UserHolder.currentUser = user
-                loadProfileFromLocal()
-                swipeRefreshLayout.isRefreshing = false
-            },
-            onError = { error ->
-                Toast.makeText(requireContext(), "Error loading profile: $error", Toast.LENGTH_SHORT).show()
-                swipeRefreshLayout.isRefreshing = false
-            }
-        )
-    }
 
 
 }

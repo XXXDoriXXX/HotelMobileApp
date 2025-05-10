@@ -30,15 +30,23 @@ import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.fragment.app.viewModels
+import com.example.viewmodels.HotelViewModel
+import com.example.viewmodels.GenericViewModelFactory
 
 class HomeFragment : Fragment() {
+    private val viewModel: HotelViewModel by viewModels {
+        GenericViewModelFactory(HotelViewModel::class.java) {
+            HotelViewModel(UserHolder.getHotelRepository())
+        }
+    }
+
     private lateinit var searchInputField: TextInputEditText
     private lateinit var itemsList: RecyclerView
     private lateinit var layoutToggleButton: ImageButton
     private var isVerticalLayout = false
     private lateinit var hotelAdapter: ItemsHotelAdapter
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
-    private val hotelRepository = UserHolder.getHotelRepository()
     private var currentCategory = "trending"
     private var currentPage = 0
     private var isDataLoaded = false
@@ -100,15 +108,54 @@ class HomeFragment : Fragment() {
         val tabBest = view.findViewById<TextView>(R.id.tab_best)
         val tabPopular = view.findViewById<TextView>(R.id.tab_popular)
         val tabs = listOf(tabTrending, tabBest, tabPopular)
-        hotelRepository.getAllAmenities(
-            onResult = { amenities ->
-                amenityNameToId.clear()
-                amenityNameToId.putAll(amenities.associate { it.name to it.id })
-            },
-            onError = { err ->
-                SnackBarUtils.showLong(requireContext(), requireView(), R.string.load_error)
+        viewModel.hotels.observe(viewLifecycleOwner) { hotels ->
+            if (!this::hotelAdapter.isInitialized) {
+                hotelAdapter = ItemsHotelAdapter(hotels.toMutableList(), requireContext(), isVerticalLayout)
+                itemsList.adapter = hotelAdapter
+            } else {
+                hotelAdapter.items = hotels.toMutableList()
+                hotelAdapter.notifyDataSetChanged()
             }
-        )
+
+            shimmerLayoutHome.stopShimmer()
+            shimmerLayoutHome.visibility = View.GONE
+            itemsList.visibility = View.VISIBLE
+            isLoading = false
+            swipeRefreshLayout.isRefreshing = false
+            if (hotels.isNotEmpty()) {
+                currentPage++
+            }
+            canLoadMore = hotels.size == pageSize
+
+        }
+
+        viewModel.amenities.observe(viewLifecycleOwner) { list ->
+            amenityNameToId.clear()
+            amenityNameToId.putAll(list.associate { it.name to it.id })
+            AmenityHolder.allAmenities = list
+        }
+
+        viewModel.loading.observe(viewLifecycleOwner) { loading ->
+            if (loading) {
+                shimmerLayoutHome.startShimmer()
+                shimmerLayoutHome.visibility = View.VISIBLE
+                itemsList.visibility = View.GONE
+            } else {
+                shimmerLayoutHome.stopShimmer()
+                shimmerLayoutHome.visibility = View.GONE
+                itemsList.visibility = View.VISIBLE
+            }
+
+        }
+
+        viewModel.error.observe(viewLifecycleOwner) { errorMsg ->
+            errorMsg?.let {
+                SnackBarUtils.showLong(requireContext(), requireView(), R.string.loading_error, it)
+            }
+        }
+
+        viewModel.loadAllAmenities()
+
         view.findViewById<TextView>(R.id.location_text)?.text = address
         shimmerLayoutHome = view.findViewById(R.id.shimmerLayoutHome)
         itemsList = view.findViewById(R.id.itemsHotelList)
@@ -121,11 +168,6 @@ class HomeFragment : Fragment() {
             shimmerLayoutHome.visibility = View.GONE
             itemsList.visibility = View.VISIBLE
         }
-
-        hotelRepository.getAllAmenities(
-            onResult = { list -> AmenityHolder.allAmenities = list },
-            onError = { error -> Log.e("INIT", "amenities fetch failed", error) }
-        )
 
         filtersRecycler = view.findViewById(R.id.filters_recycler)
         filtersAdapter = FiltersAdapter(
@@ -459,19 +501,8 @@ class HomeFragment : Fragment() {
         )
         val gson = Gson()
         Log.d("FILTER_BODY", gson.toJson(searchParams))
-        hotelRepository.searchHotelsByFilters(
-            filters = searchParams,
-            onResult = { hotels ->
-                allHotels.clear()
-                allHotels.addAll(hotels)
-                hotelAdapter = ItemsHotelAdapter(allHotels, requireContext(), isVerticalLayout)
-                itemsList.adapter = hotelAdapter
-            },
-            onError = { err ->
-                SnackBarUtils.showLong(requireContext(), requireView(), R.string.search_failed, err.message ?: "")
-                isSearching = false
-            }
-        )
+        viewModel.searchHotelsByFilters(searchParams)
+
     }
 
     private fun refreshHotels() {
@@ -481,24 +512,47 @@ class HomeFragment : Fragment() {
         }
         isDataLoaded = false
         loadHotels()
-        swipeRefreshLayout.isRefreshing = true
     }
 
 
     private fun loadHotels() {
         if (isSearching) return
+
+        if (this::hotelAdapter.isInitialized) {
+            hotelAdapter.items.clear()
+            hotelAdapter.notifyDataSetChanged()
+        }
         isLoading = true
         currentPage = 0
         allHotels.clear()
         canLoadMore = true
-        hotelAdapter = ItemsHotelAdapter(allHotels, requireContext(), isVerticalLayout)
-        itemsList.adapter = hotelAdapter
-        updateLayoutManager()
-        loadMoreHotels()
+
+        viewModel.loadHotelsByCategory(
+            category = currentCategory,
+            city = getCity(),
+            country = getCountry(),
+            skip = 0,
+            limit = pageSize
+        )
+    }
+
+    private fun getCity(): String {
+        val address = requireContext()
+            .getSharedPreferences("prefs", Context.MODE_PRIVATE)
+            .getString("last_location", "Unknown City, Unknown Country") ?: ""
+        return address.split(",").getOrNull(0)?.trim() ?: "Unknown"
+    }
+
+    private fun getCountry(): String {
+        val address = requireContext()
+            .getSharedPreferences("prefs", Context.MODE_PRIVATE)
+            .getString("last_location", "Unknown City, Unknown Country") ?: ""
+        return address.split(",").getOrNull(1)?.trim() ?: "Unknown"
     }
 
     private fun loadMoreHotels() {
-        if (isSearching) return
+        if (isSearching || isLoading || !canLoadMore) return
+
         isLoading = true
 
         if (currentPage == 0) {
@@ -506,50 +560,19 @@ class HomeFragment : Fragment() {
             shimmerLayoutHome.visibility = View.VISIBLE
             itemsList.visibility = View.GONE
         }
-        val unknown = getString(R.string.unknown_value)
+
         val address = requireContext().getSharedPreferences("prefs", Context.MODE_PRIVATE)
             .getString("last_location", "Unknown City, Unknown Country") ?: "Unknown City, Unknown Country"
         val parts = address.split(",").map { it.trim() }
-        val city = parts.getOrNull(0) ?: unknown
-        val country = parts.getOrNull(1) ?: unknown
+        val city = parts.getOrNull(0) ?: "Unknown"
+        val country = parts.getOrNull(1) ?: "Unknown"
 
-        hotelRepository.getHotelsByCategory(
+        viewModel.loadHotelsByCategory(
             category = currentCategory,
             city = city,
             country = country,
             skip = currentPage * pageSize,
-            limit = pageSize,
-            onResult = { hotels ->
-                if (!isAdded) return@getHotelsByCategory
-
-                if (hotels.isNotEmpty()) {
-                    val oldSize = allHotels.size
-                    allHotels.addAll(hotels)
-                    hotelAdapter.notifyItemRangeInserted(oldSize, hotels.size)
-                    currentPage++
-                }
-                if (hotels.size < pageSize) {
-                    canLoadMore = false
-                }
-                isLoading = false
-                swipeRefreshLayout.isRefreshing = false
-
-                shimmerLayoutHome.stopShimmer()
-                shimmerLayoutHome.visibility = View.GONE
-                itemsList.visibility = View.VISIBLE
-            },
-            onError = {
-                if (!isAdded) return@getHotelsByCategory
-                isLoading = false
-                swipeRefreshLayout.isRefreshing = false
-
-                shimmerLayoutHome.stopShimmer()
-                shimmerLayoutHome.visibility = View.GONE
-                itemsList.visibility = View.VISIBLE
-
-                SnackBarUtils.showLong(requireContext(), requireView(), R.string.loading_error)
-
-            }
+            limit = pageSize
         )
     }
 
