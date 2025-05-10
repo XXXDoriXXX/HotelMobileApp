@@ -19,6 +19,7 @@ import com.example.hotelapp.R
 import com.example.hotelapp.repository.UserRepository
 import com.example.hotelapp.utils.SessionManager
 import androidx.fragment.app.viewModels
+import com.example.hotelapp.classes.SnackBarUtils
 import com.example.viewmodels.ProfileViewModel
 import com.example.viewmodels.GenericViewModelFactory
 
@@ -33,7 +34,7 @@ class ProfileFragment : Fragment() {
     private lateinit var avatarImageView: ImageView
     private lateinit var profileEmail: TextView
     private lateinit var profileName: TextView
-
+    private lateinit var rootView: View
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -63,7 +64,7 @@ class ProfileFragment : Fragment() {
         }
 
         viewModel.error.observe(viewLifecycleOwner) {
-            Toast.makeText(requireContext(), "Error loading profile: $it", Toast.LENGTH_SHORT).show()
+            SnackBarUtils.showLong(requireContext(),rootView, R.string.toast_error_with_reason, "Error loading profile: $it")
             swipeRefreshLayout.isRefreshing = false
 
         }

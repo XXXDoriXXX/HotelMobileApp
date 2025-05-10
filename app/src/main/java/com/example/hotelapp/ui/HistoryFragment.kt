@@ -26,6 +26,7 @@ import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import kotlin.math.abs
 import androidx.fragment.app.viewModels
+import com.example.hotelapp.classes.SnackBarUtils
 import com.example.viewmodels.HistoryViewModel
 import com.example.viewmodels.GenericViewModelFactory
 
@@ -45,7 +46,7 @@ class HistoryFragment : Fragment() {
     private lateinit var adapter: ItemHistoryAdapter
     private lateinit var shimmerLayout: ShimmerFrameLayout
     private lateinit var sortSpinner: Spinner
-
+    private lateinit var rootView: View
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -92,7 +93,7 @@ class HistoryFragment : Fragment() {
             shimmerLayout.stopShimmer()
             shimmerLayout.visibility = View.GONE
             orderHistoryRecyclerView.visibility = View.VISIBLE
-            Toast.makeText(requireContext(), "Не вдалося завантажити бронювання", Toast.LENGTH_SHORT).show()
+            SnackBarUtils.showLong(requireContext(),rootView, R.string.toast_error_with_reason, "Не вдалося завантажити бронювання")
         }
 
         sortSpinner.adapter = adapterspiner
@@ -209,7 +210,7 @@ class HistoryFragment : Fragment() {
                         "Completed" -> adapter.showArchiveConfirmation(item.bookingId, position)
                         "Pending", "Confirmed" -> {
                             adapter.notifyItemChanged(position)
-                            Toast.makeText(requireContext(), "Бронювання ще активне — спочатку скасуйте", Toast.LENGTH_SHORT).show()
+                            SnackBarUtils.showLong(requireContext(),rootView, R.string.toast_error_with_reason, "Бронювання ще активне — спочатку скасуйте")
                         }
                         else -> adapter.notifyItemChanged(position)
                     }
@@ -253,7 +254,7 @@ class HistoryFragment : Fragment() {
             )
             bottomSheet.show(parentFragmentManager, bottomSheet.tag)
         } else {
-            Toast.makeText(requireContext(), "Бронювання не знайдено", Toast.LENGTH_SHORT).show()
+            SnackBarUtils.showLong(requireContext(),rootView, R.string.toast_error_with_reason, "Бронювання не знайдено")
         }
     }
     private fun deleteBooking(bookingId: Int, position: Int) {
@@ -261,11 +262,11 @@ class HistoryFragment : Fragment() {
             bookingId,
             onSuccess = {
                 adapter.removeItem(position)
-                Toast.makeText(requireContext(), "Бронювання видалено", Toast.LENGTH_SHORT).show()
+                SnackBarUtils.showLong(requireContext(),rootView, R.string.toast_error_with_reason, "Бронювання видалено")
             },
             onError = {
                 adapter.notifyItemChanged(position)
-                Toast.makeText(requireContext(), "Помилка при видаленні", Toast.LENGTH_SHORT).show()
+                SnackBarUtils.showLong(requireContext(),rootView, R.string.toast_error_with_reason, "Помилка при видаленні")
             }
         )
     }
@@ -279,11 +280,11 @@ class HistoryFragment : Fragment() {
                     item.status = "Archived"
                     adapter.notifyItemChanged(position)
                 }
-                Toast.makeText(requireContext(), "Архівовано", Toast.LENGTH_SHORT).show()
+                SnackBarUtils.showLong(requireContext(),rootView, R.string.toast_error_with_reason, "Архівовано")
             },
             onError = {
                 adapter.notifyItemChanged(position)
-                Toast.makeText(requireContext(), "Помилка при архівації", Toast.LENGTH_SHORT).show()
+                SnackBarUtils.showLong(requireContext(),rootView, R.string.toast_error_with_reason, "Помилка при архівації")
             }
         )
     }
