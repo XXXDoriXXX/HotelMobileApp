@@ -44,7 +44,7 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         sessionManager = SessionManager(requireContext())
-        val view = inflater.inflate(R.layout.fragment_profile, container, false)
+        rootView = inflater.inflate(R.layout.fragment_profile, container, false)
         viewModel.user.observe(viewLifecycleOwner) { user ->
             if (user != null) {
                 profileName.text = "${user.last_name} ${user.first_name}"
@@ -69,14 +69,14 @@ class ProfileFragment : Fragment() {
 
         }
         viewModel.loadProfile(requireContext())
-        val editProfileBtn: Button = view.findViewById(R.id.edit_profile_button)
-        val settingsButton: LinearLayout = view.findViewById(R.id.settings_btn)
-        val logoutButton: LinearLayout = view.findViewById(R.id.logout_btn)
-        val support_btn: LinearLayout=view.findViewById(R.id.help_page_btn)
-        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
-        avatarImageView = view.findViewById(R.id.profile_avatar)
-        profileEmail = view.findViewById(R.id.profile_email)
-        profileName = view.findViewById(R.id.profile_name)
+        val editProfileBtn: Button = rootView.findViewById(R.id.edit_profile_button)
+        val settingsButton: LinearLayout = rootView.findViewById(R.id.settings_btn)
+        val logoutButton: LinearLayout = rootView.findViewById(R.id.logout_btn)
+        val support_btn: LinearLayout=rootView.findViewById(R.id.help_page_btn)
+        swipeRefreshLayout = rootView.findViewById(R.id.swipeRefreshLayout)
+        avatarImageView = rootView.findViewById(R.id.profile_avatar)
+        profileEmail = rootView.findViewById(R.id.profile_email)
+        profileName = rootView.findViewById(R.id.profile_name)
         swipeRefreshLayout.setOnRefreshListener {
             viewModel.loadProfile(requireContext())
         }
@@ -111,7 +111,7 @@ class ProfileFragment : Fragment() {
         }
         }
 
-        return view
+        return rootView
     }
 
 

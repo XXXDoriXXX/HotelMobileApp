@@ -79,7 +79,7 @@ class UserRepository {
                             email = json["email"]?.asString ?: "",
                             phone = json["phone"]?.asString ?: "",
                             birth_date = json["birth_date"]?.asString ?: "",
-                            avatarUrl = json["avatar_url"]?.asString ?: ""
+                            avatarUrl = json["avatar_url"]?.takeUnless { it is JsonNull }?.asString.orEmpty()
                         )
                         UserHolder.currentUser = user
                         sessionManager.saveUserData(user)

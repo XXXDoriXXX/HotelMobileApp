@@ -29,7 +29,10 @@
     <style name="DialogCornerStyle" parent="ShapeAppearance.MaterialComponents.MediumComponent">
         <item name="cornerSize">24dp</item>
     </style>
-
+    <style name="CCPDialogTheme" parent="ThemeOverlay.AppCompat.Dialog">
+        <item name="android:background">#293d62</item>
+        <item name="android:textColorPrimary">#FFFFFF</item>
+    </style>
 
 
 

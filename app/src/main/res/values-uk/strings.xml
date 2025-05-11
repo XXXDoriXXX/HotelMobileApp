@@ -135,5 +135,9 @@
     <string name="back_button">Назад</string>
     <string name="no_rooms_icon">Немає доступних номерів</string>
 
+    <string name="valid_phone_number">Введіть вірний номер телефону</string>
+    <string name="valid_ears_old">Ви повині бути повнолітнім для реєстрації</string>
+    <string name="register_succesful">Реєстрація успішна</string>
+    <string name="network_error">Помилка мережі:</string>
 
 </resources>

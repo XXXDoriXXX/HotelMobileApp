@@ -138,6 +138,13 @@
     <string name="back_button">Back</string>
     <string name="no_rooms_icon">No rooms available</string>
 
+    <string name="valid_phone_number">Enter a valid phone number</string>
+    <string name="valid_ears_old">You must be at least 18 years old to register</string>
+    <string name="register_succesful">Registration successful!</string>
+    <string name="network_error">Network error:</string>
+
+
+
     <string-array name="sort_options">
         <item>Date ↑</item>
         <item>Date ↓</item>

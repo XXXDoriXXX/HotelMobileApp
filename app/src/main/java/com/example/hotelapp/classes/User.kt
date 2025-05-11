@@ -7,7 +7,7 @@ class User (
                val email: String,
                val phone: String,
                val birth_date: String,
-                val avatarUrl: String
+                val avatarUrl: String?
 ){
 
 }
