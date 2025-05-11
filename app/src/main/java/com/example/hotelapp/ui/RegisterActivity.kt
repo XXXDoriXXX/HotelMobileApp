@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.inputmethod.EditorInfo
+import android.widget.DatePicker
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -43,7 +44,7 @@ class RegisterActivity : AppCompatActivity() {
 
         val logo = findViewById<ImageView>(R.id.register_logo)
         val title = findViewById<LinearLayout>(R.id.register_title)
-
+        val datePicker = findViewById<DatePicker>(R.id.edit_birth_date_picker)
         logo.animate().alpha(1f).translationY(0f).setDuration(600).setStartDelay(200).start()
         title.animate().alpha(1f).translationY(0f).setDuration(600).setStartDelay(400).start()
 
@@ -52,21 +53,17 @@ class RegisterActivity : AppCompatActivity() {
         val emailField = findViewById<TextInputEditText>(R.id.email_input_field)
         val phoneField = findViewById<TextInputEditText>(R.id.phone_input_field)
         val passwordField = findViewById<TextInputEditText>(R.id.password_input_field)
-        val birthDateField = findViewById<TextInputEditText>(R.id.date_of_birth_input_field)
-
         usernameField.setImeOptions(EditorInfo.IME_ACTION_NEXT)
         usersecondnameField.setImeOptions(EditorInfo.IME_ACTION_NEXT)
         emailField.setImeOptions(EditorInfo.IME_ACTION_NEXT)
         phoneField.setImeOptions(EditorInfo.IME_ACTION_NEXT)
         passwordField.setImeOptions(EditorInfo.IME_ACTION_NEXT)
-        birthDateField.setImeOptions(EditorInfo.IME_ACTION_DONE)
 
         val firstNameLayout = findViewById<TextInputLayout>(R.id.username_input)
         val lastNameLayout = findViewById<TextInputLayout>(R.id.usersecondname_input)
         val emailLayout = findViewById<TextInputLayout>(R.id.email_input)
         val phoneLayout = findViewById<TextInputLayout>(R.id.phone_input)
         val passwordLayout = findViewById<TextInputLayout>(R.id.password_input)
-        val birthLayout = findViewById<TextInputLayout>(R.id.date_of_birth_input)
 
         val haveaccount: LinearLayout = findViewById(R.id.have_account_text)
         haveaccount.setOnClickListener {
@@ -80,15 +77,16 @@ class RegisterActivity : AppCompatActivity() {
             val email = emailField.text.toString().trim()
             val phone = phoneField.text.toString().trim()
             val password = passwordField.text.toString().trim()
-            val birthDate = birthDateField.text.toString().trim().replace("/", "-")
-
-            // Clear previous errors
+            val birthDate = "%04d-%02d-%02d".format(
+                datePicker.year,
+                datePicker.month + 1,
+                datePicker.dayOfMonth
+            )
             firstNameLayout.error = null
             lastNameLayout.error = null
             emailLayout.error = null
             phoneLayout.error = null
             passwordLayout.error = null
-            birthLayout.error = null
 
             when {
                 username.isEmpty() -> {
@@ -111,8 +109,8 @@ class RegisterActivity : AppCompatActivity() {
                     passwordLayout.error = "Password must be at least 6 characters"
                     return@setOnClickListener
                 }
-                !birthDate.matches(Regex("\\d{4}-\\d{2}-\\d{2}")) -> {
-                    birthLayout.error = "Date format must be YYYY-MM-DD"
+                !phone.matches(Regex("^\\+?\\d{10,15}\$")) -> {
+                    phoneLayout.error = "Enter a valid phone number"
                     return@setOnClickListener
                 }
             }
@@ -142,24 +140,6 @@ class RegisterActivity : AppCompatActivity() {
             })
         }
 
-        birthDateField.addTextChangedListener(object : TextWatcher {
-            private var isEditing = false
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                if (isEditing) return
-                isEditing = true
-                val input = s.toString().replace("/", "")
-                val formatted = StringBuilder()
-                for (i in input.indices) {
-                    formatted.append(input[i])
-                    if ((i == 3 || i == 5) && i != input.length - 1) formatted.append("/")
-                }
-                birthDateField.setText(formatted.toString())
-                birthDateField.setSelection(formatted.length)
-                isEditing = false
-            }
-        })
     }
 
     private fun saveToken(token: String) {
