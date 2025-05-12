@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.hotelapp.R
+import com.example.hotelapp.classes.BaseActivity
+import com.example.hotelapp.classes.SnackBarUtils
 import com.example.hotelapp.models.AuthResponse
 import com.example.hotelapp.models.LoginRequest
 import com.example.hotelapp.repository.AuthRepository
@@ -23,7 +25,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : BaseActivity()  {
     private val authRepository = AuthRepository()
     private lateinit var sessionManager: SessionManager
 
@@ -32,6 +34,7 @@ class LoginActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_login)
         sessionManager = SessionManager(this)
+
         val logo = findViewById<ImageView>(R.id.register_logo)
         val title = findViewById<LinearLayout>(R.id.register_title)
 
@@ -75,19 +78,19 @@ class LoginActivity : AppCompatActivity() {
             passwordLayout.error = null
 
             if (email.isEmpty()) {
-                emailLayout.error = "Поле не може бути порожнім"
+                emailLayout.error = getString(R.string.error_enter_email)
                 return@setOnClickListener
             }
             if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                emailLayout.error = "Це не схоже на email"
+                emailLayout.error = getString(R.string.error_invalid_email)
                 return@setOnClickListener
             }
             if (password.isEmpty()) {
-                passwordLayout.error = "Введіть пароль"
+                passwordLayout.error = getString(R.string.error_password_required)
                 return@setOnClickListener
             }
             if (password.length < 6) {
-                passwordLayout.error = "Пароль має бути хоча б 6 символів"
+                passwordLayout.error = getString(R.string.error_password_too_short)
                 return@setOnClickListener
             }
 
@@ -105,11 +108,11 @@ class LoginActivity : AppCompatActivity() {
                         if (!token.isNullOrEmpty()) {
                             saveToken(token)
                             UserHolder.currentUser = JwtUtils.parseTokenToUser(token)
-                            Toast.makeText(
-                                this@LoginActivity,
-                                "Вітаю, ${UserHolder.currentUser?.first_name}",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            UserHolder.currentUser?.first_name?.let { it1 ->
+                                SnackBarUtils.showLong(this@LoginActivity, root,R.string.welcome_message,
+                                    it1
+                                )
+                            }
                             sessionManager.saveLoginInfo(
                                 token = token,
                                 firstName = UserHolder.currentUser!!.first_name,
@@ -130,25 +133,22 @@ class LoginActivity : AppCompatActivity() {
                             }
                             finish()
                         } else {
-                            Toast.makeText(
-                                this@LoginActivity,
-                                "Сервер повернув некоректний токен",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            SnackBarUtils.showLong(this@LoginActivity,root,R.string.error_token_invalid)
                         }
                     } else {
-                        passwordLayout.error = "Невірний логін або пароль"
+                        passwordLayout.error = getString(R.string.error_login_failed)
 
                     }
                 }
 
                 override fun onFailure(call: retrofit2.Call<AuthResponse>, t: Throwable) {
                     loginButton.isEnabled = true
-                    Toast.makeText(
+                    SnackBarUtils.showLong(
                         this@LoginActivity,
-                        "Помилка: ${t.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                        root,
+                        R.string.error_generic,
+                        t.message ?: "Unknown error"
+                    )
                 }
             })
         }

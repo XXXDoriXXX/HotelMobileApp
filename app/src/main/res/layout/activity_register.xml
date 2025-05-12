@@ -32,10 +32,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:orientation="vertical"
-        android:translationY="-20dp"
+android:layout_marginRight="16dp"
         android:layout_marginLeft="16dp"
         android:alpha="0"
+        android:orientation="vertical"
+        android:translationY="-20dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/register_logo">
 
@@ -44,7 +46,7 @@
             android:layout_height="wrap_content"
             android:alpha="1"
             android:fontFamily="@font/roboto_bold"
-            android:text="Register"
+            android:text="@string/register"
             android:textColor="?attr/colorOnPrimary"
             android:textSize="48sp" />
 
@@ -53,7 +55,7 @@
             android:layout_height="wrap_content"
             android:alpha="1"
             android:fontFamily="@font/roboto_bold"
-            android:text="Create a new account below"
+            android:text="@string/register_desc"
             android:textColor="@color/colorOnSecondary"
             android:textSize="24sp" />
     </LinearLayout>
@@ -88,7 +90,7 @@
                 android:id="@+id/username_input_field"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="First Name"
+                android:hint="@string/first_name_hint"
                 android:inputType="textPersonName" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -112,7 +114,7 @@
                 android:id="@+id/usersecondname_input_field"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Last Name"
+                android:hint="@string/last_name_hint"
                 android:inputType="textPersonName" />
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
@@ -139,7 +141,7 @@
             android:id="@+id/email_input_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Email"
+            android:hint="@string/email_hint"
             android:inputType="textEmailAddress" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -182,7 +184,7 @@
                 android:maxLength="11"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Phone Number"
+                android:hint="@string/phone_hint"
                 android:inputType="phone"
                 />
 
@@ -212,7 +214,7 @@
             android:id="@+id/password_input_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Password"
+            android:hint="@string/password_hint"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
     <com.google.android.material.card.MaterialCardView
@@ -255,7 +257,7 @@
         android:layout_marginBottom="12dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:text="Register"
+        android:text="@string/register_button"
         android:textColor="?attr/colorPrimary"
         android:textSize="28sp"
         app:cornerRadius="16dp"
@@ -273,12 +275,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="8dp"
+
         android:layout_marginBottom="32dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Already have an account?"
+            android:text="@string/have_account"
             android:textColor="?attr/colorOnPrimary"
             android:textSize="14sp"
             android:fontFamily="@font/roboto_regular" />
@@ -286,7 +289,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" Log in"
+            android:text="@string/login_button"
             android:textColor="?attr/colorAccent"
             android:textSize="14sp"
             android:fontFamily="@font/roboto_regular" />

@@ -10,9 +10,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.LottieAnimationView
 import com.example.hotelapp.Holder.HotelHolder
 import com.example.hotelapp.R
+import com.example.hotelapp.classes.BaseActivity
 import com.example.hotelapp.utils.SessionManager
 
-class BookingSuccessActivity : AppCompatActivity() {
+class BookingSuccessActivity : BaseActivity()  {
     private lateinit var sessionManager: SessionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {

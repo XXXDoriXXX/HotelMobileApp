@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.hotelapp.R
+import com.example.hotelapp.classes.BaseActivity
 import com.example.hotelapp.classes.SnackBarUtils
 import com.example.hotelapp.models.ChangeCredentialsRequest
 import com.example.hotelapp.repository.UserRepository
@@ -28,7 +29,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import java.util.Calendar
 
-class EditProfileActivity : AppCompatActivity() {
+class EditProfileActivity : BaseActivity()  {
     private lateinit var sessionManager: SessionManager
     private lateinit var avatarImageView: ImageView
     private lateinit var firstNameField: EditText

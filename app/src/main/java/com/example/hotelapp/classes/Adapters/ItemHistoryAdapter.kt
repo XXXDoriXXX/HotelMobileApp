@@ -30,9 +30,10 @@ class ItemHistoryAdapter(
 
         fun bind(order: OrderItem) {
             hotelName.text = order.hotelName
-            roomType.text = "Room: ${order.roomType}"
-            orderDates.text = "${order.checkInDate} - ${order.checkOutDate}"
-            totalPrice.text = "Total: $${order.totalPrice}"
+            val context = itemView.context
+            roomType.text = context.getString(R.string.order_room_type, order.roomType)
+            orderDates.text = context.getString(R.string.order_dates_range, order.checkInDate, order.checkOutDate)
+            totalPrice.text = context.getString(R.string.order_total_price, order.totalPrice)
             statusText.text = order.status
 
             when (order.status) {
@@ -90,19 +91,19 @@ class ItemHistoryAdapter(
 
     fun showDeleteConfirmation(bookingId: Int, position: Int) {
         MaterialAlertDialogBuilder(context)
-            .setTitle("Видалити бронювання?")
-            .setMessage("Це дія є незворотною. Ви впевнені?")
-            .setPositiveButton("Так") { _, _ -> onDeleteBooking(bookingId, position) }
-            .setNegativeButton("Ні") { dialog, _ -> dialog.dismiss(); notifyItemChanged(position) }
+            .setTitle(R.string.dialog_delete_booking_title)
+            .setMessage(R.string.dialog_delete_booking_message)
+            .setPositiveButton(R.string.dialog_yes) { _, _ -> onDeleteBooking(bookingId, position) }
+            .setNegativeButton(R.string.dialog_no) { dialog, _ -> dialog.dismiss(); notifyItemChanged(position) }
             .show()
     }
 
     fun showArchiveConfirmation(bookingId: Int, position: Int) {
         MaterialAlertDialogBuilder(context)
-            .setTitle("Архівувати бронювання?")
-            .setMessage("Бронювання буде переміщене в архів.")
-            .setPositiveButton("Так") { _, _ -> onArchiveBooking(bookingId, position) }
-            .setNegativeButton("Ні") { dialog, _ -> dialog.dismiss(); notifyItemChanged(position) }
+            .setTitle(R.string.dialog_archive_booking_title)
+            .setMessage(R.string.dialog_archive_booking_message)
+            .setPositiveButton(R.string.dialog_yes) { _, _ -> onArchiveBooking(bookingId, position) }
+            .setNegativeButton(R.string.dialog_no) { dialog, _ -> dialog.dismiss(); notifyItemChanged(position) }
             .show()
     }
     fun getItems(): List<Any> = items

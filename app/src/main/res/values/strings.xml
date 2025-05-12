@@ -94,12 +94,6 @@
 
     <string name="share_subject">Check out this hotel on HotelApp</string>
     <string name="share_chooser_title">Share hotel via</string>
-    <string name="amenity_wifi">Wi-Fi</string>
-    <string name="amenity_tv">TV</string>
-    <string name="amenity_ac">AC</string>
-    <string name="amenity_gym">Gym</string>
-    <string name="amenity_parking">Parking</string>
-    <string name="amenity_other">Other</string>
 
     <string name="added_to_favorites">Added to favorites</string>
     <string name="removed_from_favorites">Removed from favorites</string>
@@ -138,12 +132,106 @@
     <string name="back_button">Back</string>
     <string name="no_rooms_icon">No rooms available</string>
 
-    <string name="valid_phone_number">Enter a valid phone number</string>
     <string name="valid_ears_old">You must be at least 18 years old to register</string>
     <string name="register_succesful">Registration successful!</string>
-    <string name="network_error">Network error:</string>
+
+    <string name="favorites">Favorites</string>
+    <string name="favorites_desc"> Your favorite places are here</string>
+    <string name="history">Order History</string>
+
+    <string name="login_email_hint">Email address</string>
+    <string name="login_password_hint">Password</string>
+    <string name="login_button">Log In</string>
+    <string name="register_redirect">Don’t have an account? Register</string>
+
+    <string name="error_empty_field">This field cannot be empty</string>
+    <string name="error_password_required">Enter password</string>
+    <string name="error_password_too_short">Password must be at least 6 characters</string>
+    <string name="error_login_failed">Invalid login or password</string>
+    <string name="error_token_invalid">Server returned an invalid token</string>
+    <string name="error_generic">Error: %1$s</string>
+
+    <string name="welcome_message">Welcome, %1$s</string>
+
+    <string name="register_button">Register</string>
+    <string name="register_successful">Registration successful</string>
+    <string name="have_account">Already have an account?</string>
+
+    <!-- Поля вводу -->
+    <string name="first_name_hint">First name</string>
+    <string name="last_name_hint">Last name</string>
+    <string name="email_hint">Email</string>
+    <string name="phone_hint">Phone</string>
+    <string name="password_hint">Password</string>
+
+    <!-- Валідація -->
+    <string name="error_first_name_required">First name required</string>
+    <string name="error_last_name_required">Last name required</string>
+    <string name="error_email_invalid">Enter a valid email</string>
+    <string name="valid_phone_number">Enter a valid phone number (e.g. +380123456789)</string>
+    <string name="error_password_short">Password must be at least 6 characters</string>
+
+    <!-- Мережеві -->
+    <string name="network_error">Error: %1$s</string>
+
+    <string name="register">Register</string>
+    <string name="register_desc">Create a new account below</string>
 
 
+    <string name="room_type_format">Type: %1$s</string>
+    <string name="room_places_format">Places: %1$d</string>
+
+    <string name="order_room_type">Room: %1$s</string>
+    <string name="order_dates_range">%1$s - %2$s</string>
+    <string name="dialog_delete_booking_title">Delete booking?</string>
+    <string name="dialog_delete_booking_message">This action is irreversible. Are you sure?</string>
+    <string name="dialog_archive_booking_title">Archive booking?</string>
+    <string name="dialog_archive_booking_message">Booking will be moved to archive.</string>
+    <string name="dialog_yes">Yes</string>
+    <string name="dialog_no">No</string>
+    <string name="order_total_price">Total: $%1$.2f</string>
+
+    <string name="amenity_wifi">Free WiFi</string>
+    <string name="amenity_parking">Parking</string>
+    <string name="amenity_pool">Swimming Pool</string>
+    <string name="amenity_breakfast">Breakfast Included</string>
+    <string name="amenity_gym">Fitness Center</string>
+    <string name="amenity_spa">Spa and Wellness Center</string>
+    <string name="amenity_front_desk">24-Hour Front Desk</string>
+    <string name="amenity_elevator">Elevator</string>
+    <string name="amenity_concierge">Concierge Service</string>
+    <string name="amenity_luggage">Luggage Storage</string>
+    <string name="amenity_cleaning">Daily Housekeeping</string>
+    <string name="amenity_shuttle">Airport Shuttle</string>
+    <string name="amenity_meeting">Meeting Facilities</string>
+    <string name="amenity_pet">Pet Friendly</string>
+    <string name="amenity_wheelchair">Wheelchair Accessible</string>
+    <string name="amenity_no_smoking">Smoke-Free Property</string>
+    <string name="amenity_business">Business Center</string>
+    <string name="amenity_bicycle">Bicycle Rental</string>
+    <string name="amenity_terrace">Terrace</string>
+    <string name="amenity_laundry">Laundry Service</string>
+    <string name="amenity_ac">Air Conditioning</string>
+    <string name="amenity_tv">TV in Room</string>
+    <string name="amenity_minibar">Mini-Bar</string>
+    <string name="amenity_room_service">Room Service</string>
+    <string name="amenity_bathroom">Private Bathroom</string>
+    <string name="amenity_desk">Desk</string>
+    <string name="amenity_hairdryer">Hairdryer</string>
+    <string name="amenity_kettle">Electric Kettle</string>
+    <string name="amenity_iron">Iron and Ironing Board</string>
+    <string name="amenity_soundproof">Soundproofing</string>
+    <string name="amenity_safe">Safe</string>
+    <string name="amenity_balcony">Balcony</string>
+    <string name="amenity_towels">Towels and Linens</string>
+    <string name="amenity_clothes">Clothes Rack</string>
+    <string name="amenity_other">Other</string>
+
+    <string name="dont_have">Don\'t have an account?</string>
+    <string name="create_it"> Create it</string>
+
+    <string name="login">Login</string>
+    <string name="login_desc">Please Sign in to continue</string>
 
     <string-array name="sort_options">
         <item>Date ↑</item>

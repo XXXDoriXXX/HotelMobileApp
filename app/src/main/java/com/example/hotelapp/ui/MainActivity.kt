@@ -26,13 +26,14 @@ import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.hotelapp.R
+import com.example.hotelapp.classes.BaseActivity
 import com.example.hotelapp.classes.ImageCacheProxy
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.delay
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private lateinit var navController: NavController
     private val handler = Handler(Looper.getMainLooper())

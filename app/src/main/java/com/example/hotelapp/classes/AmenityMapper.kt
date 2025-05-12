@@ -1,5 +1,6 @@
 package com.example.hotelapp.classes
 
+import android.content.Context
 import com.example.hotelapp.Holder.AmenityHolder
 import com.example.hotelapp.R
 import com.example.hotelapp.classes.Adapters.AmenityDisplay
@@ -43,11 +44,50 @@ object AmenityMapper {
         "Towels and Linens" to R.drawable.other,
         "Clothes Rack" to R.drawable.clothes
     )
+    private val nameResMap = mapOf(
+        "Free WiFi" to R.string.amenity_wifi,
+        "Parking" to R.string.amenity_parking,
+        "Swimming Pool" to R.string.amenity_pool,
+        "Breakfast Included" to R.string.amenity_breakfast,
+        "Fitness Center" to R.string.amenity_gym,
+        "Spa and Wellness Center" to R.string.amenity_spa,
+        "24-Hour Front Desk" to R.string.amenity_front_desk,
+        "Elevator" to R.string.amenity_elevator,
+        "Concierge Service" to R.string.amenity_concierge,
+        "Luggage Storage" to R.string.amenity_luggage,
+        "Daily Housekeeping" to R.string.amenity_cleaning,
+        "Airport Shuttle" to R.string.amenity_shuttle,
+        "Meeting Facilities" to R.string.amenity_meeting,
+        "Pet Friendly" to R.string.amenity_pet,
+        "Wheelchair Accessible" to R.string.amenity_wheelchair,
+        "Non-Smoking Rooms" to R.string.amenity_no_smoking,
+        "Smoke-Free Property" to R.string.amenity_no_smoking,
+        "Business Center" to R.string.amenity_business,
+        "Bicycle Rental" to R.string.amenity_bicycle,
+        "Terrace" to R.string.amenity_terrace,
+        "Laundry Service" to R.string.amenity_laundry,
+        "Air Conditioning" to R.string.amenity_ac,
+        "TV in Room" to R.string.amenity_tv,
+        "Mini-Bar" to R.string.amenity_minibar,
+        "Room Service" to R.string.amenity_room_service,
+        "Private Bathroom" to R.string.amenity_bathroom,
+        "Desk" to R.string.amenity_desk,
+        "Hairdryer" to R.string.amenity_hairdryer,
+        "Electric Kettle" to R.string.amenity_kettle,
+        "Iron and Ironing Board" to R.string.amenity_iron,
+        "Soundproofing" to R.string.amenity_soundproof,
+        "Safe" to R.string.amenity_safe,
+        "Balcony" to R.string.amenity_balcony,
+        "Towels and Linens" to R.string.amenity_towels,
+        "Clothes Rack" to R.string.amenity_clothes
+    )
 
-    fun mapAmenity(id: Int): AmenityDisplay {
+    fun mapAmenity(context: Context, id: Int): AmenityDisplay {
         val amenity = AmenityHolder.getById(id)
-        val name = amenity?.name ?: "Other"
-        val icon = iconMap[name] ?: R.drawable.other
+        val rawName = amenity?.name ?: "Other"
+        val name = context.getString(nameResMap[rawName] ?: R.string.amenity_other)
+        val icon = iconMap[rawName] ?: R.drawable.other
         return AmenityDisplay(icon, name)
     }
+
 }

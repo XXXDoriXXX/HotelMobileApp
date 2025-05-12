@@ -16,7 +16,7 @@
         android:id="@+id/favorites_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Favorites"
+        android:text="@string/favorites"
         android:textColor="?attr/colorOnPrimary"
         android:textSize="26sp"
         android:fontFamily="@font/roboto_medium"
@@ -26,7 +26,7 @@
         android:id="@+id/favorites_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Your favorite places are here"
+        android:text="@string/favorites_desc"
         android:textColor="?attr/colorOnSecondary"
         android:textSize="14sp"
         android:fontFamily="@font/roboto_regular"
@@ -34,7 +34,6 @@
         app:layout_constraintTop_toBottomOf="@id/favorites_title"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Поле пошуку -->
     <LinearLayout
         android:id="@+id/search_bar"
         android:layout_width="0dp"
@@ -62,7 +61,7 @@
             android:layout_weight="1"
             android:background="@null"
             android:fontFamily="@font/roboto"
-            android:hint="Search..."
+            android:hint="@string/search_hint"
             android:paddingStart="8dp"
             android:textColor="?attr/colorOnPrimary"
             android:textColorHint="?attr/colorOnSecondary"

@@ -10,8 +10,9 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.hotelapp.R
+import com.example.hotelapp.classes.BaseActivity
 
-class HelpActivity : AppCompatActivity() {
+class HelpActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

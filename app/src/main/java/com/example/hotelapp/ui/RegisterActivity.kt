@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.hotelapp.R
+import com.example.hotelapp.classes.BaseActivity
 import com.example.hotelapp.classes.SnackBarUtils
 import com.example.hotelapp.classes.User
 import com.example.hotelapp.models.AuthResponse
@@ -23,7 +24,7 @@ import com.google.android.material.button.MaterialButton
 import com.hbb20.CountryCodePicker
 import retrofit2.Call
 
-class RegisterActivity : AppCompatActivity() {
+class RegisterActivity : BaseActivity()  {
     private val authRepository = AuthRepository()
     private lateinit var sessionManager: SessionManager
 
@@ -103,15 +104,15 @@ class RegisterActivity : AppCompatActivity() {
 
             when {
                 username.isEmpty() -> {
-                    firstNameLayout.error = "First name required"
+                    firstNameLayout.error = getString(R.string.error_first_name_required)
                     return@setOnClickListener
                 }
                 usersecondname.isEmpty() -> {
-                    lastNameLayout.error = "Last name required"
+                    lastNameLayout.error = getString(R.string.error_last_name_required)
                     return@setOnClickListener
                 }
                 email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                    emailLayout.error = "Enter a valid email"
+                    emailLayout.error =getString(R.string.error_invalid_email)
                     return@setOnClickListener
                 }
                 phone.isEmpty() || !phone.matches(Regex("^\\+\\d{10,15}$")) -> {
@@ -119,7 +120,7 @@ class RegisterActivity : AppCompatActivity() {
                     return@setOnClickListener
                 }
                 password.length < 6 -> {
-                    passwordLayout.error = "Password must be at least 6 characters"
+                    passwordLayout.error = getString(R.string.error_password_short)
                     return@setOnClickListener
                 }
                 age < 18 -> {

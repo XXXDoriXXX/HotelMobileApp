@@ -24,6 +24,7 @@ import com.example.hotelapp.classes.BusyDatesValidator
 import com.example.hotelapp.classes.CompositeValidator
 import com.example.hotelapp.classes.Adapters.RoomImagesAdapter
 import com.example.hotelapp.classes.AmenityMapper
+import com.example.hotelapp.classes.BaseActivity
 import com.example.hotelapp.classes.SnackBarUtils
 import com.example.hotelapp.network.RetrofitClient
 import com.example.hotelapp.repository.BookingRepository
@@ -39,7 +40,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.ln
 
-class CurrentRoomInfo : AppCompatActivity() {
+class CurrentRoomInfo : BaseActivity()  {
 
     private lateinit var selectDatesButton: Button
     private lateinit var totalPriceText: TextView
@@ -85,7 +86,7 @@ class CurrentRoomInfo : AppCompatActivity() {
 
         selectDatesButton.setOnClickListener { loadBookedDatesAndShowPicker() }
         val amenities = HotelHolder.currentRoom?.amenities?.map {
-            AmenityMapper.mapAmenity(it.amenity_id)
+            AmenityMapper.mapAmenity(this, it.amenity_id)
         } ?: listOf()
 
         val amenitiesAdapter = AmenitiesAdapter(amenities)

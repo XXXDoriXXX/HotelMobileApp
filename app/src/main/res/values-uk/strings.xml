@@ -91,13 +91,6 @@
 
     <string name="share_subject">Оціни цей готель у HotelApp</string>
     <string name="share_chooser_title">Поділитись готелем через</string>
-    <string name="amenity_wifi">Wi-Fi</string>
-    <string name="amenity_tv">Телевізор</string>
-    <string name="amenity_ac">Кондиціонер</string>
-    <string name="amenity_gym">Тренажерний зал</string>
-    <string name="amenity_parking">Паркінг</string>
-    <string name="amenity_other">Інше</string>
-
     <string name="added_to_favorites">Додано до обраного</string>
     <string name="removed_from_favorites">Видалено з обраного</string>
     <string name="rating_submitted">Рейтинг збережено</string>
@@ -135,9 +128,101 @@
     <string name="back_button">Назад</string>
     <string name="no_rooms_icon">Немає доступних номерів</string>
 
-    <string name="valid_phone_number">Введіть вірний номер телефону</string>
     <string name="valid_ears_old">Ви повині бути повнолітнім для реєстрації</string>
     <string name="register_succesful">Реєстрація успішна</string>
-    <string name="network_error">Помилка мережі:</string>
 
+    <string name="favorites">Улюблені</string>
+    <string name="favorites_desc">Ваші улюблені місця тут</string>
+    <string name="history">Історія замовлень</string>
+
+    <string name="login_email_hint">Електронна пошта</string>
+    <string name="login_password_hint">Пароль</string>
+    <string name="login_button">Увійти</string>
+    <string name="register_redirect">Немає акаунта? Зареєструватися</string>
+
+    <string name="error_empty_field">Поле не може бути порожнім</string>
+    <string name="error_password_required">Введіть пароль</string>
+    <string name="error_password_too_short">Пароль має бути хоча б 6 символів</string>
+    <string name="error_login_failed">Невірний логін або пароль</string>
+    <string name="error_token_invalid">Сервер повернув некоректний токен</string>
+    <string name="error_generic">Помилка: %1$s</string>
+
+    <string name="welcome_message">Вітаю, %1$s</string>
+
+    <string name="register_button">Зареєструватися</string>
+    <string name="register_successful">Реєстрація успішна</string>
+    <string name="have_account">Уже є акаунт?</string>
+
+    <!-- Поля вводу -->
+    <string name="first_name_hint">Імʼя</string>
+    <string name="last_name_hint">Прізвище</string>
+    <string name="email_hint">Електронна пошта</string>
+    <string name="phone_hint">Телефон</string>
+    <string name="password_hint">Пароль</string>
+
+    <!-- Валідація -->
+    <string name="error_first_name_required">Імʼя обовʼязкове</string>
+    <string name="error_last_name_required">Прізвище обовʼязкове</string>
+    <string name="error_email_invalid">Введіть коректну пошту</string>
+    <string name="valid_phone_number">Введіть коректний номер (наприклад: +380123456789)</string>
+    <string name="error_password_short">Пароль має містити щонайменше 6 символів</string>
+
+    <string name="network_error">Помилка: %1$s</string>
+
+    <string name="register">Реєстрація</string>
+    <string name="register_desc">Створіть новий обліковий запис нижче</string>
+
+    <string name="room_type_format">Тип: %1$s</string>
+    <string name="room_places_format">К-сть місць: %1$d</string>
+    <string name="order_room_type">Кімната: %1$s</string>
+    <string name="order_dates_range">%1$s — %2$s</string>
+    <string name="dialog_delete_booking_title">Видалити бронювання?</string>
+    <string name="dialog_delete_booking_message">Ця дія є незворотною. Ви впевнені?</string>
+    <string name="dialog_archive_booking_title">Архівувати бронювання?</string>
+    <string name="dialog_archive_booking_message">Бронювання буде переміщене в архів.</string>
+    <string name="dialog_yes">Так</string>
+    <string name="dialog_no">Ні</string>
+    <string name="order_total_price">Разом: $%1$.2f </string>
+
+    <string name="amenity_wifi">Wi-Fi</string>
+    <string name="amenity_parking">Паркінг</string>
+    <string name="amenity_pool">Басейн</string>
+    <string name="amenity_breakfast">Сніданок включено</string>
+    <string name="amenity_gym">Фітнес-зал</string>
+    <string name="amenity_spa">Спа та оздоровлення</string>
+    <string name="amenity_front_desk">Цілодобова рецепція</string>
+    <string name="amenity_elevator">Ліфт</string>
+    <string name="amenity_concierge">Консьєрж-сервіс</string>
+    <string name="amenity_luggage">Камера зберігання</string>
+    <string name="amenity_cleaning">Щоденне прибирання</string>
+    <string name="amenity_shuttle">Трансфер до аеропорту</string>
+    <string name="amenity_meeting">Конференц-зал</string>
+    <string name="amenity_pet">Можна з тваринами</string>
+    <string name="amenity_wheelchair">Доступ для інвалідів</string>
+    <string name="amenity_no_smoking">Без паління</string>
+    <string name="amenity_business">Бізнес-центр</string>
+    <string name="amenity_bicycle">Оренда велосипедів</string>
+    <string name="amenity_terrace">Тераса</string>
+    <string name="amenity_laundry">Пральня</string>
+    <string name="amenity_ac">Кондиціонер</string>
+    <string name="amenity_tv">Телевізор у номері</string>
+    <string name="amenity_minibar">Міні-бар</string>
+    <string name="amenity_room_service">Обслуговування номерів</string>
+    <string name="amenity_bathroom">Власна ванна кімната</string>
+    <string name="amenity_desk">Письмовий стіл</string>
+    <string name="amenity_hairdryer">Фен</string>
+    <string name="amenity_kettle">Електрочайник</string>
+    <string name="amenity_iron">Праска та дошка для прасування</string>
+    <string name="amenity_soundproof">Звукоізоляція</string>
+    <string name="amenity_safe">Сейф</string>
+    <string name="amenity_balcony">Балкон</string>
+    <string name="amenity_towels">Рушники та білизна</string>
+    <string name="amenity_clothes">Вішалка для одягу</string>
+    <string name="amenity_other">Інше</string>
+
+    <string name="dont_have">Не маєте облікового запису?</string>
+    <string name="create_it"> Створіть його</string>
+
+    <string name="login">Вхід</string>
+    <string name="login_desc">Будь ласка, авторизуйтесь, щоб продовжити</string>
 </resources>

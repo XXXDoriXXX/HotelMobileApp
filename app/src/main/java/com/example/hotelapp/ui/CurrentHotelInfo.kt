@@ -21,11 +21,12 @@ import com.example.hotelapp.classes.Adapters.HotelImagesAdapter
 import com.example.hotelapp.classes.Adapters.AmenitiesAdapter
 import com.example.hotelapp.classes.Adapters.AmenityDisplay
 import com.example.hotelapp.classes.AmenityMapper
+import com.example.hotelapp.classes.BaseActivity
 import com.example.hotelapp.classes.SnackBarUtils
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlin.math.ln
 
-class CurrentHotelInfo : AppCompatActivity() {
+class CurrentHotelInfo : BaseActivity()  {
     private lateinit var shimmerLayout: com.facebook.shimmer.ShimmerFrameLayout
     private lateinit var hotelRepository: HotelRepository
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
@@ -250,7 +251,7 @@ class CurrentHotelInfo : AppCompatActivity() {
 
 
         val amenities = hotel.amenities.map {
-            AmenityMapper.mapAmenity(it.amenity_id)
+            AmenityMapper.mapAmenity(this, it.amenity_id)
         }
 
         val amenitiesAdapter = AmenitiesAdapter(amenities)

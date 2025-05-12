@@ -8,18 +8,16 @@
     android:background="?android:attr/windowBackground"
     android:padding="16dp">
 
-    <!-- Заголовок сторінки -->
     <TextView
         android:id="@+id/history_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Order History"
+        android:text="@string/favorites"
         android:textSize="24sp"
         android:textColor="?attr/colorOnPrimary"
         android:fontFamily="@font/roboto_bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-    <!-- Загрузка -->
     <LinearLayout
         android:id="@+id/sort_container"
         android:layout_width="wrap_content"

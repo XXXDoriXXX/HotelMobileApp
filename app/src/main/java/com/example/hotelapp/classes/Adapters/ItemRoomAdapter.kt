@@ -47,9 +47,9 @@ class ItemsRoomAdapter(var items:List<RoomItem>, var context: Context) : Recycle
             } else {
                 holder.image.setImageResource(R.drawable.default_image)
             }
-            holder.roomnumber.text ="Room number: "+items[position].room_number.toString()
-            holder.type.text = "Status: "+items[position].room_type
-            holder.places.text ="Places: "+ items[position].places.toString()
+            holder.roomnumber.text =items[position].room_number.toString()
+            holder.type.text = context.getString(R.string.room_type_format, items[position].room_type)
+            holder.places.text = context.getString(R.string.room_places_format, items[position].places)
             holder.price.text = "$"+items[position].price_per_night.toString()
             holder.image.setOnClickListener {
                 HotelHolder.currentRoom = items[position]
