@@ -263,10 +263,8 @@ class CurrentHotelInfo : BaseActivity()  {
 
             if (isFavorite) {
                 addToFavorites(hotel)
-                SnackBarUtils.showLong(this, rootView, R.string.added_to_favorites)
             } else {
                 removeFromFavorites(hotel.id)
-                SnackBarUtils.showShort(this, rootView, R.string.removed_from_favorites)
             }
 
         }

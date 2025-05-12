@@ -249,9 +249,10 @@
             android:id="@+id/layoutToggleButton"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            app:itemIconTint="#84c6cf"
-            app:tint="#84c6cf"
+            app:tint="@color/colorSecondary"
             android:layout_marginTop="8dp"
+            app:itemIconTint="@color/colorSecondary"
+
 
             android:layout_marginRight="16dp"
             android:background="#00000000"

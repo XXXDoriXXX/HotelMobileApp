@@ -114,7 +114,7 @@
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_heart_outline"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:tint="#7da8b4" />
+                    app:tint="?attr/colorAccent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -179,7 +179,7 @@
 
             android:layout_gravity="bottom|center_horizontal"
             app:cardCornerRadius="32dp"
-            app:cardBackgroundColor="#7da8b4"
+            app:cardBackgroundColor="@color/colorSecondary"
             app:cardElevation="6dp"
             android:layout_marginBottom="0dp"
             android:padding="16dp">

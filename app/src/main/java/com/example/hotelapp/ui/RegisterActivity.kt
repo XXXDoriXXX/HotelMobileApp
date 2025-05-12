@@ -1,6 +1,7 @@
 package com.example.hotelapp.ui
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.widget.DatePicker
@@ -50,6 +51,8 @@ class RegisterActivity : BaseActivity()  {
         title.animate().alpha(1f).translationY(0f).setDuration(600).setStartDelay(400).start()
 
         val ccp = findViewById<CountryCodePicker>(R.id.ccp)
+        ccp.setDialogBackgroundColor(Color.rgb(34, 52, 88))
+        ccp.setDialogTextColor(Color.WHITE)
         val phoneField = findViewById<TextInputEditText>(R.id.phone_input_field)
         ccp.registerCarrierNumberEditText(phoneField)
 

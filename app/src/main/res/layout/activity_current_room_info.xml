@@ -126,7 +126,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_gravity="bottom|center_horizontal"
                 app:cardCornerRadius="32dp"
-                app:cardBackgroundColor="#7da8b4"
+                app:cardBackgroundColor="?attr/colorAccent"
                 app:cardElevation="6dp"
                 android:padding="16dp">
 
