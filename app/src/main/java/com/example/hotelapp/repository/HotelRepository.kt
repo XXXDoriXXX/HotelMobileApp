@@ -1,4 +1,7 @@
 import com.example.hotelapp.api.HotelService
+import com.example.hotelapp.classes.Amenity
+import com.example.hotelapp.classes.ErrorUtils
+import com.example.hotelapp.models.FavoriteHotelWrapper
 import com.example.hotelapp.models.HotelSearchParams
 import com.example.hotelapp.models.HotelWithStatsResponse
 import com.example.hotelapp.utils.SessionManager
@@ -13,7 +16,7 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
                 if (response.isSuccessful) {
                     onResult(response.body() ?: emptyList())
                 } else {
-                    onError(Exception("Failed to fetch hotels: ${response.message()}"))
+                    onError(Exception(ErrorUtils.parseErrorMessage(response)))
                 }
             }
 
@@ -73,7 +76,7 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
                     } ?: emptyList()
                     onResult(hotels)
                 } else {
-                    onError(Exception("Failed to fetch hotels: ${response.message()}"))
+                    onError(Exception(ErrorUtils.parseErrorMessage(response)))
                 }
             }
 
@@ -108,39 +111,12 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
                             onResult(body.hotel)
                         } else onError(Exception("Empty response"))
                     } else {
-                        onError(Exception("Failed to fetch hotel: ${response.message()}"))
+                        onError(Exception(ErrorUtils.parseErrorMessage(response)))
+
                     }
                 }
 
                 override fun onFailure(call: Call<HotelWithStatsResponse>, t: Throwable) {
-                    onError(t)
-                }
-            })
-    }
-
-    fun rateHotelPUT(
-        hotelId: Int,
-        ratingValue: Float,
-        onResult: () -> Unit,
-        onError: (Throwable) -> Unit
-    ) {
-        val token = sessionManager.getAccessToken()
-        if (token.isNullOrEmpty()) {
-            onError(Exception("No access token"))
-            return
-        }
-
-        apiService.rateHotelPut(hotelId, ratingValue, "Bearer $token")
-            .enqueue(object : Callback<Void> {
-                override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                    if (response.isSuccessful) {
-                        onResult()
-                    } else {
-                        onError(Exception("Rating failed: ${response.message()}"))
-                    }
-                }
-
-                override fun onFailure(call: Call<Void>, t: Throwable) {
                     onError(t)
                 }
             })
@@ -165,7 +141,7 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
                     } ?: emptyList()
                     onResult(hotels)
                 } else {
-                    onError(Exception("Search failed: ${response.message()}"))
+                    onError(Exception(ErrorUtils.parseErrorMessage(response)))
                 }
             }
 
@@ -179,7 +155,7 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
     fun rateHotel(
         hotelId: Int,
         rating: Float,
-        onResult: (RatingResponse) -> Unit,
+        onResult: () -> Unit,
         onError: (Throwable) -> Unit
     ) {
         val token = sessionManager.getAccessToken()
@@ -188,21 +164,157 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
             return
         }
 
-        val request = RatingRequest(rating)
-        apiService.rateHotel(hotelId, request, "Bearer $token").enqueue(object : retrofit2.Callback<RatingResponse> {
-            override fun onResponse(call: Call<RatingResponse>, response: Response<RatingResponse>) {
+        apiService.rateHotel(hotelId, rating, "Bearer $token")
+            .enqueue(object : Callback<Void> {
+                override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                    if (response.isSuccessful) {
+                        onResult()
+                    } else {
+                        val error = response.errorBody()?.string()
+                        onError(Exception(ErrorUtils.parseErrorMessage(response)))
+
+                    }
+                }
+
+                override fun onFailure(call: Call<Void>, t: Throwable) {
+                    onError(t)
+                }
+            })
+    }
+    fun getFavorites(
+        onResult: (List<HotelItem>) -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        val token = sessionManager.getAccessToken()
+        if (token.isNullOrEmpty()) {
+            onError(Exception("No access token"))
+            return
+        }
+
+        apiService.getFavorites("Bearer $token").enqueue(object : Callback<List<FavoriteHotelWrapper>> {
+            override fun onResponse(
+                call: Call<List<FavoriteHotelWrapper>>,
+                response: Response<List<FavoriteHotelWrapper>>
+            ) {
                 if (response.isSuccessful) {
-                    response.body()?.let(onResult)
+                    val hotels = response.body()?.map {
+                        it.hotel.apply {
+                            rating = it.rating
+                            views = it.views
+                        }
+                    } ?: emptyList()
+                    onResult(hotels)
                 } else {
-                    onError(Exception("Failed to rate hotel: ${response.message()}"))
+                    onError(Exception(ErrorUtils.parseErrorMessage(response)))
+
                 }
             }
 
-            override fun onFailure(call: Call<RatingResponse>, t: Throwable) {
+            override fun onFailure(call: Call<List<FavoriteHotelWrapper>>, t: Throwable) {
                 onError(t)
             }
         })
     }
+
+
+
+
+    fun addFavorite(
+        hotelId: Int,
+        onResult: () -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        val token = sessionManager.getAccessToken()
+        if (token.isNullOrEmpty()) {
+            onError(Exception("No access token"))
+            return
+        }
+        apiService.addFavorite(hotelId, "Bearer $token").enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) onResult()
+                else onError(Exception(ErrorUtils.parseErrorMessage(response)))
+
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) = onError(t)
+        })
+    }
+
+    fun removeFavorite(
+        hotelId: Int,
+        onResult: () -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        val token = sessionManager.getAccessToken()
+        if (token.isNullOrEmpty()) {
+            onError(Exception("No access token"))
+            return
+        }
+        apiService.removeFavorite(hotelId, "Bearer $token").enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) onResult()
+                else onError(Exception(ErrorUtils.parseErrorMessage(response)))
+
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) = onError(t)
+        })
+    }
+    fun getAllAmenities(
+        onResult: (List<Amenity>) -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        var hotelAmenities: List<Amenity>? = null
+        var roomAmenities: List<Amenity>? = null
+        var errorOccurred = false
+
+        val checkAndReturn = {
+            if (hotelAmenities != null && roomAmenities != null) {
+                val combined = (hotelAmenities!! + roomAmenities!!).distinctBy { it.id }
+                onResult(combined)
+            }
+        }
+
+        apiService.getHotelAmenities().enqueue(object : Callback<List<Amenity>> {
+            override fun onResponse(call: Call<List<Amenity>>, response: Response<List<Amenity>>) {
+                if (response.isSuccessful) {
+                    hotelAmenities = response.body() ?: emptyList()
+                    checkAndReturn()
+                } else if (!errorOccurred) {
+                    errorOccurred = true
+                    onError(Exception("Failed to fetch hotel amenities"))
+                }
+            }
+
+            override fun onFailure(call: Call<List<Amenity>>, t: Throwable) {
+                if (!errorOccurred) {
+                    errorOccurred = true
+                    onError(t)
+                }
+            }
+        })
+
+        apiService.getRoomAmenities().enqueue(object : Callback<List<Amenity>> {
+            override fun onResponse(call: Call<List<Amenity>>, response: Response<List<Amenity>>) {
+                if (response.isSuccessful) {
+                    roomAmenities = response.body() ?: emptyList()
+                    checkAndReturn()
+                } else if (!errorOccurred) {
+                    errorOccurred = true
+                    onError(Exception("Failed to fetch room amenities"))
+                }
+            }
+
+            override fun onFailure(call: Call<List<Amenity>>, t: Throwable) {
+                if (!errorOccurred) {
+                    errorOccurred = true
+                    onError(t)
+                }
+            }
+        })
+    }
+
+
     fun searchHotels(
         name: String,
         onResult: (List<HotelItem>) -> Unit,
@@ -213,7 +325,7 @@ class HotelRepository(private val apiService: HotelService,private val sessionMa
                 if (response.isSuccessful) {
                     onResult(response.body() ?: emptyList())
                 } else {
-                    onError(Exception("Failed to search hotels"))
+                    onError(Exception(ErrorUtils.parseErrorMessage(response)))
                 }
             }
 

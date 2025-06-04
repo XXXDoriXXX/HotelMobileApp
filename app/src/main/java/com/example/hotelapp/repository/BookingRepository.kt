@@ -6,16 +6,22 @@ import com.example.hotelapp.models.BookingResponse
 import com.example.hotelapp.models.RefundResponse
 import com.example.hotelapp.models.StripePaymentResponse
 import com.example.hotelapp.utils.SessionManager
+import com.google.gson.JsonObject
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class BookingRepository(private val api: HotelService, private val session: SessionManager) {
 
-    fun getMyBookings(onResult: (List<BookingResponse>) -> Unit, onError: (Throwable) -> Unit) {
+    fun getMyBookingsSorted(
+        sortBy: String,
+        order: String,
+        onResult: (List<BookingResponse>) -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
         val token = session.getAccessToken() ?: return onError(Throwable("No token"))
-
-        api.getMyBookings("Bearer $token").enqueue(object : Callback<List<BookingResponse>> {
+        api.getMyBookingsSorted("Bearer $token", sortBy, order).enqueue(object : Callback<List<BookingResponse>> {
             override fun onResponse(
                 call: Call<List<BookingResponse>>,
                 response: Response<List<BookingResponse>>
@@ -23,7 +29,7 @@ class BookingRepository(private val api: HotelService, private val session: Sess
                 if (response.isSuccessful) {
                     onResult(response.body() ?: emptyList())
                 } else {
-                    onError(Throwable("Failed to fetch booking history"))
+                    onError(Throwable("Failed to fetch sorted bookings"))
                 }
             }
 
@@ -32,6 +38,7 @@ class BookingRepository(private val api: HotelService, private val session: Sess
             }
         })
     }
+
     fun requestRefund(
         bookingId: Int,
         onSuccess: (Float) -> Unit,
@@ -44,7 +51,15 @@ class BookingRepository(private val api: HotelService, private val session: Sess
                     val refund = response.body()?.refunded ?: 0f
                     onSuccess(refund)
                 } else {
-                    onError(Throwable("Не вдалося отримати суму повернення"))
+                    val errorMessage = try {
+                        response.errorBody()?.string()
+                            ?.let { com.google.gson.JsonParser.parseString(it).asJsonObject["detail"]?.asString }
+                            ?: "Failed to fetch refund amount"
+                    } catch (e: Exception) {
+                        "Failed to fetch refund amount"
+                    }
+                    onError(Throwable(errorMessage))
+
                 }
             }
 
@@ -70,19 +85,90 @@ class BookingRepository(private val api: HotelService, private val session: Sess
             payment_method = paymentMethod
         )
 
-        api.createBookingCheckout(request, "Bearer $token")
-            .enqueue(object : Callback<StripePaymentResponse> {
-                override fun onResponse(call: Call<StripePaymentResponse>, response: Response<StripePaymentResponse>) {
+        api.createBookingCheckoutRaw(request, "Bearer $token")
+            .enqueue(object : Callback<JsonObject> {
+                override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                     if (response.isSuccessful) {
-                        response.body()?.checkoutUrl?.let(onSuccess)
+                        val body = response.body()
+                        if (body != null) {
+                            when {
+                                body.has("checkout_url") -> {
+                                    val checkoutUrl = body.get("checkout_url").asString
+                                    onSuccess(checkoutUrl)
+                                }
+                                body.has("message") -> {
+                                    val message = body.get("message").asString
+                                    onSuccess(message)
+                                }
+                                else -> {
+                                    onFailure(Throwable("Unknown response structure"))
+                                }
+                            }
+                        } else {
+                            onFailure(Throwable("Empty response body"))
+                        }
                     } else {
-                        onFailure(Throwable("Не вдалося отримати checkout URL"))
+                        val errorMessage = try {
+                            response.errorBody()?.string()
+                                ?.let { com.google.gson.JsonParser.parseString(it).asJsonObject["detail"]?.asString }
+                                ?: "Booking creation failed"
+                        } catch (e: Exception) {
+                            "Booking creation failed"
+                        }
+
+                        onFailure(Throwable(errorMessage))
                     }
+
                 }
 
-                override fun onFailure(call: Call<StripePaymentResponse>, t: Throwable) {
+                override fun onFailure(call: Call<JsonObject>, t: Throwable) {
                     onFailure(t)
                 }
             })
     }
+    fun deleteBooking(
+        bookingId: Int,
+        onSuccess: () -> Unit,
+        onError: (Throwable) -> Unit
+    )
+    {
+        val token = session.getAccessToken() ?: return onError(Throwable("No token"))
+        api.deleteBooking("Bearer $token", bookingId).enqueue(object : Callback<okhttp3.ResponseBody> {
+            override fun onResponse(call: Call<okhttp3.ResponseBody>, response: Response<okhttp3.ResponseBody>) {
+                if (response.isSuccessful) {
+                    onSuccess()
+                } else {
+                    onError(Throwable("Failed to delete booking"))
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                onError(t)
+            }
+        })
+    }
+
+    fun archiveBooking(
+        bookingId: Int,
+        onSuccess: () -> Unit,
+        onError: (Throwable) -> Unit
+    )
+    {
+        val token = session.getAccessToken() ?: return onError(Throwable("No token"))
+        api.archiveBooking("Bearer $token", bookingId).enqueue(object : Callback<okhttp3.ResponseBody> {
+            override fun onResponse(call: Call<okhttp3.ResponseBody>, response: Response<okhttp3.ResponseBody>) {
+                if (response.isSuccessful) {
+                    onSuccess()
+                } else {
+                    onError(Throwable("Failed to archive booking"))
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                onError(t)
+            }
+        })
+    }
+
+
 }

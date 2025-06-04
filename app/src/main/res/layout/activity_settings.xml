@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Choose Theme"
+        android:text="@string/choose_theme"
         android:textSize="18sp"
         android:layout_marginBottom="16dp" />
 
@@ -21,18 +21,52 @@
             android:id="@+id/radio_system"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="System Default" />
+            android:text="@string/system_default" />
 
         <RadioButton
             android:id="@+id/radio_light"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Light Theme" />
+            android:text="@string/light_theme" />
 
         <RadioButton
             android:id="@+id/radio_dark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Dark Theme" />
+            android:text="@string/dark_theme" />
     </RadioGroup>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#CCCCCC"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="12dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/choose_language"
+        android:textSize="18sp"
+        android:layout_marginBottom="12dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/btn_english"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/english"
+            android:layout_marginEnd="16dp" />
+
+        <Button
+            android:id="@+id/btn_ukrainian"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ukrainian" />
+    </LinearLayout>
 </LinearLayout>

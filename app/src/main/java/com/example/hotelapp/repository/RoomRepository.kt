@@ -42,4 +42,20 @@ class RoomRepository {
             }
         })
     }
+    fun getRoomById(roomId: Int, callback: (RoomItem?, Throwable?) -> Unit) {
+        roomService.getRoomById(roomId).enqueue(object : retrofit2.Callback<RoomItem> {
+            override fun onResponse(call: Call<RoomItem>, response: retrofit2.Response<RoomItem>) {
+                if (response.isSuccessful) {
+                    callback(response.body(), null)
+                } else {
+                    callback(null, Throwable(response.message()))
+                }
+            }
+
+            override fun onFailure(call: Call<RoomItem>, t: Throwable) {
+                callback(null, t)
+            }
+        })
+    }
+
 }

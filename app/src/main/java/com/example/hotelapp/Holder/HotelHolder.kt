@@ -9,5 +9,5 @@ object HotelHolder {
     var currentRoom: RoomItem? = null
     var roomList: MutableList<RoomItem> = mutableListOf()
     var orders: MutableList<OrderItem> = mutableListOf()
-
+    var lastSelectedRoom: RoomItem? = null
 }

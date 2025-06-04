@@ -21,7 +21,7 @@
         tools:layout="@layout/fragment_profile" />
     <fragment
         android:id="@+id/favoriteFragment"
-        android:name="com.example.hotelapp.FavoriteFragment"
+        android:name="com.example.hotelapp.ui.FavoriteFragment"
         android:label="fragment_favorite"
         tools:layout="@layout/fragment_favorite" >
         <action

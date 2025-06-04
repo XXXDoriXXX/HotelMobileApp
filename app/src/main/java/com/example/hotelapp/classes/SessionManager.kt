@@ -2,6 +2,7 @@ package com.example.hotelapp.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import com.example.hotelapp.classes.User
 
 
@@ -19,6 +20,8 @@ class SessionManager(context: Context) {
         private const val KEY_PHONE = "phone"
         private const val KEY_BIRTH_DATE = "birth_date"
         private const val KEY_AVATAR_URL = "avatar_url"
+        private const val KEY_FAVORITE_HOTEL_IDS = "favorite_hotel_ids"
+
 
     }
     fun getAccessToken(): String? {
@@ -56,6 +59,10 @@ class SessionManager(context: Context) {
     }
 
 
+    fun getUserBirthDate(): String? {
+        return prefs.getString(KEY_BIRTH_DATE, null)
+    }
+
     fun saveUserAvatar(avatarPath: String) {
         prefs.edit().putString("cached_avatar_path", avatarPath).apply()
     }
@@ -63,7 +70,22 @@ class SessionManager(context: Context) {
     fun getUserAvatar(): String? {
         return prefs.getString("cached_avatar_path", null)
     }
+    fun getUserFirstName(): String? {
+        return prefs.getString(KEY_FIRST_NAME, null)
+    }
 
+    fun saveFavoriteHotelIds(ids: List<Int>) {
+        val idString = ids.joinToString(",")
+        Log.d("FAV_DEBUG", "Зберігаємо ID улюблених: $ids")
+
+
+        prefs.edit().putString(KEY_FAVORITE_HOTEL_IDS, idString).apply()
+    }
+
+    fun getFavoriteHotelIds(): List<Int> {
+        val idString = prefs.getString(KEY_FAVORITE_HOTEL_IDS, "") ?: return emptyList()
+        return idString.split(",").filter { it.isNotBlank() }.map { it.toInt() }
+    }
 
     fun isLoggedIn(): Boolean {
         val loggedIn = prefs.getBoolean(KEY_IS_LOGGED_IN, false)

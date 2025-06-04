@@ -1,225 +1,299 @@
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/main"
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scroll_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+<androidx.constraintlayout.widget.ConstraintLayout
+
+    android:id="@+id/register_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorPrimary"
-    android:padding="16dp">
+    android:padding="24dp">
 
-    <!-- Лого або заголовок -->
     <ImageView
         android:id="@+id/register_logo"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:layout_width="190dp"
+        android:layout_height="190dp"
         android:layout_marginTop="32dp"
-        android:scaleType="fitCenter"
+        android:scaleType="centerInside"
+        android:alpha="0"
+        android:translationY="-20dp"
         android:src="@drawable/logo"
         app:tint="?attr/colorAccent"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <TextView
+    <LinearLayout
         android:id="@+id/register_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Pleace create a new acount"
-        android:textColor="?attr/colorOnPrimary"
-        android:textSize="28sp"
-        android:fontFamily="@font/roboto_bold"
-android:layout_marginTop="12dp"
+        android:layout_marginTop="20dp"
+android:layout_marginRight="16dp"
+        android:layout_marginLeft="16dp"
+        android:alpha="0"
+        android:orientation="vertical"
+        android:translationY="-20dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/register_logo"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/register_logo">
 
-    <!-- Поле Username -->
-    <com.google.android.material.textfield.TextInputLayout
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="1"
+            android:fontFamily="@font/roboto_bold"
+            android:text="@string/register"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="48sp" />
 
-        android:id="@+id/username_input"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="1"
+            android:fontFamily="@font/roboto_bold"
+            android:text="@string/register_desc"
+            android:textColor="@color/colorOnSecondary"
+            android:textSize="24sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/username_input_loyaut"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="26dp"
-        app:boxBackgroundMode="outline"
-        app:boxCornerRadiusTopStart="16dp"
-        app:boxCornerRadiusTopEnd="16dp"
-        app:boxCornerRadiusBottomStart="16dp"
-        app:boxCornerRadiusBottomEnd="16dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="24dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         app:layout_constraintTop_toBottomOf="@id/register_title"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="16dp">
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/username_input_field"
-            android:layout_width="match_parent"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/username_input"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Name"
-            android:textColorHint="?attr/colorPrimary" />
-    </com.google.android.material.textfield.TextInputLayout>
-    <com.google.android.material.textfield.TextInputLayout
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            app:boxCornerRadiusTopStart="24dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="24dp"
+            app:boxCornerRadiusBottomEnd="24dp"
+            app:boxStrokeColor="@color/stroke_color_selector"
+            app:hintTextColor="@color/colorSecondary">
 
-        android:id="@+id/usersecondname_input"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:boxBackgroundMode="outline"
-        app:boxCornerRadiusTopStart="16dp"
-        app:boxCornerRadiusTopEnd="16dp"
-        app:boxCornerRadiusBottomStart="16dp"
-        app:boxCornerRadiusBottomEnd="16dp"
-        app:layout_constraintTop_toBottomOf="@id/username_input"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="16dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/username_input_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/first_name_hint"
+                android:inputType="textPersonName" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/usersecondname_input_field"
-            android:layout_width="match_parent"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/usersecondname_input"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Second Name"
-            android:textColorHint="?attr/colorPrimary" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            app:boxCornerRadiusBottomEnd="24dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="24dp"
 
-    <!-- Поле Email -->
+            app:boxCornerRadiusTopStart="24dp"
+            app:boxStrokeColor="@color/stroke_color_selector"
+            app:hintTextColor="@color/colorSecondary">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/usersecondname_input_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/last_name_hint"
+                android:inputType="textPersonName" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/email_input"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:boxBackgroundMode="outline"
-        app:boxCornerRadiusTopStart="16dp"
-        app:boxCornerRadiusTopEnd="16dp"
-        app:boxCornerRadiusBottomStart="16dp"
-        app:boxCornerRadiusBottomEnd="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/usersecondname_input"
+        android:layout_marginTop="24dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        app:layout_constraintTop_toBottomOf="@id/username_input_loyaut"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="16dp"
-
-
-        >
+        app:boxCornerRadiusTopStart="24dp"
+        app:boxCornerRadiusTopEnd="24dp"
+        app:boxCornerRadiusBottomStart="24dp"
+        app:boxCornerRadiusBottomEnd="24dp"
+        app:hintTextColor="@color/colorSecondary"
+        app:boxStrokeColor="@color/stroke_color_selector">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/email_input_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Email"
-            android:inputType="textEmailAddress"
-            android:textColorHint="?attr/colorPrimary" />
+            android:hint="@string/email_hint"
+            android:inputType="textEmailAddress" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Поле Phone Number -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/phone_input"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/phone_input_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:boxBackgroundMode="outline"
-        app:boxCornerRadiusTopStart="16dp"
-        app:boxCornerRadiusTopEnd="16dp"
-        app:boxCornerRadiusBottomStart="16dp"
-        app:boxCornerRadiusBottomEnd="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/email_input"
+        android:layout_marginTop="24dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        app:layout_constraintTop_toBottomOf="@id/email_input"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="16dp">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/phone_input_field"
+       >
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Phone Number"
-            android:inputType="phone"
-            android:textColorHint="?attr/colorPrimary" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="match_parent"
+            app:cardCornerRadius="24dp"
+            app:strokeWidth="1dp"
+            android:elevation="1dp"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="4dp">
 
-    <!-- Поле Password -->
+            <com.hbb20.CountryCodePicker
+                android:id="@+id/ccp"
+                app:ccp_contentColor="@color/colorOnPrimary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:ccp_defaultNameCode="UA"
+                app:ccp_showFlag="true"
+                app:ccp_showNameCode="false"
+                app:ccp_showFullName="false"
+                />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/phone_input_field"
+                android:maxLength="11"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/phone_hint"
+                android:inputType="phone"
+                />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/password_input"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:boxBackgroundMode="outline"
-        app:boxCornerRadiusTopStart="16dp"
-        app:boxCornerRadiusTopEnd="16dp"
-        app:boxCornerRadiusBottomStart="16dp"
-        app:boxCornerRadiusBottomEnd="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/phone_input"
+        android:layout_marginTop="24dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        app:layout_constraintTop_toBottomOf="@id/phone_input_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="16dp">
+        app:boxCornerRadiusTopStart="24dp"
+        app:boxCornerRadiusTopEnd="24dp"
+        app:boxCornerRadiusBottomStart="24dp"
+        app:boxCornerRadiusBottomEnd="24dp"
+        app:hintTextColor="@color/colorSecondary"
+        app:boxStrokeColor="@color/stroke_color_selector">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/password_input_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Password"
-            android:inputType="textPassword"
-            android:textColorHint="?attr/colorPrimary" />
+            android:hint="@string/password_hint"
+            android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
-
-    <!-- Поле Date of Birth -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/date_of_birth_input"
-        android:layout_width="0dp"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/birth_date_picker"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:boxBackgroundMode="outline"
-        app:boxCornerRadiusBottomEnd="16dp"
-        app:boxCornerRadiusBottomStart="16dp"
-        app:boxCornerRadiusTopEnd="16dp"
-        app:boxCornerRadiusTopStart="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="16dp"
+        app:layout_constraintTop_toBottomOf="@id/password_input"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password_input"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="16dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="24dp"
+        app:cardCornerRadius="32dp"
+        app:strokeWidth="1dp"
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/date_of_birth_input_field"
+        android:elevation="1dp"
+        >
+
+        <DatePicker
+            android:id="@+id/edit_birth_date_picker"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Date of Birth (YYYY/MM/DD)"
-            android:inputType="datetime"
-            android:textColorHint="?attr/colorPrimary" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="90dp"
+            android:calendarViewShown="false"
+            android:datePickerMode="spinner"
+            android:background="@color/colorPrimary"
+            android:elevation="1dp"
+            android:padding="5dp"
+            android:scaleX="1.4"
+            android:scaleY="1.4" />
 
-    <!-- Кнопка реєстрації -->
+    </com.google.android.material.card.MaterialCardView>
+
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/register_button"
         android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="?attr/colorSecondary"
-        android:text="Register"
-        android:textSize="26dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="12dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
+        android:text="@string/register_button"
         android:textColor="?attr/colorPrimary"
+        android:textSize="28sp"
         app:cornerRadius="16dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/date_of_birth_input" />
-    <TextView
-        android:id="@+id/have_account_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Already have an account? Log in"
-        android:textColor="?attr/colorAccent"
-        android:textSize="16sp"
-        android:fontFamily="@font/roboto_regular"
-        app:layout_constraintTop_toBottomOf="@id/register_button"
+        app:iconPadding="8dp"
+        app:backgroundTint="?attr/colorAccent"
+        app:layout_constraintTop_toBottomOf="@id/birth_date_picker"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/have_account_text"
+        app:layout_constraintTop_toBottomOf="@id/register_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+
+        android:layout_marginBottom="32dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/have_account"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="14sp"
+            android:fontFamily="@font/roboto_regular" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/login_button"
+            android:textColor="?attr/colorAccent"
+            android:textSize="14sp"
+            android:fontFamily="@font/roboto_regular" />
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

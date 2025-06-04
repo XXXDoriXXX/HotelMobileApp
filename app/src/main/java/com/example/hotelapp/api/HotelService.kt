@@ -5,8 +5,10 @@ import HotelResponseWrapper
 import RatingRequest
 import RatingResponse
 import ViewResponse
+import com.example.hotelapp.classes.Amenity
 import com.example.hotelapp.models.BookingRequest
 import com.example.hotelapp.models.BookingResponse
+import com.example.hotelapp.models.FavoriteHotelWrapper
 import com.example.hotelapp.models.HotelSearchParams
 import com.example.hotelapp.models.HotelWithStatsResponse
 import com.example.hotelapp.models.PaymentRequest
@@ -19,6 +21,7 @@ import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
@@ -36,12 +39,18 @@ interface HotelService {
         @Path("hotel_id") hotelId: Int,
         @Header("Authorization") token: String
     ): Call<ViewResponse>
-    @POST("hotels/{hotel_id}/rate")
+    @PUT("hotels/{hotel_id}/rate")
     fun rateHotel(
         @Path("hotel_id") hotelId: Int,
-        @Body ratingRequest: RatingRequest,
+        @Body rating: Float,
         @Header("Authorization") token: String
-    ): Call<RatingResponse>
+    ): Call<Void>
+    @GET("amenities/hotel")
+    fun getHotelAmenities(): Call<List<Amenity>>
+
+    @GET("amenities/room")
+    fun getRoomAmenities(): Call<List<Amenity>>
+
     @GET("hotels/search")
     fun searchHotels(@Query("name") name: String): Call<List<HotelItem>>
     @POST("/bookings/")
@@ -78,12 +87,6 @@ interface HotelService {
         @Path("hotel_id") hotelId: Int,
         @Header("Authorization") token: String
     ): Call<HotelWithStatsResponse>
-    @PUT("hotels/{hotel_id}/rate")
-    fun rateHotelPut(
-        @Path("hotel_id") hotelId: Int,
-        @Body value: Float,
-        @Header("Authorization") token: String
-    ): Call<Void>
     @POST("hotels/search")
     fun searchHotels(
         @Body filters: HotelSearchParams
@@ -95,12 +98,40 @@ interface HotelService {
         @Header("Authorization") token: String
     ): Call<StripePaymentResponse>
 
-    @GET("/bookings/my")
-    fun getMyBookings(@Header("Authorization") token: String): Call<List<BookingResponse>>
+    @GET("bookings/my")
+    fun getMyBookingsSorted(
+        @Header("Authorization") token: String,
+        @Query("sort_by") sortBy: String,
+        @Query("order") order: String
+    ): Call<List<BookingResponse>>
+
     @POST("/bookings/{booking_id}/refund-request")
     fun requestRefund(
         @Path("booking_id") bookingId: Int,
         @Header("Authorization") token: String
     ): Call<RefundResponse>
+    @POST("bookings/checkout")
+    fun createBookingCheckoutRaw(
+        @Body request: BookingRequest,
+        @Header("Authorization") token: String
+    ): Call<JsonObject>
+    @GET("favorites/")
+    fun getFavorites(@Header("Authorization") token: String): Call<List<FavoriteHotelWrapper>>
+    @POST("favorites/{hotel_id}")
+    fun addFavorite(
+        @Path("hotel_id") hotelId: Int,
+        @Header("Authorization") token: String
+    ): Call<Void>
+
+    @DELETE("favorites/{hotel_id}")
+    fun removeFavorite(
+        @Path("hotel_id") hotelId: Int,
+        @Header("Authorization") token: String
+    ): Call<Void>
+    @DELETE("bookings/{id}")
+    fun deleteBooking(@Header("Authorization") token: String, @Path("id") id: Int): Call<ResponseBody>
+
+    @POST("bookings/{id}/archive")
+    fun archiveBooking(@Header("Authorization") token: String, @Path("id") id: Int): Call<ResponseBody>
 
 }

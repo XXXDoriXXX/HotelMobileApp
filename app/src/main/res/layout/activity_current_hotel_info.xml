@@ -1,13 +1,38 @@
+
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <!-- Основний ConstraintLayout -->
+        <FrameLayout
+            android:id="@+id/loading_overlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ProgressBar
+                android:id="@+id/loading_spinner"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:indeterminate="true" />
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?attr/colorPrimary">
@@ -22,7 +47,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- Назад кнопка -->
         <ImageView
             android:id="@+id/back_button"
             android:layout_width="18dp"
@@ -33,7 +57,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:tint="?attr/colorOnPrimary" />
 
-        <!-- Поділитися кнопка -->
         <ImageView
             android:id="@+id/share_button"
             android:layout_width="30dp"
@@ -47,9 +70,9 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Винесений BottomSheet у CoordinatorLayout -->
     <androidx.cardview.widget.CardView
         android:id="@+id/hotelDetailsBottomSheet"
+        android:visibility="gone"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         app:behavior_peekHeight="280dp"
         app:behavior_hideable="false"
@@ -66,14 +89,35 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <TextView
-                android:id="@+id/hotel_category"
-                android:layout_width="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto_medium"
-                android:text="Trending"
-                android:textColor="?attr/colorOnSecondary"
-                android:textSize="20sp" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/hotel_category"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_medium"
+                    android:text="@string/hotel_category_trending"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="20sp"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+
+                <ImageView
+                    android:id="@+id/favorite_button"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:contentDescription="Favorite toggle"
+                    android:elevation="10dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_heart_outline"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:tint="?attr/colorAccent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
             <TextView
                 android:id="@+id/hotel_name"
@@ -81,7 +125,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/roboto"
-                android:text="Blue Star Hotel"
+                android:text="@string/hotel_name_example"
                 android:textColor="?attr/colorOnPrimary"
                 android:textSize="32sp" />
 
@@ -91,7 +135,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/roboto_regular"
-                android:text="Your go-to location for a romantic stay in luxury."
+                android:text="@string/hotel_description_example"
                 android:textColor="?attr/colorOnSecondary"
                 android:textSize="16sp" />
 
@@ -135,7 +179,7 @@
 
             android:layout_gravity="bottom|center_horizontal"
             app:cardCornerRadius="32dp"
-            app:cardBackgroundColor="#7da8b4"
+            app:cardBackgroundColor="@color/colorSecondary"
             app:cardElevation="6dp"
             android:layout_marginBottom="0dp"
             android:padding="16dp">
@@ -173,7 +217,7 @@
                     android:layout_marginTop="16dp"
                     android:backgroundTint="?attr/colorPrimary"
                     android:fontFamily="@font/roboto_bold"
-                    android:text="B O O K   N O W"
+                    android:text="@string/book_now"
                     android:textColor="?attr/colorOnSurface"
                     android:textSize="22sp"
                     app:cornerRadius="22dp" />

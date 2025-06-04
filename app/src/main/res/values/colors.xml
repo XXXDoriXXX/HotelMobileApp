@@ -1,9 +1,22 @@
 <resources>
-    <color name="colorPrimary">#F5F7FA</color>
-    <color name="colorSecondary">#62B6CB</color>
-    <color name="colorOnPrimary">#1C1C1C</color>
-    <color name="colorOnSecondary">#728398</color>
-    <color name="colorSurface">#FFFFFF</color>
-    <color name="chipBackground">#e0f2f1</color>
+    <!-- Фон та поверхні -->
+    <color name="colorPrimary">#FDFCFB</color> <!-- Кремово-білий основний фон -->
+    <color name="colorSurface">#FFFFFF</color> <!-- Карточки, білий фон -->
 
+    <!-- Акценти -->
+    <color name="colorSecondary">#D4D8F0</color> <!-- Лавандовий топбар, кнопки -->
+    <color name="colorAccent">#FDE4C3</color> <!-- Персиковий акцент -->
+
+    <!-- Текст -->
+    <color name="colorOnPrimary">#1C1C1E</color> <!-- Темний сірий -->
+    <color name="colorOnSecondary">#8E8E8E</color> <!-- Білий текст на акцентних кольорах -->
+
+    <!-- Додаткове -->
+    <color name="colorGraphLine">#FFB74D</color> <!-- Помаранчева лінія графіка -->
+    <color name="colorBorder">#E0E0E0</color> <!-- Легкі сіруваті бордери -->
+    <color name="chipBackground">#F5F5F5</color> <!-- Плашки валют -->
+
+    <!-- Error / Warning -->
+    <color name="colorError">#E57373</color>
+    <color name="colorOnError">#FFFFFF</color>
 </resources>

@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <application
         android:allowBackup="true"
@@ -17,11 +18,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HotelApp"
+        android:windowSoftInputMode="adjustResize"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.HelpActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.BookingDetailsActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.CurrentHotelInfo"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="myapp" android:host="hotel" />
+            </intent-filter>
+        </activity>
 
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"
@@ -32,10 +48,12 @@
             android:exported="false" />
         <activity
             android:name=".ui.EditProfileActivity"
-            android:exported="false" /> <!-- SplashActivity як стартова активність -->
+            android:exported="false" />
         <activity
             android:name=".ui.SplashActivity"
-            android:exported="true">
+            android:exported="true"
+            android:noHistory="true">
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -71,9 +89,6 @@
             android:exported="false" />
         <activity
             android:name=".ui.SettingsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.CurrentHotelInfo"
             android:exported="false" />
         <activity
             android:name=".ui.MainActivity"

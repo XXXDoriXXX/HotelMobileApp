@@ -11,16 +11,6 @@
         android:background="?android:attr/windowBackground"
         android:padding="16dp">
 
-        <!-- Меню та іконка -->
-        <ImageView
-            android:id="@+id/menu_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/menu_lines"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:tint="?attr/colorOnPrimary"
-            android:layout_marginTop="15dp" />
 
         <ImageView
             android:id="@+id/notification_icon"
@@ -32,31 +22,28 @@
             app:tint="?attr/colorOnPrimary"
             android:layout_marginTop="15dp" />
 
-        <!-- Заголовок -->
         <TextView
             android:id="@+id/title_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_medium"
-            android:text="Hotel Search"
+            android:text="@string/hotel_search_title"
             android:textColor="?attr/colorOnPrimary"
             android:textSize="26sp"
             android:layout_marginTop="25dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/menu_icon" />
+             />
 
-        <!-- Підзаголовок -->
         <TextView
             android:id="@+id/subtitle_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_medium"
-            android:text="Find your perfect stay"
+            android:text="@string/hotel_search_subtitle"
             android:textColor="?attr/colorOnSecondary"
             android:textSize="16sp"
             app:layout_constraintTop_toBottomOf="@+id/title_text" />
 
-        <!-- Поле пошуку -->
         <LinearLayout
             android:id="@+id/search_bar"
             android:layout_width="0dp"
@@ -84,7 +71,7 @@
                 android:layout_weight="1"
                 android:background="@null"
                 android:fontFamily="@font/roboto"
-                android:hint="Search..."
+                android:hint="@string/search_hint"
                 android:paddingStart="8dp"
                 android:textColor="?attr/colorOnPrimary"
                 android:textColorHint="?attr/colorOnSecondary"
@@ -156,7 +143,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto"
-                android:text="Los Angeles, California USA"
+                android:text="@string/location_placeholder"
                 android:textColor="?attr/colorOnSecondary"
                 android:textSize="14sp" />
         </LinearLayout>
@@ -180,7 +167,7 @@
                 android:background="@drawable/tab_background_selector"
                 android:padding="8dp"
                 android:gravity="center"
-                android:text="Trending"
+                android:text="@string/tab_trending"
                 android:textColor="@color/tab_text_selector"
                 android:textSize="14sp"
                 android:fontFamily="@font/roboto_medium"
@@ -194,7 +181,7 @@
                 android:background="@drawable/tab_background_selector"
                 android:padding="8dp"
                 android:gravity="center"
-                android:text="Best Deals"
+                android:text="@string/tab_best_deals"
                 android:textColor="@color/tab_text_selector"
                 android:fontFamily="@font/roboto_medium"
                 android:textSize="14sp" />
@@ -206,7 +193,7 @@
                 android:background="@drawable/tab_background_selector"
                 android:padding="8dp"
                 android:gravity="center"
-                android:text="Popular"
+                android:text="@string/tab_popular"
                 android:textColor="@color/tab_text_selector"
                 android:fontFamily="@font/roboto_medium"
                 android:textSize="14sp" />
@@ -262,9 +249,10 @@
             android:id="@+id/layoutToggleButton"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            app:itemIconTint="#84c6cf"
-            app:tint="#84c6cf"
+            app:tint="@color/colorSecondary"
             android:layout_marginTop="8dp"
+            app:itemIconTint="@color/colorSecondary"
+
 
             android:layout_marginRight="16dp"
             android:background="#00000000"

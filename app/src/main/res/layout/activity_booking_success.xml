@@ -1,40 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
     android:background="@color/colorSurface"
-    android:padding="32dp">
+    android:padding="24dp"
+    tools:context=".ui.BookingSuccessActivity">
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/successAnimation"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="false"
+        app:lottie_rawRes="@raw/success_animation" />
 
     <TextView
         android:id="@+id/bookingSuccessText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Бронювання підтверджено"
+        android:layout_marginTop="16dp"
+        android:text="Бронювання підтверджено!"
+        android:textColor="@color/colorOnPrimary"
         android:textSize="26sp"
         android:textStyle="bold"
-        android:textColor="@color/colorOnPrimary"
-        android:gravity="center"
-        android:layout_marginBottom="32dp"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/successAnimation" />
 
-    <Button
-        android:id="@+id/viewBookingsButton"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/bookingDateText"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Переглянути бронювання"
-        android:backgroundTint="@color/colorSecondary"
+        android:layout_marginTop="8dp"
+        android:text="Дата: 2025-05-10"
         android:textColor="@color/colorOnPrimary"
         android:textSize="18sp"
-        android:layout_marginBottom="16dp"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bookingSuccessText" />
+
+    <TextView
+        android:id="@+id/bookingAmountText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Сума: $123.45"
+        android:textColor="@color/colorSecondary"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bookingDateText" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/refundInfoCard"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:cardBackgroundColor="@color/colorPrimary"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bookingAmountText">
+
+        <TextView
+            android:id="@+id/refundInfoText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="\u2022 Повернення можливе до 24 годин до заселення.\n\u2022 Якщо залишилось менше 7 днів, повертається лише часткова сума.\n\u2022 Деталі — у профілі."
+            android:textColor="@color/colorOnPrimary"
+            android:textSize="16sp" />
+
+    </androidx.cardview.widget.CardView>
+
+    <RatingBar
+        android:id="@+id/ratingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:numStars="5"
+        android:stepSize="1.0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/refundInfoCard" />
 
     <Button
-        android:id="@+id/okButton"
-        android:layout_width="match_parent"
+        android:id="@+id/submitRatingButton"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="ОК"
-        android:backgroundTint="@color/colorPrimary"
-        android:textColor="@color/colorOnPrimary"
-        android:textSize="18sp"/>
-</LinearLayout>
+        android:backgroundTint="@color/colorSecondary"
+        android:text="Оцінити готель"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        app:cornerRadius="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ratingBar" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/viewBookingsButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorSurface"
+        android:text="Переглянути бронювання"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        app:cornerRadius="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/okButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/okButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorSurface"
+        android:text="На головну"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        app:cornerRadius="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

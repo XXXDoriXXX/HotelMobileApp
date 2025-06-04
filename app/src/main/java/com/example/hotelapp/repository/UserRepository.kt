@@ -63,6 +63,40 @@ class UserRepository {
             }
         })
     }
+    fun loadProfile(context: Context, onSuccess: (User) -> Unit, onError: (Throwable) -> Unit) {
+        val sessionManager = UserHolder.getSessionManager()
+        val token = sessionManager.getAccessToken() ?: return onError(Throwable("No access token available"))
+
+        userService.getProfileDetails("Bearer $token").enqueue(object : Callback<JsonObject> {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                try {
+                    if (response.isSuccessful && response.body() != null) {
+                        val json = response.body()!!
+                        val user = User(
+                            id = json["id"]?.asInt ?: 0,
+                            first_name = json["first_name"]?.asString ?: "",
+                            last_name = json["last_name"]?.asString ?: "",
+                            email = json["email"]?.asString ?: "",
+                            phone = json["phone"]?.asString ?: "",
+                            birth_date = json["birth_date"]?.asString ?: "",
+                            avatarUrl = json["avatar_url"]?.takeUnless { it is JsonNull }?.asString.orEmpty()
+                        )
+                        UserHolder.currentUser = user
+                        sessionManager.saveUserData(user)
+                        onSuccess(user)
+                    } else {
+                        onError(Throwable("Failed to parse profile response"))
+                    }
+                } catch (e: Exception) {
+                    onError(Throwable("Parsing error: ${e.message}"))
+                }
+            }
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                onError(t)
+            }
+        })
+    }
 
     fun loadProfileDetails(
         context: Context,
@@ -81,16 +115,24 @@ class UserRepository {
                             val avatarUrl = jsonObject.get("avatar_url")?.takeUnless { it is JsonNull }?.asString.orEmpty()
                             val fullAvatarUrl = if (avatarUrl.isNotEmpty()) avatarUrl else ""
 
+                            val favoriteIdsJson = jsonObject.get("favorite_hotel_ids")
+                            val favoriteIds = if (favoriteIdsJson != null && favoriteIdsJson.isJsonArray) {
+                                favoriteIdsJson.asJsonArray.mapNotNull { it.asInt }
+                            } else {
+                                emptyList()
+                            }
+
                             val updatedUser = User(
-                                id = jsonObject.get("id")?.takeUnless { it is JsonNull }?.asInt ?: 0,
-                                first_name = jsonObject.get("first_name")?.takeUnless { it is JsonNull }?.asString ?: "",
-                                last_name = jsonObject.get("last_name")?.takeUnless { it is JsonNull }?.asString ?: "",
-                                email = jsonObject.get("email")?.takeUnless { it is JsonNull }?.asString ?: "",
-                                phone = jsonObject.get("phone")?.takeUnless { it is JsonNull }?.asString ?: "",
-                                birth_date = jsonObject.get("birth_date")?.takeUnless { it is JsonNull }?.asString ?: "",
+                                id = jsonObject.get("id")?.asInt ?: 0,
+                                first_name = jsonObject.get("first_name")?.asString ?: "",
+                                last_name = jsonObject.get("last_name")?.asString ?: "",
+                                email = jsonObject.get("email")?.asString ?: "",
+                                phone = jsonObject.get("phone")?.asString ?: "",
+                                birth_date = jsonObject.get("birth_date")?.asString ?: "",
                                 avatarUrl = avatarUrl
                             )
 
+                            sessionManager.saveFavoriteHotelIds(favoriteIds)
                             UserHolder.currentUser = updatedUser
                             sessionManager.saveUserAvatar(fullAvatarUrl)
 

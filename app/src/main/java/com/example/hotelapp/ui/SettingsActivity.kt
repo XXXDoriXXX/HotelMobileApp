@@ -1,14 +1,18 @@
 package com.example.hotelapp.ui
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.RadioButton
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.hotelapp.R
+import com.example.hotelapp.classes.BaseActivity
+import com.example.hotelapp.classes.LanguageController
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -18,6 +22,19 @@ class SettingsActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        val langController = LanguageController(this)
+
+        findViewById<Button>(R.id.btn_english).setOnClickListener {
+            langController.switchLanguage("en")
+            restartApp()
+        }
+
+        findViewById<Button>(R.id.btn_ukrainian).setOnClickListener {
+            langController.switchLanguage("uk")
+            restartApp()
+        }
+
         val systemTheme: RadioButton = findViewById(R.id.radio_system)
         val lightTheme: RadioButton = findViewById(R.id.radio_light)
         val darkTheme: RadioButton = findViewById(R.id.radio_dark)
@@ -40,5 +57,12 @@ class SettingsActivity : AppCompatActivity() {
         darkTheme.setOnClickListener {
             ThemeManager.saveTheme(this, ThemeManager.THEME_DARK)
         }
+    }
+
+    private fun restartApp() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }
 }

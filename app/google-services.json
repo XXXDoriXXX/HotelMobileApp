@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "207302679322",
+    "project_id": "hotelapp-cf952",
+    "storage_bucket": "hotelapp-cf952.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:207302679322:android:da108ff17e8ac118616aa3",
+        "android_client_info": {
+          "package_name": "com.hpk.hotelapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXZpljx99MSQ8Wjg610PaJNAJYVoyfx1c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
