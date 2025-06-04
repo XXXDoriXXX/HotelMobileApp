@@ -591,6 +591,8 @@ class HomeFragment : Fragment() {
     private fun toggleLayout() {
         isVerticalLayout = !isVerticalLayout
         updateLayoutManager()
+        hotelAdapter = ItemsHotelAdapter(hotelAdapter.items, requireContext(), isVerticalLayout)
+        itemsList.adapter = hotelAdapter
         if (isSearching) {
             applyFilters()
         } else {
