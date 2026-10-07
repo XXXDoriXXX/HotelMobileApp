@@ -1,84 +1,68 @@
 # HotelMobileApp
 
-![Kotlin](https://img.shields.io/badge/language-Kotlin-blue.svg)
-![Android](https://img.shields.io/badge/platform-Android-green.svg)
-![Status](https://img.shields.io/badge/status-active-brightgreen.svg)
+Android app for searching hotels and booking rooms.
 
-## Description
+![Kotlin](https://img.shields.io/badge/Kotlin-1.9-7F52FF?logo=kotlin&logoColor=white)
+![Android](https://img.shields.io/badge/Android-min%20SDK%2029-3DDC84?logo=android&logoColor=white)
+![Retrofit](https://img.shields.io/badge/Retrofit-2.9-48B983)
+![Stripe](https://img.shields.io/badge/Stripe-635BFF?logo=stripe&logoColor=white)
+![Gradle](https://img.shields.io/badge/Gradle-8.9-02303A?logo=gradle&logoColor=white)
 
-**HotelMobileApp** is a modern mobile application for Android, developed in Kotlin, providing a convenient service for hotel room booking, exploring hotel information, managing reservations, and accessing additional services.
+## Overview
 
-The app is designed for both guests and hotel administration, offering flexible tools for interaction and hotel management.
+HotelMobileApp is the guest client of the Hotel project. It uses the [Hotel-back](https://github.com/XXXDoriXXX/Hotel-back) REST API for all data.
 
----
+| Repository | Role |
+| --- | --- |
+| [Hotel-back](https://github.com/XXXDoriXXX/Hotel-back) | REST API used by this app |
+| [Hotel-front-web](https://github.com/XXXDoriXXX/Hotel-front-web) | Web panel for hotel owners, [live demo](https://hotel-front-web.vercel.app) |
+| [HotelMobileApp](https://github.com/XXXDoriXXX/HotelMobileApp) | This Android app |
+| [HotelFastApi](https://github.com/XXXDoriXXX/HotelFastApi) | Earlier prototype of the API (legacy) |
 
-## Key Features
+```
+HotelMobileApp (Retrofit) ──> Hotel-back (FastAPI) ──> PostgreSQL
+```
 
-- 🔍 **Hotel Search**  
-  Effortless searching for hotels by city, price, rating, and other parameters.
+## Features
 
-- 🏨 **Detailed Information**  
-  Browse photos, descriptions, a list of services, available rooms, and guest reviews.
+- Registration and login, session kept on the device
+- Hotel search with filters, hotel details with photos, amenities and ratings
+- Room list and room details with images and booked dates
+- Booking with date selection and card payment through Stripe
+- Booking history, booking details, refund requests
+- Favorite hotels
+- Profile editing and avatar
+- Share a hotel link and open its location in maps
+- English and Ukrainian languages, light and dark themes
 
-- 📅 **Room Booking**  
-  Instant booking with the ability to select check-in/check-out dates, room category, and number of guests.
+## Tech stack
 
-- 👤 **Personal Account**  
-  Manage your bookings, update personal information, and view order history.
+Kotlin, Android SDK (min 29, target 34, compile 35), View Binding, Retrofit and OkHttp, Gson, Glide, Stripe Android SDK, Google Play Services Location, Material Components, Lottie, Shimmer, Navigation component.
 
-- 💳 **Payment Integration**  
-  Convenient and secure payment for reservations.
+## Getting started
 
-- 🛎️ **Notifications & Reminders**  
-  Push notifications about booking status, special offers, and promotions.
+Requirements: Android Studio with JDK 11 or newer and an emulator or a device running Android 10 (API 29) or newer.
 
-- 📈 **Analytics for Hotels**  
-  Tools for viewing statistics, managing rooms and prices (for administration).
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/XXXDoriXXX/HotelMobileApp.git
+   ```
+2. Open the project in Android Studio and let Gradle sync.
+3. Set the API address in `app/src/main/java/com/example/hotelapp/Holder/apiHolder.kt` (`BASE_URL`). To use a local backend from the Android emulator, use `http://10.0.2.2:8000`.
+4. Run the `app` configuration, or build from the command line:
+   ```bash
+   ./gradlew assembleDebug
+   ```
 
----
+## Configuration
 
+| Setting | Where | Description |
+| --- | --- | --- |
+| `BASE_URL` | `Holder/apiHolder.kt` | Base URL of the Hotel-back API |
+| Firebase config | `app/google-services.json` | Firebase project file, replace it with your own if you fork the project |
 
+Payments need a running Hotel-back instance configured with Stripe keys.
 
-## Installation & Running
+## Author
 
-1. **Clone the repository:**
-    ```bash
-    git clone https://github.com/XXXDoriXXX/HotelMobileApp.git
-    ```
-2. **Open the project in [Android Studio](https://developer.android.com/studio).**
-3. **Sync Gradle and ensure all dependencies are installed.**
-4. **Run the app on an emulator or a physical device.**
-
----
-
-## Technologies
-
-- **Programming Language:** Kotlin
-- **Platform:** Android SDK
-- **Architecture:** MVVM (Model-View-ViewModel)
-- **Libraries:**  
-  - Jetpack (ViewModel, LiveData, Navigation, Room)
-  - Retrofit / OkHttp (network requests)
-  - Glide / Coil (image loading)
-  - Firebase (authentication, push notifications)
-  - Material Components
-
----
-
-## How to Contribute
-
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature/your-feature-name`).
-3. Make your changes and commit them (`git commit -am 'Add some feature'`).
-4. Push to the branch.
-5. Open a pull request.
-
----
-
-## Contact & Support
-
-- Author: [XXXDoriXXX](https://github.com/XXXDoriXXX)
-- For questions and suggestions, please use [Issues](https://github.com/XXXDoriXXX/HotelMobileApp/issues)
-
-
-
+[XXXDoriXXX](https://github.com/XXXDoriXXX)
